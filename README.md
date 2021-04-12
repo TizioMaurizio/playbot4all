@@ -6,7 +6,7 @@ parallel jobs:<br/>
 -robot design<br/>
 <br/>
 future:<br/>
--chat bot set up<br/>
 -robot state machine<br/>
 -games<br/>
 -walking pattern<br/>
+-chat bot set up<br/>
