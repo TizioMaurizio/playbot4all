@@ -23,6 +23,7 @@ void loop()
   
   else
   {
+	  //testing
     digitalWrite(LED, HIGH); // LED High
     Serial.println(statusSensor);
   }
