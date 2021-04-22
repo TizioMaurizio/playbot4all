@@ -3,6 +3,7 @@
 	"led": int[3,5], //5 RGB leds
 	"button": bool[4], //4 buttons
 	"capacitive": bool[1], //1 capacitive sensor (pet on head)
+	"analogstick": int[3],
 	"rotary": int, //trim when too big
 	"imu": float[3], //may be better just traslation
 }
