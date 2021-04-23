@@ -1,11 +1,11 @@
 //INDEX: (ctrl+F, check capital letters)
 
 ////////JSON state manager
-//Led 11*,10,9,2
+//Led r:11*,g:10,b:9,2
 //Button 
 //Capacitive 8
-//Analog A0,A1
-//Rotary 3,4,5
+//Analog x:A0,y:A1
+//Rotary sw:3,dt:4,clk:5
 //IMU A4**, A5
 
 ////////Locomotion manager
@@ -19,14 +19,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //begin
 //defines for serial debugging
-#define LED_SERIAL true
-#define BUTTON_SERIAL true
+#define LED_SERIAL false
+#define BUTTON_SERIAL false
 #define CAPACITIVE_SERIAL true
 #define ANALOG_SERIAL true
-#define ROTARY_SERIAL true
-#define IMU_SERIAL true
+#define ROTARY_SERIAL false
+#define IMU_SERIAL false
 #define IR_SERIAL true
-#define SERVODRIVE_SERIAL true
+#define SERVODRIVE_SERIAL false
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////JSON state manager
 ////////JSON state manager
@@ -47,6 +47,9 @@ void LED_setup(){
   // initialize serial communication at 9600 bits per second:
   // make the pushbutton's pin an input:
   pinMode(LED_pushButton, INPUT);
+  if(LED_SERIAL){
+    Serial.println("-LED");
+  }
 }
 
 void LED_loop(){
@@ -78,20 +81,34 @@ bool BUTTON_btn[4];
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Capacitive
 //Capacitive
 #define CAPACITIVE_touchpin 8 // sets the capactitive touch sensor @pin 4
+
+bool CAPACITIVE_already = false;
+bool CAPACITIVE_detected = false;
 //int CAPACITIVE_ledPin = 2; // sets the LED @pin 2
 void CAPACITIVE_setup() {
   pinMode(CAPACITIVE_touchpin, INPUT); //sets the touch sensor as input
   //pinMode(CAPACITIVE_ledPin, OUTPUT);  //sets the led as output
+  if(CAPACITIVE_SERIAL){
+    Serial.println("-Capacitive Touch Sensor");
+  }
 }
 void CAPACITIVE_loop() {
   int CAPACITIVE_touchValue = digitalRead(CAPACITIVE_touchpin); //reads the touch sensor signal
   if (CAPACITIVE_touchValue == HIGH){      //if sensor is HIGH
     //digitalWrite(CAPACITIVE_ledPin, HIGH);   //LED will turn ON
-    if (CAPACITIVE_SERIAL){
-      Serial.println("Capacitive: %d", CAPACITIVE_touchValue)
+    CAPACITIVE_detected = true;
+    //testing
+    //digitalWrite(IR_LED, HIGH); // LED High
+    if(CAPACITIVE_detected && !CAPACITIVE_already){
+      if(CAPACITIVE_SERIAL){
+        Serial.println("Capacitive: touch detected");
+      }
     }
+    CAPACITIVE_already = true;
   }
   else{       //otherwise
+    CAPACITIVE_detected = false;
+    CAPACITIVE_already = false;
     //digitalWrite(CAPACITIVE_ledPin,LOW); //LED is turned OFF
   } 
   //delay(300);   //delay of 300milliseconds
@@ -103,6 +120,9 @@ void CAPACITIVE_loop() {
 #define ANALOG_joyY A1
 
 void ANALOG_setup() {
+  if(ANALOG_SERIAL){
+    Serial.println("-Analog Stick");
+  }
 }
  
 void ANALOG_loop() {
@@ -111,9 +131,13 @@ void ANALOG_loop() {
   int ANALOG_yValue = analogRead(ANALOG_joyY);
  
   //print the values with to plot or view
-  Serial.print(ANALOG_xValue);
-  Serial.print("\t");
-  Serial.println(ANALOG_yValue);
+  if(ANALOG_xValue < 500 || ANALOG_yValue < 500 || ANALOG_xValue > 510 || ANALOG_yValue > 510){
+    if(ANALOG_SERIAL){
+      Serial.print(ANALOG_xValue);
+      Serial.print("\t");
+      Serial.println(ANALOG_yValue);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Rotary
@@ -138,6 +162,9 @@ void ROTARY_setup() {
  
   // Read the initial state of CLK
   ROTARY_lastStateCLK = digitalRead(ROTARY_CLK);
+  if(ROTARY_SERIAL){
+    Serial.println("-Rotary Encoder");
+  }
 }
  
 void ROTARY_loop() {
@@ -188,7 +215,7 @@ void ROTARY_loop() {
   }
  
   // Put in a slight delay to help debounce the reading
-  delay(1);
+  //delay(1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IMU
@@ -206,6 +233,9 @@ void IMU_setup(){
   Wire.write(0x6B);  // PWR_MGMT_1 register
   Wire.write(0);     // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
+  if(ROTARY_SERIAL){
+    Serial.println("-IMU");
+  }
 }
 void IMU_loop(){
   Wire.beginTransmission(IMU_MPU_addr);
@@ -219,7 +249,7 @@ void IMU_loop(){
   IMU_GyX=Wire.read()<<8|Wire.read();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
   IMU_GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
   IMU_GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
-  if(IMU_SERIAL){
+  if(IMU_SERIAL && false){
     Serial.print("AcX = "); Serial.print(IMU_AcX);
     Serial.print(" | AcY = "); Serial.print(IMU_AcY);
     Serial.print(" | AcZ = "); Serial.print(IMU_AcZ);
@@ -228,7 +258,10 @@ void IMU_loop(){
     Serial.print(" | GyY = "); Serial.print(IMU_GyY);
     Serial.print(" | GyZ = "); Serial.println(IMU_GyZ);
   }
-  delay(333);
+  if(IMU_SERIAL && IMU_AcZ > -14000){ //detect vertical movement or inclination (imu pins facing down)
+    Serial.print(" | AcZ = "); Serial.print(IMU_AcZ);
+  }
+  //delay(333);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Locomotion manager
@@ -236,12 +269,17 @@ void IMU_loop(){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IR Sensor
 //IR Sensor
 int IR_IRSensor = 12; // connect ir sensor to arduino pin 2
-int IR_LED = 13; // conect Led to arduino pin 13
+bool IR_detected = false;
+bool IR_already = false;
+//int IR_LED = 13; // conect Led to arduino pin 13
 
 void IR_setup() 
 {
   pinMode (IR_IRSensor, INPUT); // sensor pin INPUT
-  pinMode (IR_LED, OUTPUT); // Led pin OUTPUT
+  //pinMode (IR_LED, OUTPUT); // Led pin OUTPUT
+  if(IR_SERIAL){
+    Serial.println("-IR Sensor");
+  }
 }
 
 void IR_loop()
@@ -249,19 +287,26 @@ void IR_loop()
   int IR_statusSensor = digitalRead (IR_IRSensor);
   
   if (IR_statusSensor == 1){
-    digitalWrite(IR_LED, LOW); // LED LOW
-    if(IR_SERIAL){
-      Serial.println(IR_statusSensor);
-    }
+    IR_detected = false;
+    IR_already = false; //to be sure
+    //digitalWrite(IR_LED, LOW); // LED LOW
+    //if(IR_SERIAL){
+      //Serial.print("IR sensor: ");
+      //Serial.println(IR_statusSensor);
+    //}
   }
   
   else
   {
+    IR_detected = true;
     //testing
-    digitalWrite(IR_LED, HIGH); // LED High
-    if(IR_SERIAL){
-      Serial.println(IR_statusSensor);
+    //digitalWrite(IR_LED, HIGH); // LED High
+    if(IR_detected && !IR_already){
+      if(IR_SERIAL){
+        Serial.println("IR_Sensor: obstacle detected");
+      }
     }
+    IR_already = true;
   }
   
 }
@@ -281,16 +326,22 @@ void setup() {
   // put your setup code here, to run once:
   //REMINDER initialize Serial only once
   Serial.begin(9600);
+  Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
+  Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
+  Serial.println("\nEnabled serial prints:");
   LED_setup();
+  CAPACITIVE_setup();
   ANALOG_setup();
   ROTARY_setup();
   IMU_setup();
   IR_setup();
+  Serial.println("\nBegin");
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   LED_loop();
+  CAPACITIVE_loop();
   ANALOG_loop();
   ROTARY_loop();
   IMU_loop();
