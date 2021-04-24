@@ -28,6 +28,27 @@
 #define IR_SERIAL true
 #define SERVODRIVE_SERIAL false
 
+#define UPDATE_TIME 50 //milliseconds
+
+#include <ArduinoJson.h>
+
+int componentsAmount = 0;
+int toUpdate = 0; //see below
+//setup functions bring this up to the amount of components,
+//everytime a component updates its field in the JSON it decreases this value by one,
+//this gets refreshed to the total amount of components whenever UPDATE_TIME exprires
+
+// Allocate the JSON document
+//
+// Inside the brackets, 200 is the RAM allocated to this document.
+// Don't forget to change this value to match your requirement.
+// Use arduinojson.org/v6/assistant to compute the capacity.
+StaticJsonDocument<200> JSON;
+// StaticJsonObject allocates memory on the stack, it can be
+// replaced by DynamicJsonDocument which allocates in the heap.
+//
+// DynamicJsonDocument  doc(200);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////JSON state manager
 ////////JSON state manager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Led
@@ -50,6 +71,7 @@ void LED_setup(){
   if(LED_SERIAL){
     Serial.println("-LED");
   }
+  componentsAmount++;
 }
 
 void LED_loop(){
@@ -65,6 +87,10 @@ void LED_loop(){
     Serial.println(LED_button_state);
   }
   LED_prev_state = LED_button_state; 
+  
+  if(toUpdate--){
+    //update JSON
+  }
 }
 
 void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_blue_light_value)
@@ -77,6 +103,18 @@ void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_b
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Button
 //Button
 bool BUTTON_btn[4];
+
+void BUTTON_setup(){
+  
+  componentsAmount++;
+}
+
+void BUTTON_loop(){
+  
+  if(toUpdate--){
+    //update JSON
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Capacitive
 //Capacitive
@@ -91,6 +129,7 @@ void CAPACITIVE_setup() {
   if(CAPACITIVE_SERIAL){
     Serial.println("-Capacitive Touch Sensor");
   }
+  componentsAmount++;
 }
 void CAPACITIVE_loop() {
   int CAPACITIVE_touchValue = digitalRead(CAPACITIVE_touchpin); //reads the touch sensor signal
@@ -110,6 +149,10 @@ void CAPACITIVE_loop() {
     CAPACITIVE_detected = false;
     CAPACITIVE_already = false;
     //digitalWrite(CAPACITIVE_ledPin,LOW); //LED is turned OFF
+  }
+  
+  if(toUpdate--){
+    //update JSON
   } 
   //delay(300);   //delay of 300milliseconds
 }
@@ -123,6 +166,7 @@ void ANALOG_setup() {
   if(ANALOG_SERIAL){
     Serial.println("-Analog Stick");
   }
+  componentsAmount++;
 }
  
 void ANALOG_loop() {
@@ -137,6 +181,10 @@ void ANALOG_loop() {
       Serial.print("\t");
       Serial.println(ANALOG_yValue);
     }
+  }
+  
+  if(toUpdate--){
+    //update JSON
   }
 }
 
@@ -165,6 +213,7 @@ void ROTARY_setup() {
   if(ROTARY_SERIAL){
     Serial.println("-Rotary Encoder");
   }
+  componentsAmount++;
 }
  
 void ROTARY_loop() {
@@ -213,6 +262,10 @@ void ROTARY_loop() {
     // Remember last button press event
     ROTARY_lastButtonPress = millis();
   }
+  
+  if(toUpdate--){
+    //update JSON
+  }
  
   // Put in a slight delay to help debounce the reading
   //delay(1);
@@ -233,9 +286,10 @@ void IMU_setup(){
   Wire.write(0x6B);  // PWR_MGMT_1 register
   Wire.write(0);     // set to zero (wakes up the MPU-6050)
   Wire.endTransmission(true);
-  if(ROTARY_SERIAL){
+  if(IMU_SERIAL){
     Serial.println("-IMU");
   }
+  componentsAmount++;
 }
 void IMU_loop(){
   Wire.beginTransmission(IMU_MPU_addr);
@@ -261,6 +315,10 @@ void IMU_loop(){
   if(IMU_SERIAL && IMU_AcZ > -14000){ //detect vertical movement or inclination (imu pins facing down)
     Serial.print(" | AcZ = "); Serial.print(IMU_AcZ);
   }
+  
+  if(toUpdate--){
+    //update JSON
+  }
   //delay(333);
 }
 
@@ -280,6 +338,7 @@ void IR_setup()
   if(IR_SERIAL){
     Serial.println("-IR Sensor");
   }
+  componentsAmount++;
 }
 
 void IR_loop()
@@ -309,6 +368,9 @@ void IR_loop()
     IR_already = true;
   }
   
+  if(toUpdate--){
+    //update JSON
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ServoDrive
@@ -322,6 +384,8 @@ void IR_loop()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //main
 
+int prevTime = millis()
+
 void setup() {
   // put your setup code here, to run once:
   //REMINDER initialize Serial only once
@@ -330,20 +394,30 @@ void setup() {
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
   LED_setup();
+  BUTTON_setup();
   CAPACITIVE_setup();
   ANALOG_setup();
   ROTARY_setup();
   IMU_setup();
   IR_setup();
-  Serial.println("\nBegin");
+  Serial.print(componentsAmount);
+  Serial.println(" components linked to JSON");
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   LED_loop();
+  BUTTON_loop();
   CAPACITIVE_loop();
   ANALOG_loop();
   ROTARY_loop();
   IMU_loop();
   IR_loop();
+  
+  //JSON fields are filled in the functions' loops, then sent via serial every 50ms
+  int currTime = millis();
+  if(currTime - prevTime >= UPDATE_TIME){
+    toUpdate = componentsAmount; //reduced by one in each loop function
+    serializeJson(JSON, Serial);
+    prevTime = millis();
+  }
 }
