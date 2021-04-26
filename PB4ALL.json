@@ -6,5 +6,5 @@
 	"analogstick": int[3],
 	"rotary": int, //trim when too big
 	"imu": float[3], //may be better just traslation
-	"pos": int [3], //standard, walk, sdraiato... something else? 
+	"pos": int [3], //standard, walk, lying down... something else? 
 }
