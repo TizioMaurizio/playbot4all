@@ -117,33 +117,8 @@ def remote():
     # - perform simulation steps until Webots is stopping the controller
     prev_key = -1
     
-    step = 0
-    pA = [0, 0.3, 0, 0.6]
-    pB = [-0.6, 0.3, -0.6, 0.6]
-    pC = [-0.6, -0.6, -0.6, -0.3]
-    pD = [0.6, -0.6, 0.6, -0.3]
-    pE = [0.6, 0.3, 0.6, 0.6]
-    pF = [-0.6, 0.3, -0.6, 0.6]
-    vA = [2, 1, 2, 2]
-    vB = [2, 1, 2, 2]
-    vC = [2, 2, 2, 1]
-    vD = [2, 2, 2, 1]
-    vE = [2, 1, 2, 2]
-    vF = [2, 1, 2, 2]
-    dest = (pA, pB, pC, pD, pE, pF)# [-0.6, -0.6, -0.6, -0.3])#, [0.6, -0.6, 0.6, -0.3])
-    vel = (vA, vB, vC, vD, vE, vF)#, [2, 1, 2, 2])#, [2, 2, 2, 1], [2, 2, 2, 1])
-    while robot.step(timestep) != -1:#False:#
-        goto(dest[step],vel[step])
-        if complete(dest[step]): 
-        #goto([0.6, 0.6, 0.6, 0.6])
-            completed = False
-            if(step < len(dest)-1):
-                step = step + 1
-            else:
-                step = 2
-            
         
-    while False:#robot.step(timestep) != -1:#
+    while robot.step(timestep) != -1:#
         
         key=keyboard.getKey()
         if key != prev_key:
