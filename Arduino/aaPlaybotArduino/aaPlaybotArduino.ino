@@ -28,7 +28,7 @@
 #define IR_SERIAL false
 #define SERVODRIVE_SERIAL false
 
-#define UPDATE_TIME 50 //milliseconds
+#define UPDATE_TIME 100 //milliseconds
 
 #include <ArduinoJson.h>
 
@@ -386,6 +386,7 @@ void IR_loop()
   
   if(toUpdate--){
     //update JSON
+    JSON["irsensor"] = CAPACITIVE_detected;
   }
 }
 
@@ -417,10 +418,10 @@ int SERVO_servos[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 
 //Swing 'd' >=80
 
 //Motor variables
-int SERVO_targetPoses[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90}; //from hand to swing
+int SERVO_targetPoses[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90}; //OLD COMMENT from hand to swing
 int SERVO_velocities[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 unsigned long SERVO_previousMillis = 0;
-const long SERVO_INTERVAL = 14; //1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
+const long SERVO_INTERVAL = 14; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
 int SERVO_INCREMENT = 1; //change this to speed up movement once interval is minimized
 unsigned long SERVO_currentMillis = millis();
 int SERVO_deltaMove;
@@ -499,7 +500,7 @@ int prevTime = millis();
 void setup() {
   // put your setup code here, to run once:
   //REMINDER initialize Serial only once
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
@@ -531,6 +532,7 @@ void loop() {
     read_json();
     toUpdate = componentsAmount; //reduced by one in each loop function
     serializeJson(JSON, Serial);
+    Serial.println();
     prevTime = millis();
   }
 }

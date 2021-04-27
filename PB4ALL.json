@@ -1,10 +1,12 @@
 //comments are added for understanding, they don't exist in JSON
 {
-	"led": int[3,5], //5 RGB leds
+	"led": int[3,["top","right","left","back"]], //4 RGB leds
 	"button": bool[4], //4 buttons
 	"capacitive": bool[1], //1 capacitive sensor (pet on head)
-	"analogstick": int[3],
+	"analogstick": int["x","y"],
 	"rotary": int, //trim when too big
-	"imu": float[3], //may be better just traslation
+	"imu": float["x","y","z"], //may be better just traslation
+	"irsensor": bool["left","front","right"]
+	"servo": float["hip_right","leg_right","hip_left","leg_left"]
 	"pos": int [3], //standard, walk, lying down... something else? 
 }
