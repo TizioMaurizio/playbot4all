@@ -1,5 +1,40 @@
 """THIS COMES FROM WEBOTS SIMULATION, WILL BECOME OUTDATED IF THE CONTROLLER IS MODIFIED THERE"""
 
+import jsonhandler
+import keyboard
+
+prev_key = 0
+key = 1
+
+def loop():
+    global key, prev_key
+    if keyboard.is_pressed('q') and key!='q':  # if key 'q' is pressed 
+            key = 'q'
+            if not jsonhandler.send({"servo":{"0":20,"1":20,"2":20,"3":20}}):
+                print('NOT SENT')
+            #print('send servo')
+    if keyboard.is_pressed('w') and key!='w':  # if key 'w' is pressed 
+            key = 'w'
+            if not jsonhandler.send({"servo":{"0":9,"1":9,"2":9,"3":9}}):
+                print('NOT SENT')
+            #print('send led')
+    if keyboard.is_pressed('e') and key!='e':  # if key 'e' is pressed 
+            key = 'e'
+            if not jsonhandler.send({"led":{"0":20,"1":20,"2":20,"3":20}}):
+                print('NOT SENT')
+    if keyboard.is_pressed('r') and key!='r':  # if key 'r' is pressed 
+            key = 'r'
+            if not jsonhandler.send({"led":{"0":9,"1":9,"2":9,"3":9}}):
+                print('NOT SENT')
+    if keyboard.is_pressed('l') and key!='l':  # if key 'e' is pressed 
+            key = 'l'
+            if not jsonhandler.send({"pose":"stand"}):
+                print('NOT SENT')
+    if keyboard.is_pressed('o') and key!='o':  # if key 'r' is pressed 
+            key = 'o'
+            if not jsonhandler.send({"pose":"stand"}):
+                print('NOT SENT')
+'''
 # You may need to import some classes of the controller module. Ex:
 #  from controller import Robot, Motor, DistanceSensor
 from controller import Robot
@@ -8,6 +43,7 @@ from controller import Motor, Brake, PositionSensor
 import tkinter as tk
 import threading
 import time
+
 
 # create the Robot instance.
 robot = Robot()
@@ -288,3 +324,4 @@ def remote():
 x = threading.Thread(target=remote)
 x.start() 
 #window.mainloop()
+'''

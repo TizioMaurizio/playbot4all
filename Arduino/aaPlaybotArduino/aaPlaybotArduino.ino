@@ -62,6 +62,11 @@ int LED_color = 0; //module 8 gets the color
 int LED_colors[8][3] = {RED,{0,255,0},{0,0,255},{255,255,125},{0,255,255},{255,0,255},{255,255,0},{255,255,255}};
 int LED_pushButton = 2;
 
+#define LED_TOP "0"
+#define LED_RIGHT "1"
+#define LED_LEFT "2"
+#define LED_BACK "3"
+
 void LED_setup(){
   pinMode(LED_red_light_pin, OUTPUT);
   pinMode(LED_green_light_pin, OUTPUT);
@@ -405,6 +410,11 @@ void IR_loop()
 #define SERVO_SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 #define SERVO_NONE -99
 
+#define HIP_RIGHT "0"
+#define LEG_RIGHT "1"
+#define HIP_LEFT "2"
+#define LEG_LEFT "3"
+
 int SERVO_SERVONUM = 4;
 int SERVO_RECLEN = SERVO_SERVONUM*3+1; //account for \n
 //SoftwareSerial linkSerial(10, 11); // RX, TX
@@ -558,21 +568,22 @@ void read_json(){
     // Most of the time, you can rely on the implicit casts.
     // In other case, you can do received["time"].as<long>();
     if(received["led"]["0"])
-      JSON["led"]["top"] = received["led"]["0"];
+      JSON["led"][LED_TOP] = received["led"]["0"];
     if(received["led"]["1"])
-      JSON["led"]["right"] = received["led"]["1"];
+      JSON["led"][LED_RIGHT] = received["led"]["1"];
     if(received["led"]["2"])
-      JSON["led"]["left"] = received["led"]["2"];
+      JSON["led"][LED_LEFT] = received["led"]["2"];
     if(received["led"]["3"])
-      JSON["led"]["back"] = received["led"]["3"];
+      JSON["led"][LED_BACK] = received["led"]["3"];
     if(received["servo"]["0"])
-      JSON["servo"]["hip_right"] = received["servo"]["0"];
+      JSON["servo"][HIP_RIGHT] = received["servo"]["0"];
     if(received["servo"]["1"])
-      JSON["servo"]["leg_right"] = received["servo"]["1"];
+      JSON["servo"][LEG_RIGHT] = received["servo"]["1"];
     if(received["servo"]["2"])
-      JSON["servo"]["hip_left"] = received["servo"]["2"];
+      JSON["servo"][HIP_LEFT] = received["servo"]["2"];
     if(received["servo"]["3"])
-      JSON["servo"]["leg_left"] = received["servo"]["3"];
+      JSON["servo"][LEG_LEFT] = received["servo"]["3"];
+
     /*JSON["servo"]["hip_right"] = received["servo"]["hip_right"];
     JSON["servo"]["leg_right"] = received["servo"]["leg_right"];
     JSON["servo"]["hip_left"] = received["servo"]["hip_left"];
