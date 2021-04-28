@@ -500,7 +500,8 @@ int prevTime = millis();
 void setup() {
   // put your setup code here, to run once:
   //REMINDER initialize Serial only once
-  Serial.begin(115200);
+  Serial.begin(2000000);
+  Serial.setTimeout(UPDATE_TIME);
   Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
@@ -539,27 +540,43 @@ void loop() {
 
 void read_json(){
   if(Serial.available() > 0){
-    String inData = Serial.readStringUntil('\n');
+    int currTime = millis();
+    int prevTime = millis();
+    //String inData = Serial.readStringUntil('\n');
+    String inData = Serial.readString();
     StaticJsonDocument<200> received;
     // Deserialize the JSON document
     DeserializationError error = deserializeJson(received, inData);
     if (error) {
       Serial.print(F("deserializeJson() failed: "));
       Serial.println(error.f_str());
+      Serial.println(inData);
       return;
     }
     // Fetch values.
     //
     // Most of the time, you can rely on the implicit casts.
     // In other case, you can do received["time"].as<long>();
-    JSON["led"]["top"] = received["led"]["top"];
-    JSON["led"]["right"] = received["led"]["right"];
-    JSON["led"]["left"] = received["led"]["left"];
-    JSON["led"]["back"] = received["led"]["back"];
-    JSON["servo"]["hip_right"] = received["servo"]["hip_right"];
+    if(received["led"]["0"])
+      JSON["led"]["top"] = received["led"]["0"];
+    if(received["led"]["1"])
+      JSON["led"]["right"] = received["led"]["1"];
+    if(received["led"]["2"])
+      JSON["led"]["left"] = received["led"]["2"];
+    if(received["led"]["3"])
+      JSON["led"]["back"] = received["led"]["3"];
+    if(received["servo"]["0"])
+      JSON["servo"]["hip_right"] = received["servo"]["0"];
+    if(received["servo"]["1"])
+      JSON["servo"]["leg_right"] = received["servo"]["1"];
+    if(received["servo"]["2"])
+      JSON["servo"]["hip_left"] = received["servo"]["2"];
+    if(received["servo"]["3"])
+      JSON["servo"]["leg_left"] = received["servo"]["3"];
+    /*JSON["servo"]["hip_right"] = received["servo"]["hip_right"];
     JSON["servo"]["leg_right"] = received["servo"]["leg_right"];
     JSON["servo"]["hip_left"] = received["servo"]["hip_left"];
-    JSON["servo"]["leg_left"] = received["servo"]["leg_left"];
+    JSON["servo"]["leg_left"] = received["servo"]["leg_left"];*/
     // Print values.
   }
 }
