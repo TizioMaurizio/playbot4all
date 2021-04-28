@@ -59,13 +59,14 @@ int LED_blue_light_pin = 9;
 int LED_prev_state = 0;
 int LED_color = 0; //module 8 gets the color
 #define RED {255,0,0}
-int LED_colors[8][3] = {RED,{0,255,0},{0,0,255},{255,255,125},{0,255,255},{255,0,255},{255,255,0},{255,255,255}};
+#define YELLOW {255,255,125}
+int LED_colors[8][3] = {RED,{0,255,0},{0,0,255},YELLOW,{0,255,255},{255,0,255},{255,255,0},{255,255,255}};
 int LED_pushButton = 2;
 
-#define LED_TOP "0"
-#define LED_RIGHT "1"
-#define LED_LEFT "2"
-#define LED_BACK "3"
+#define LED_TOP 0
+#define LED_RIGHT 1
+#define LED_LEFT 2
+#define LED_BACK 3
 
 void LED_setup(){
   pinMode(LED_red_light_pin, OUTPUT);
@@ -77,6 +78,12 @@ void LED_setup(){
   if(LED_SERIAL){
     Serial.println("-LED");
   }
+  JSON["led"][LED_TOP][0] = 0;
+  JSON["led"][LED_TOP][1] = 0;
+  JSON["led"][LED_TOP][2] = 0;
+  JSON["led"][LED_RIGHT][0] = 0;
+  JSON["led"][LED_RIGHT][1] = 0;
+  JSON["led"][LED_RIGHT][2] = 0;
   componentsAmount++;
 }
 
@@ -410,10 +417,10 @@ void IR_loop()
 #define SERVO_SERVOMAX  575 // this is the 'maximum' pulse length count (out of 4096)
 #define SERVO_NONE -99
 
-#define HIP_RIGHT "0"
-#define LEG_RIGHT "1"
-#define HIP_LEFT "2"
-#define LEG_LEFT "3"
+#define HIP_RIGHT 0
+#define LEG_RIGHT 1
+#define HIP_LEFT 2
+#define LEG_LEFT 3
 
 int SERVO_SERVONUM = 4;
 int SERVO_RECLEN = SERVO_SERVONUM*3+1; //account for \n
@@ -443,38 +450,58 @@ void SERVO_setup() {
   for(int i=0; i<SERVO_SERVONUM; i++){  // power motors to starting position
     SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
     SERVO_targetPoses[i] = SERVO_servos[i];
+    JSON["servo"][i] = SERVO_servos[i];
+    JSON["vel"][i] = SERVO_velocities[i];
   }
+  componentsAmount++;
 }
 
 void SERVO_loop() {
+  SERVO_currentMillis = millis();
   //read angles every INTERVAL milliseconds
   if(toUpdate--){
     for(int i=0; i<SERVO_SERVONUM; i++){
-      SERVO_targetPoses[i] = JSON["servoangles"][i];
-      SERVO_velocities[i] = JSON["servovelocities"][i];
+      SERVO_targetPoses[i] = int(JSON["servo"][i]) - 180;
+      SERVO_velocities[i] = JSON["vel"][i];
     }
   }
+  //SERVO_targetPoses[0] = 360;
+  
+  /*unsigned long SERVO_deltaT = SERVO_currentMillis - SERVO_previousMillis;
+  if (SERVO_deltaT >= SERVO_INTERVAL) {
+    SERVO_previousMillis = SERVO_currentMillis;
+    for(int i=0; i<16; i++){
+      if(SERVO_servos[i] != SERVO_targetPoses[i]){
+        SERVO_deltaMove = SERVO_targetPoses[i] - SERVO_servos[i];
+        if(abs(SERVO_deltaMove) <= SERVO_INCREMENT)
+          SERVO_servos[i] = SERVO_targetPoses[i];
+        else 
+          SERVO_servos[i] += SERVO_INCREMENT * sign(SERVO_deltaMove);
+        SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
+      }
+    }
+  }*/
   
   //update motor pose every INTERVAL milliseconds
   unsigned long SERVO_deltaT = SERVO_currentMillis - SERVO_previousMillis;
   if (SERVO_deltaT >= SERVO_INTERVAL) {
     SERVO_previousMillis = millis();
-    SERVO_targetPoses[0] = JSON["servo"]["hip_right"];
-    SERVO_targetPoses[1] = JSON["servo"]["leg_right"];
-    SERVO_targetPoses[2] = JSON["servo"]["hip_left"];
-    SERVO_targetPoses[3] = JSON["servo"]["leg_left"];
-    if(SERVO_deltaT - SERVO_INTERVAL > 3)
-      Serial.println(SERVO_deltaT);
     for(int i=0; i<SERVO_SERVONUM; i++){
       if(SERVO_servos[i] != SERVO_targetPoses[i]){
         SERVO_deltaMove = SERVO_targetPoses[i] - SERVO_servos[i];
-        if(abs(SERVO_deltaMove) <= SERVO_INCREMENT)
+        if(abs(SERVO_deltaMove) <= SERVO_INCREMENT * SERVO_velocities[i])
           SERVO_servos[i] = SERVO_targetPoses[i];
         else 
           SERVO_servos[i] += SERVO_INCREMENT * sign(SERVO_deltaMove) * SERVO_velocities[i];
         SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
       }
     }
+    
+  }
+
+  for(int i=0;i<3;i++){
+    if(JSON["led"][LED_TOP][i]<=255 || JSON["led"][LED_TOP][i]>=0 )
+      SERVO_pwm.setPWM(13+i, 0, rgbToPulse(JSON["led"][LED_TOP][i]));
   }
 }
 
@@ -495,6 +522,11 @@ int sign(int x){
  */
 int angleToPulse(int SERVO_ang){
    int SERVO_pulse = map(SERVO_ang,0, 180, SERVO_SERVOMIN,SERVO_SERVOMAX);// map angle of 0 to 180 to Servo min and Servo max
+   return SERVO_pulse;
+}
+
+int rgbToPulse(int SERVO_ang){
+   int SERVO_pulse = map(SERVO_ang,0, 255, 0,4095);// map angle of 0 to 180 to Servo min and Servo max
    return SERVO_pulse;
 }
 
@@ -522,7 +554,7 @@ void setup() {
   ROTARY_setup();
   //IMU_setup();
   IR_setup();
-  //SERVO_setup();
+  SERVO_setup();
   Serial.print(componentsAmount);
   Serial.println(" components reflected by JSON");
 }
@@ -535,7 +567,7 @@ void loop() {
   ROTARY_loop();
   //IMU_loop();
   IR_loop();
-  //SERVO_loop();
+  SERVO_loop();
   
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
   int currTime = millis();
@@ -567,22 +599,34 @@ void read_json(){
     //
     // Most of the time, you can rely on the implicit casts.
     // In other case, you can do received["time"].as<long>();
-    if(received["led"]["0"])
-      JSON["led"][LED_TOP] = received["led"]["0"];
-    if(received["led"]["1"])
-      JSON["led"][LED_RIGHT] = received["led"]["1"];
-    if(received["led"]["2"])
-      JSON["led"][LED_LEFT] = received["led"]["2"];
-    if(received["led"]["3"])
-      JSON["led"][LED_BACK] = received["led"]["3"];
-    if(received["servo"]["0"])
-      JSON["servo"][HIP_RIGHT] = received["servo"]["0"];
-    if(received["servo"]["1"])
-      JSON["servo"][LEG_RIGHT] = received["servo"]["1"];
-    if(received["servo"]["2"])
-      JSON["servo"][HIP_LEFT] = received["servo"]["2"];
-    if(received["servo"]["3"])
-      JSON["servo"][LEG_LEFT] = received["servo"]["3"];
+    if(received["led"][0][2])
+      JSON["led"][LED_TOP][0] = received["led"][0][0];
+      JSON["led"][LED_TOP][1] = received["led"][0][1];
+      JSON["led"][LED_TOP][2] = received["led"][0][2];
+    if(received["led"][1][2])
+      JSON["led"][LED_RIGHT][0] = received["led"][0][0];
+      JSON["led"][LED_RIGHT][1] = received["led"][0][1];
+      JSON["led"][LED_RIGHT][2] = received["led"][0][2];
+    /*if(received["led"][2])
+      JSON["led"][LED_LEFT] = received["led"][2];
+    if(received["led"][3])
+      JSON["led"][LED_BACK] = received["led"][3];*/
+    if(received["servo"][HIP_RIGHT])
+      JSON["servo"][HIP_RIGHT] = received["servo"][0];
+    if(received["servo"][LEG_RIGHT])
+      JSON["servo"][LEG_RIGHT] = received["servo"][1];
+    if(received["servo"][HIP_LEFT])
+      JSON["servo"][HIP_LEFT] = received["servo"][2];
+    if(received["servo"][LEG_LEFT])
+      JSON["servo"][LEG_LEFT] = received["servo"][3];
+    if(received["vel"][HIP_RIGHT])
+      JSON["vel"][HIP_RIGHT] = received["vel"][0];
+    if(received["vel"][LEG_RIGHT])
+      JSON["vel"][LEG_RIGHT] = received["vel"][1];
+    if(received["vel"][HIP_LEFT])
+      JSON["vel"][HIP_LEFT] = received["vel"][2];
+    if(received["vel"][LEG_LEFT])
+      JSON["vel"][LEG_LEFT] = received["vel"][3];
 
     /*JSON["servo"]["hip_right"] = received["servo"]["hip_right"];
     JSON["servo"]["leg_right"] = received["servo"]["leg_right"];

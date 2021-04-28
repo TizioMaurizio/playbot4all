@@ -10,21 +10,21 @@ def loop():
     global key, prev_key
     if keyboard.is_pressed('q') and key!='q':  # if key 'q' is pressed 
             key = 'q'
-            if not jsonhandler.send({"servo":{"0":20,"1":20,"2":20,"3":20}}):
+            if not jsonhandler.send({"servo":[180,180,180,180],"vel":[10,10,10,10]}):
                 print('NOT SENT')
             #print('send servo')
     if keyboard.is_pressed('w') and key!='w':  # if key 'w' is pressed 
             key = 'w'
-            if not jsonhandler.send({"servo":{"0":9,"1":9,"2":9,"3":9}}):
+            if not jsonhandler.send({"servo":[360,360,360,360],"vel":[20,20,20,20]}):
                 print('NOT SENT')
             #print('send led')
     if keyboard.is_pressed('e') and key!='e':  # if key 'e' is pressed 
             key = 'e'
-            if not jsonhandler.send({"led":{"0":20,"1":20,"2":20,"3":20}}):
+            if not jsonhandler.send({"led":[[255,0,255],[255,0,255]]}):
                 print('NOT SENT')
     if keyboard.is_pressed('r') and key!='r':  # if key 'r' is pressed 
             key = 'r'
-            if not jsonhandler.send({"led":{"0":9,"1":9,"2":9,"3":9}}):
+            if not jsonhandler.send({"led":[[255,255,0],[255,255,0]]}):
                 print('NOT SENT')
     if keyboard.is_pressed('l') and key!='l':  # if key 'e' is pressed 
             key = 'l'

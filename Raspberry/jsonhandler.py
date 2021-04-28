@@ -15,7 +15,7 @@ SEND_RATE = REC_RATE * 3
 
 tosend = 0
 
-arduino = serial.Serial('COM5', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
 arduino.flushInput()
 arduino.flushOutput()
 
@@ -58,7 +58,7 @@ def loop():
             #asd+=1
             #servo = not servo
             #if(asd == 20):
-                #send({"servo":{"0":20,"1":20,"2":20,"3":20}})
+                #send({"servo":{"0":360,"1":360,"2":360,"3":360}})
             #if(asd == 30):
                 #send({"led":{"0":20,"1":20,"2":20,"3":20}})
             ack()
