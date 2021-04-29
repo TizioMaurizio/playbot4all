@@ -42,7 +42,7 @@ def loop():
         if(received):
             #print(asd)
             #print('\n')
-            #print(received)
+            
             #print('\n')
             try:
                 playbot = json.loads(received) #read the json
@@ -50,6 +50,7 @@ def loop():
             except:
                 pass
                 #print("Json error")
+            #print(received)
         
         prevtime = currtime
         
@@ -80,12 +81,13 @@ sending = 0
 def send(toSend):
     global sending
     sending = toSend
+    print('SEND')
     return 1
 
 def ack():
     global sending
     arduino.write(json.dumps(sending).encode())
-
+    #print(json.dumps(sending).encode())
     '''
 def send(toSend):
     global sending, sent, sendqueuestring, sendqueue, staging
