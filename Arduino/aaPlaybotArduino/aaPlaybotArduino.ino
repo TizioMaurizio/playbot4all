@@ -398,7 +398,7 @@ void IR_loop()
   
   if(toUpdate--){
     //update JSON
-    JSON["irsensor"] = CAPACITIVE_detected;
+    JSON["irsensor"] = IR_detected;
   }
 }
 
@@ -450,8 +450,8 @@ void SERVO_setup() {
   for(int i=0; i<SERVO_SERVONUM; i++){  // power motors to starting position
     SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
     SERVO_targetPoses[i] = SERVO_servos[i];
-    JSON["servo"][i] = SERVO_servos[i];
-    JSON["vel"][i] = SERVO_velocities[i];
+    //JSON["servo"][i] = SERVO_servos[i];
+    //JSON["vel"][i] = SERVO_velocities[i];
   }
   componentsAmount++;
 }
@@ -460,9 +460,19 @@ void SERVO_loop() {
   SERVO_currentMillis = millis();
   //read angles every INTERVAL milliseconds
   if(toUpdate--){
-    for(int i=0; i<SERVO_SERVONUM; i++){
-      SERVO_targetPoses[i] = int(JSON["servo"][i]) - 180;
-      SERVO_velocities[i] = JSON["vel"][i];
+    if(JSON["ready"]){
+        for(int i=0; i<SERVO_SERVONUM; i++){
+          SERVO_targetPoses[i] = int(JSON["next"][i]);
+          JSON["servo"][i] = SERVO_targetPoses[i];
+          JSON["ready"]=false;
+          //SERVO_velocities[i] = int(JSON["vel"][i]);
+        }
+    }
+    else{
+      for(int i=0; i<SERVO_SERVONUM; i++){
+        SERVO_targetPoses[i] = int(JSON["servo"][i]);
+        //SERVO_velocities[i] = int(JSON["vel"][i]);
+      }
     }
   }
   //SERVO_targetPoses[0] = 360;
@@ -484,21 +494,42 @@ void SERVO_loop() {
   
   //update motor pose every INTERVAL milliseconds
   unsigned long SERVO_deltaT = SERVO_currentMillis - SERVO_previousMillis;
+  int complete = 0;
+  
   if (SERVO_deltaT >= SERVO_INTERVAL) {
     SERVO_previousMillis = millis();
     for(int i=0; i<SERVO_SERVONUM; i++){
       if(SERVO_servos[i] != SERVO_targetPoses[i]){
         SERVO_deltaMove = SERVO_targetPoses[i] - SERVO_servos[i];
-        if(abs(SERVO_deltaMove) <= SERVO_INCREMENT * SERVO_velocities[i])
+        if(abs(SERVO_deltaMove) <= SERVO_INCREMENT * SERVO_velocities[i]){
           SERVO_servos[i] = SERVO_targetPoses[i];
+          complete++;
+        }
         else 
           SERVO_servos[i] += SERVO_INCREMENT * sign(SERVO_deltaMove) * SERVO_velocities[i];
         SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
       }
+      else{
+        complete++;
+      }
     }
-    
   }
-
+  
+  if(complete == SERVO_SERVONUM){ //update servo with next and invalidate next
+    /*for(int i=0; i<SERVO_SERVONUM; i++){
+      SERVO_targetPoses[i] = int(JSON["next"][i]);
+      JSON["servo"][i] = SERVO_targetPoses[i];
+      //SERVO_velocities[i] = int(JSON["vel"][i]);
+    }
+    int(JSON["next"][0]=-1);*/
+    JSON["ready"]=true;
+  }
+  else{
+    JSON["ready"]=false;
+  }
+  
+  
+  
   for(int i=0;i<3;i++){
     if(JSON["led"][LED_TOP][i]<=255 || JSON["led"][LED_TOP][i]>=0 )
       SERVO_pwm.setPWM(13+i, 0, rgbToPulse(JSON["led"][LED_TOP][i]));
@@ -547,7 +578,7 @@ void setup() {
   Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
-  LED_setup();
+  //LED_setup();
   BUTTON_setup();
   CAPACITIVE_setup();
   ANALOG_setup();
@@ -560,7 +591,7 @@ void setup() {
 }
 
 void loop() {
-  LED_loop();
+  //LED_loop();
   BUTTON_loop();
   CAPACITIVE_loop();
   ANALOG_loop();
@@ -572,9 +603,9 @@ void loop() {
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
   int currTime = millis();
   if(currTime - prevTime >= UPDATE_TIME){
-    read_json();
     toUpdate = componentsAmount; //reduced by one in each loop function
     serializeJson(JSON, Serial);
+    read_json();
     Serial.println();
     prevTime = millis();
   }
@@ -599,34 +630,30 @@ void read_json(){
     //
     // Most of the time, you can rely on the implicit casts.
     // In other case, you can do received["time"].as<long>();
-    if(received["led"][0][2])
-      JSON["led"][LED_TOP][0] = received["led"][0][0];
-      JSON["led"][LED_TOP][1] = received["led"][0][1];
-      JSON["led"][LED_TOP][2] = received["led"][0][2];
-    if(received["led"][1][2])
-      JSON["led"][LED_RIGHT][0] = received["led"][0][0];
-      JSON["led"][LED_RIGHT][1] = received["led"][0][1];
-      JSON["led"][LED_RIGHT][2] = received["led"][0][2];
+    if(received["led"][0])
+      JSON["led"][LED_TOP] = received["led"][0];
+    if(received["led"][1])
+      JSON["led"][LED_RIGHT] = received["led"][1];
     /*if(received["led"][2])
       JSON["led"][LED_LEFT] = received["led"][2];
     if(received["led"][3])
       JSON["led"][LED_BACK] = received["led"][3];*/
     if(received["servo"][HIP_RIGHT])
-      JSON["servo"][HIP_RIGHT] = received["servo"][0];
+      JSON["servo"][HIP_RIGHT] = float(received["servo"][0]);
     if(received["servo"][LEG_RIGHT])
-      JSON["servo"][LEG_RIGHT] = received["servo"][1];
+      JSON["servo"][LEG_RIGHT] = float(received["servo"][1]);
     if(received["servo"][HIP_LEFT])
-      JSON["servo"][HIP_LEFT] = received["servo"][2];
+      JSON["servo"][HIP_LEFT] = float(received["servo"][2]);
     if(received["servo"][LEG_LEFT])
-      JSON["servo"][LEG_LEFT] = received["servo"][3];
-    if(received["vel"][HIP_RIGHT])
-      JSON["vel"][HIP_RIGHT] = received["vel"][0];
-    if(received["vel"][LEG_RIGHT])
-      JSON["vel"][LEG_RIGHT] = received["vel"][1];
-    if(received["vel"][HIP_LEFT])
-      JSON["vel"][HIP_LEFT] = received["vel"][2];
-    if(received["vel"][LEG_LEFT])
-      JSON["vel"][LEG_LEFT] = received["vel"][3];
+      JSON["servo"][LEG_LEFT] = float(received["servo"][3]);
+    if(received["next"][HIP_RIGHT])
+      JSON["next"][HIP_RIGHT] = received["next"][0];
+    if(received["next"][LEG_RIGHT])
+      JSON["next"][LEG_RIGHT] = received["next"][1];
+    if(received["next"][HIP_LEFT])
+      JSON["next"][HIP_LEFT] = received["next"][2];
+    if(received["next"][LEG_LEFT])
+      JSON["next"][LEG_LEFT] = received["next"][3];
 
     /*JSON["servo"]["hip_right"] = received["servo"]["hip_right"];
     JSON["servo"]["leg_right"] = received["servo"]["leg_right"];

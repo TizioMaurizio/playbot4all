@@ -10,9 +10,9 @@ import threading
 import time
 import serial
 import json
+import jsonhandler
 
 RATE = 0.1
-ard = serial.Serial('COM5', 115200, timeout=RATE)
 # create the Robot instance.
 robot = Robot()
 window = tk.Tk()
@@ -20,22 +20,9 @@ greeting = tk.Label(text="Hello, Webots")
 greeting.pack()
 
 
-def serialRead():
-    currtime = time.time()
-    prevtime = 0
-    while True:
-        x = ard.readline()
-        if(x):
-            prevtime = currtime
-            currtime = time.time()
-            print(x)
-            print('\n')
-            print(currtime-prevtime)
-
 #x = threading.Thread(target=serialRead)
 #x.start() 
 
-ard.write(b'{"servo":{"hip_right":0,"leg_right":0,"hip_left":0,"leg_left":0}}')
 
 def remote():
     # get the time step of the current world.
@@ -113,15 +100,23 @@ def remote():
     
     step = ZERO
     pA = [ZERO, BBB, ZERO, AAA]
+    pAdeg = [int(ZERO*57.29+90), int(BBB*57.29+90), int(ZERO*57.29+90), int(AAA*57.29+90)]
+    #pAdeg = [int(180), int(180), int(180), int(180)]
     pB = [CCC, BBB, CCC, AAA]
+    pBdeg = [int(CCC*57.29+90), int(BBB*57.29+90), int(CCC*57.29+90), int(AAA*57.29+90)]
+    #pBdeg = [int(180), int(180), int(180), int(180)]
     pBb = [ZERO, BBB, ZERO, AAA]
     pC = [CCC, CCC, CCC, DDD]
+    pCdeg = [int(CCC*57.29+90), int(CCC*57.29+90), int(CCC*57.29+90), int(DDD*57.29+90)]
     pCb = [ZERO, CCC, ZERO, DDD]
     pD = [AAA, CCC, AAA, DDD]
+    pDdeg = [int(AAA*57.29+90), int(CCC*57.29+90), int(AAA*57.29+90), int(DDD*57.29+90)]
     pDb = [ZERO, CCC, ZERO, DDD]
     pE = [AAA, BBB, AAA, AAA]
+    pEdeg = [int(AAA*57.29+90), int(BBB*57.29+90), int(AAA*57.29+90), int(AAA*57.29+90)]
     pEb = [ZERO, BBB, ZERO, AAA]
     pZ = [ZERO, CCC, ZERO, DDD]
+    pZdeg = [int(ZERO*57.29+90), int(CCC*57.29+90), int(ZERO*57.29+90), int(DDD*57.29+90)]
     
     step = ZERO
     bA = [ZERO, BBB, ZERO, AAA]
@@ -175,7 +170,7 @@ def remote():
     prevtime = 0
     
     while robot.step(timestep) != -1:
-        
+        jsonhandler.loop()
         """  
         x = ard.read()
         if x == b'{':
@@ -198,14 +193,6 @@ def remote():
             print (recjson)
             recjson = ''
         """
-        currtime = time.time()
-        if(currtime-prevtime > RATE):
-            x = ard.readline()
-            if(x):
-                print(x)
-                print('\n')
-                print(currtime-prevtime)
-            prevtime = currtime
         
         key=keyboard.getKey()
         completed = False
@@ -252,34 +239,94 @@ def remote():
                 state='0'     
                         
         if state=='pA':
-            if reach(pA,vA):
-                state='pB'
-                if stopping:
-                    state = '0' 
+            if state != prev_state:
+                jsonhandler.send({"servo":pAdeg,"next":pBdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pAdeg or jsonhandler.getPlaybot()["servo"]==jsonhandler.getPlaybot()["next"]):
+                    if reach(pA,vA):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"] or jsonhandler.getPlaybot()["servo"]==jsonhandler.getPlaybot()["next"]):
+                        if stopping:
+                            state = '0'
+                        else: 
+                            state='pB'
+            except:
+                pass
+                
         if state=='pZ':
-            if reach(pZ,vZ):
-                state = '0'
+            if state != prev_state:
+                jsonhandler.send({"servo":pZdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pZdeg):
+                    if reach(pZ,vZ):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        state = '0'
+            except:
+                pass
+                
         if state=='pB':
-            if reach(pB,vB):
-                state='pC'
-                if stopping:
-                    state='pA'
+            if state != prev_state:
+                jsonhandler.send({"servo":pBdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pBdeg):
+                    if reach(pB,vB):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        if stopping:
+                            state='pA'
+                        else:
+                            state='pC'
+                else:
+                    jsonhandler.send({"servo":pBdeg})
+            except:
+                pass
+                
         if state=='pC':
-            if reach(pC,vC):
-                state='pD'
-                if stopping:
-                    state='pZ'
+            if state != prev_state:
+                jsonhandler.send({"servo":pCdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pCdeg):
+                    if reach(pC,vC):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        if stopping:
+                            state='pZ'
+                        else:
+                            state='pD'
+            except:
+                pass
+                        
         if state=='pD':
-            if reach(pD,vD):
-                state='pE'
-                if stopping:
-                    state='pZ'
+            if state != prev_state:
+                jsonhandler.send({"servo":pDdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pDdeg):
+                    if reach(pD,vD):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        if stopping:
+                            state='pZ'
+                        else:
+                            state='pE'
+            except:
+                pass
+                               
         if state=='pE':
-            if reach(pE,vE):
-                state='pB'
-                if stopping:
-                    state='pA'
-        
+            if state != prev_state:
+                jsonhandler.send({"servo":pEdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pEdeg):
+                    if reach(pE,vE):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        if stopping:
+                            state='pA'
+                        else:
+                            state='pB'
+            except:
+                pass
+                
         if state=='bA':
             if reach(bA,vA):
                 state='bB'
