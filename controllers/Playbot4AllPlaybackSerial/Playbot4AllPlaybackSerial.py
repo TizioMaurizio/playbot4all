@@ -48,9 +48,9 @@ def remote():
     # initialize motors
    
     AAA = 0.4
-    BBB = 0.15
+    BBB = 0.3
     CCC = -0.4
-    DDD = -0.15
+    DDD = -0.3
     TURNA = -0.5
     TURNB = 0.5
     ZERO = 0
@@ -180,14 +180,27 @@ def remote():
     vlB = [2*s,2*s,2*s,2*s]
     vlC = [2*s,1*s,2*s,2*s]
     vlD = [2*s,2*s,2*s,2*s]
+    
+    vlA = [2*s,2*s,2*s,2*s]
+    vlB = [2*s,2*s,2*s,2*s]
+    vlC = [2*s,2*s,2*s,2*s]
+    vlD = [2*s,2*s,2*s,2*s]
         
-    vA = [2*s, 1*s, 2*s, 2*s]
+    vA = [2*s, 2*s, 2*s, 2*s]
     vB = [2*s, 1*s, 2*s, 2*s]
     vC = [2*s, 2*s, 2*s, 1*s]
     vD = [2*s, 2*s, 2*s, 1*s]
     vE = [2*s, 1*s, 2*s, 2*s]
     vF = [2*s, 1*s, 2*s, 2*s]
     vZ = [2*s, 2*s, 2*s, 1*s]
+    
+    vA = [2*s, 2*s, 2*s, 2*s]
+    vB = [2*s, 2*s, 2*s, 2*s]
+    vC = [2*s, 2*s, 2*s, 2*s]
+    vD = [2*s, 2*s, 2*s, 2*s]
+    vE = [2*s, 2*s, 2*s, 2*s]
+    vF = [2*s, 2*s, 2*s, 2*s]
+    vZ = [2*s, 2*s, 2*s, 2*s]
     
     dest = (pA, pB, pC, pD, pE)#, pF)# [CCC, CCC, CCC, DDD])#, [AAA, CCC, AAA, DDD])
     stop = (pA, pBb, pCb, pDb, pEb)
@@ -274,9 +287,24 @@ def remote():
         key=keyboard.getKey()
         completed = False
         prev_state = state
-           
+        try:
+            if jsonhandler.getPlaybot()["irsensor"] and False:
+                state = '0'
+                stopping = True
+                turnRight = False
+                turnLeft = False
+                forward = False
+                backward = False
+        except:
+            pass
+            
         if state=='0':
-            doState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
+            turnState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
+            try:
+                if(jsonhandler.getPlaybot()["servo"] != ZEROdeg):
+                    jsonhandler.send({"servo":ZEROdeg,"next":ZEROdeg})
+            except:
+                pass
             #reach([ZERO,ZERO,ZERO,ZERO],[1,1,1,1])
             stopping = False
             if turnLeft:
