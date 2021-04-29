@@ -14,8 +14,12 @@ REC_RATE = 0.05
 SEND_RATE = REC_RATE * 3
 
 tosend = 0
-
-arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+for i in range(10):
+    try:
+        arduino = serial.Serial('COM'+str(i), 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+        break
+    except:
+        pass
 arduino.flushInput()
 arduino.flushOutput()
 

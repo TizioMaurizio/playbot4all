@@ -438,8 +438,8 @@ int SERVO_servos[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 
 int SERVO_targetPoses[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90}; //OLD COMMENT from hand to swing
 int SERVO_velocities[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 unsigned long SERVO_previousMillis = 0;
-const long SERVO_INTERVAL = 14; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
-int SERVO_INCREMENT = 1; //change this to speed up movement once interval is minimized
+const long SERVO_INTERVAL = 100; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
+int SERVO_INCREMENT = 4; //change this to speed up movement once interval is minimized
 unsigned long SERVO_currentMillis = millis();
 int SERVO_deltaMove;
 bool SERVO_speedSet = false;
@@ -524,11 +524,6 @@ void SERVO_loop() {
     JSON["ready"]=true;
   }
   else{
-    for(int i=0; i<SERVO_SERVONUM; i++){
-          SERVO_targetPoses[i] = int(JSON["next"][i]);
-          JSON["servo"][i] = SERVO_targetPoses[i];
-          //SERVO_velocities[i] = int(JSON["vel"][i]);
-        }
     JSON["ready"]=false;
   }
   
