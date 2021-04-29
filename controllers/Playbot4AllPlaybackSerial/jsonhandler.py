@@ -15,7 +15,7 @@ SEND_RATE = REC_RATE * 3
 
 tosend = 0
 
-arduino = serial.Serial('COM5', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
 arduino.flushInput()
 arduino.flushOutput()
 
@@ -50,7 +50,7 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            print(received)
+            #print(received)
         
         prevtime = currtime
         
@@ -81,6 +81,7 @@ sending = 0
 def send(toSend):
     global sending
     sending = toSend
+    print('SEND')
     return 1
 
 def ack():

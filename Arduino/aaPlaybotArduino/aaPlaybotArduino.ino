@@ -464,7 +464,6 @@ void SERVO_loop() {
         for(int i=0; i<SERVO_SERVONUM; i++){
           SERVO_targetPoses[i] = int(JSON["next"][i]);
           JSON["servo"][i] = SERVO_targetPoses[i];
-          JSON["ready"]=false;
           //SERVO_velocities[i] = int(JSON["vel"][i]);
         }
     }
@@ -525,6 +524,11 @@ void SERVO_loop() {
     JSON["ready"]=true;
   }
   else{
+    for(int i=0; i<SERVO_SERVONUM; i++){
+          SERVO_targetPoses[i] = int(JSON["next"][i]);
+          JSON["servo"][i] = SERVO_targetPoses[i];
+          //SERVO_velocities[i] = int(JSON["vel"][i]);
+        }
     JSON["ready"]=false;
   }
   
