@@ -1,0 +1,254 @@
+#VRML_SIM R2021a utf8
+WorldInfo {
+  basicTimeStep 16
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.3790347439078013 0.9222114879216202 0.07654171709687978 5.6524900148799135
+  position -0.3794140320095007 0.2178863279980367 0.5838793839859797
+  follow "robot"
+  followType "None"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+  size 1 1
+  appearance Appearance {
+    material Material {
+      diffuseColor 0.4 0.2 0.2
+    }
+  }
+}
+DEF WALL_1 Solid {
+  translation 0.5 0.05 0
+  children [
+    DEF WALL_SHAPE Shape {
+      appearance PBRAppearance {
+        baseColor 0.12549 0.368627 0.729412
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.02 0.1 0.98
+      }
+    }
+  ]
+  boundingObject USE WALL_SHAPE
+}
+DEF WALL_2 Solid {
+  translation -0.5 0.05 0
+  children [
+    USE WALL_SHAPE
+  ]
+  name "solid(1)"
+  boundingObject USE WALL_SHAPE
+}
+DEF WALL_3 Solid {
+  translation 0 0.05 -0.5
+  rotation 0 1 0 1.5708
+  children [
+    USE WALL_SHAPE
+  ]
+  name "solid(2)"
+  boundingObject USE WALL_SHAPE
+}
+DEF WALL_4 Solid {
+  translation 0 0.05 0.5
+  rotation 0 1 0 1.5708
+  children [
+    USE WALL_SHAPE
+  ]
+  name "solid(3)"
+  boundingObject USE WALL_SHAPE
+}
+Robot {
+  translation -0.07022317954742832 0.09986744174338326 -0.26983130453979365
+  rotation -0.9953474744106788 2.8011268377257656e-05 0.09635042501022877 -3.141586997979025
+  children [
+    DEF HIPLEFT HingeJoint {
+      jointParameters HingeJointParameters {
+        position -3.8261412642019223e-08
+        axis 0 1 0
+        anchor 0.03 0.02 0
+      }
+      device [
+        DEF hip_left RotationalMotor {
+          name "hip_left"
+        }
+        PositionSensor {
+          name "hip_left_pos"
+        }
+      ]
+      endPoint Solid {
+        translation 0.019999900000521036 0.04998999999999999 -4.418819289831277e-06
+        rotation 0.001085336178370934 0.9999992462638232 -0.0005740358571298168 0.00022119934976228602
+        children [
+          DEF LEGLEFT HingeJoint {
+            jointParameters HingeJointParameters {
+              position -6.568562038733461e-08
+              axis 0 0 1
+              anchor 0 0.04 0
+            }
+            device [
+              DEF leg_left RotationalMotor {
+                name "leg_left"
+              }
+              DEF leg_left_pos PositionSensor {
+                name "leg_left_pos"
+              }
+            ]
+            endPoint Solid {
+              translation 0.009999999999999938 0.03999999887559569 0
+              rotation 0 0 -1 6.664001874625056e-08
+              children [
+                DEF KNEELEFT HingeJoint {
+                  jointParameters HingeJointParameters {
+                    anchor 0 0 0.04
+                  }
+                  device [
+                    DEF knee_left RotationalMotor {
+                      name "knee_left"
+                    }
+                  ]
+                }
+                DEF ARMBASEBOX Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.2 0.2 1
+                    metalness 0
+                  }
+                  geometry Box {
+                    size 0.04 0.02 0.08
+                  }
+                }
+              ]
+              name "solid(5)"
+              boundingObject USE ARMBASEBOX
+              physics Physics {
+              }
+              linearVelocity 1.1263622115608372e-06 -4.532986244394984e-10 3.419860542513281e-06
+              angularVelocity -2.119456836928066e-07 5.361161160176542e-05 -1.3691639016221292e-07
+            }
+          }
+          DEF ARMBASEBOX Shape {
+            appearance PBRAppearance {
+              baseColor 0.2 0.2 1
+              metalness 0
+            }
+            geometry Box {
+              size 0.02 0.08 0.02
+            }
+          }
+        ]
+        name "solid(1)"
+        boundingObject USE ARMBASEBOX
+        physics Physics {
+        }
+        linearVelocity 5.171191698738474e-07 1.27706306640718e-09 1.4677534393436882e-06
+        angularVelocity -1.5658395094122934e-07 5.3560360856594174e-05 1.3192628931860708e-08
+      }
+    }
+    DEF HIPRIGHT HingeJoint {
+      jointParameters HingeJointParameters {
+        position -3.845295487989518e-08
+        axis 0 1 0
+        anchor -0.03 0.02 0
+      }
+      device [
+        RotationalMotor {
+          name "hip_right"
+        }
+        PositionSensor {
+          name "hip_right_pos"
+        }
+      ]
+      endPoint Solid {
+        translation -0.020000000000521705 0.049995 4.422619772570044e-06
+        rotation 0.0009117261039019628 0.9999995843776643 -1.0068520940306843e-07 0.00022149835466235402
+        children [
+          DEF LEGRIGHT HingeJoint {
+            jointParameters HingeJointParameters {
+              position 1.785750534250008e-08
+              axis 0 0 1
+              anchor 0 0.04 0
+            }
+            device [
+              RotationalMotor {
+                name "leg_right"
+              }
+              PositionSensor {
+                name "leg_right_pos"
+              }
+            ]
+            endPoint Solid {
+              translation -0.009999999999898215 0.03999995488068962 0
+              rotation 0 0 1 0
+              children [
+                DEF KNEERIGHT HingeJoint {
+                  jointParameters HingeJointParameters {
+                    position 0.800000302461933
+                    anchor 0 0 0.04
+                  }
+                  device [
+                    RotationalMotor {
+                      name "knee_right"
+                    }
+                  ]
+                }
+                DEF ARMBASEBOX Shape {
+                  appearance PBRAppearance {
+                    baseColor 0.2 0.2 1
+                    metalness 0
+                  }
+                  geometry Box {
+                    size 0.04 0.02 0.08
+                  }
+                }
+              ]
+              name "solid(5)"
+              boundingObject USE ARMBASEBOX
+              physics Physics {
+              }
+              linearVelocity -1.1266639998314119e-06 3.820859184600066e-10 -3.418831853355119e-06
+              angularVelocity 3.1721252488563845e-07 5.361326770593135e-05 1.6710557480025553e-07
+            }
+          }
+          DEF ARMBASEBOX Shape {
+            appearance PBRAppearance {
+              baseColor 0.2 0.2 1
+              metalness 0
+            }
+            geometry Box {
+              size 0.02 0.08 0.02
+            }
+          }
+        ]
+        name "solid(4)"
+        boundingObject USE ARMBASEBOX
+        physics Physics {
+        }
+        linearVelocity -5.139758328942533e-07 2.644468366508334e-09 -1.4636877175844272e-06
+        angularVelocity 2.3884918405640816e-07 5.3562023331622855e-05 -1.006375402002803e-07
+      }
+    }
+    DEF BODY Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 0
+        roughness 1
+        metalness 0
+      }
+      geometry Box {
+        size 0.1 0.1 0.1
+      }
+    }
+  ]
+  boundingObject USE BODY
+  physics Physics {
+    density -1
+    mass 1
+  }
+  controller "Playbot4AllPlayback"
+  linearVelocity 3.727333306782344e-09 2.136626647540588e-09 3.9471230457018935e-09
+  angularVelocity 4.1026560763916495e-08 5.22273347355373e-05 -4.370133959727739e-08
+}
