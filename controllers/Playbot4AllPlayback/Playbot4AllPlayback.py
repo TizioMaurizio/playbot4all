@@ -28,11 +28,15 @@ def remote():
     #  ds.enable(timestep)
     
     # initialize motors
-   
+    
+    #ROBOT GAIT PARAMETERS
+    #each of these variables defines the target angles for the gait
+    #0.4, 0.15 tall robot, 0.4,0.3 short robot
+    #THURST AND MAXIMUM LEAN ARE COUPLED, MINIMUM LEAN AND TURN ARE DECOUPLED
     AAA = 0.4
-    BBB = 0.15
+    BBB = 0.2
     CCC = -0.4
-    DDD = -0.15
+    DDD = -0.2
     TURNA = -0.5
     TURNB = 0.5
     ZERO = 0

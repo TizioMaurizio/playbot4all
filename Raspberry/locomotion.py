@@ -1,7 +1,6 @@
-"""THIS COMES FROM WEBOTS SIMULATION, WILL BECOME OUTDATED IF THE CONTROLLER IS MODIFIED THERE"""
-
-import jsonhandler
-import keyboard
+"""4wheelController controller."""
+#REQUIREMENT TO RUN: arduino connected to serial with 
+#aaPlaybotArduino running on it, otherwise states will not advance
 
 #GENERAL LOGIC:
 #The python states machine sends current and next state to arduino,
@@ -9,43 +8,38 @@ import keyboard
 #doing so the python state machine notices arduino has advanced and sends the next pair of states.
 #the case of interruptions is not currently completely managed
 #the simulated robot moves at a different speed from the real one, so it is possible that it skids or skips steps
+#
+#this robot is a REFLECTION of the actual implemented robot on arduino
+#if arduino moves too fast the simulation can't keep up and the robot
+#skids and turns
 
-# You may need to import some classes of the controller module. Ex:
-#  from controller import Robot, Motor, DistanceSensor
+import keyboard
 import time
 import serial
 import json
+import jsonhandler
 
 RATE = 0.1
-
 
 state = '0'
 prev_state = '0'
 
-
-# initialize motors
-
+#ROBOT GAIT PARAMETERS
+#each of these variables defines the target angles for the gait
+#0.4, 0.15 tall robot, 0.4,0.3 short robot
+#THURST AND MAXIMUM LEAN ARE COUPLED, MINIMUM LEAN AND TURN ARE DECOUPLED
 AAA = 0.4
-BBB = 0.15
+BBB = 0.25
 CCC = -0.4
-DDD = -0.15
+DDD = -0.25
 TURNA = -0.5
 TURNB = 0.5
 ZERO = 0
-              
-   
-def reset():
-    for joint in joints:
-        joints[joint].setVelocity(1)
-        joints[joint].setPosition(ZERO) 
-          
 
-left_step = True
-VEL = 2
-# Main loop:
-# - perform simulation steps until Webots is stopping the controller
 prev_key = -1
+#END SET UP THE ROBOT
 
+#SET UP THE FINITE-STATE AUTOMATON
 def stateToDeg(array):
     array = [round(array[0]*57.29+90), round(array[1]*57.29+90), round(array[2]*57.29+90), round(array[3]*57.29+90)]
     return array    
@@ -119,8 +113,13 @@ vlA = [2*s,2*s,2*s,1*s]
 vlB = [2*s,2*s,2*s,2*s]
 vlC = [2*s,1*s,2*s,2*s]
 vlD = [2*s,2*s,2*s,2*s]
+
+vlA = [2*s,2*s,2*s,2*s]
+vlB = [2*s,2*s,2*s,2*s]
+vlC = [2*s,2*s,2*s,2*s]
+vlD = [2*s,2*s,2*s,2*s]
     
-vA = [2*s, 1*s, 2*s, 2*s]
+vA = [2*s, 2*s, 2*s, 2*s]
 vB = [2*s, 1*s, 2*s, 2*s]
 vC = [2*s, 2*s, 2*s, 1*s]
 vD = [2*s, 2*s, 2*s, 1*s]
@@ -128,9 +127,19 @@ vE = [2*s, 1*s, 2*s, 2*s]
 vF = [2*s, 1*s, 2*s, 2*s]
 vZ = [2*s, 2*s, 2*s, 1*s]
 
+vA = [2*s, 2*s, 2*s, 2*s]
+vB = [2*s, 2*s, 2*s, 2*s]
+vC = [2*s, 2*s, 2*s, 2*s]
+vD = [2*s, 2*s, 2*s, 2*s]
+vE = [2*s, 2*s, 2*s, 2*s]
+vF = [2*s, 2*s, 2*s, 2*s]
+vZ = [2*s, 2*s, 2*s, 2*s]
+
 dest = (pA, pB, pC, pD, pE)#, pF)# [CCC, CCC, CCC, DDD])#, [AAA, CCC, AAA, DDD])
 stop = (pA, pBb, pCb, pDb, pEb)
 vel = (vA, vB, vC, vD, vE)#, vF)#, [2, 1, 2, 2])#, [2, 2, 2, 1], [2, 2, 2, 1])
+
+
 
 go = True
 resetting = False
@@ -150,22 +159,25 @@ par = 0
 
 prevtime = 0
 
+
 def doState(currDeg, nextDeg, curr, currvel, nextName, stopName):
     global state, prev_state
     if state != prev_state:
         jsonhandler.send({"servo":currDeg,"next":nextDeg})
     try:
-        if(jsonhandler.getPlaybot()["servo"]==currDeg):
-            pass
+        if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
+            if reach(curr,currvel):
+                pass
             if stopping:
-                state = stopName
-        elif(jsonhandler.getPlaybot()["servo"]==nextDeg):
+                reach(stopName,currvel)
+        elif(jsonhandler.getPlaybot()["servo"]==nextDeg): #Arduino completed the current state
                 if stopping:
                     state = stopName
                 else: 
                     state=nextName
-        if(jsonhandler.getPlaybot()["next"]!=nextDeg):
+        if(jsonhandler.getPlaybot()["next"]!=nextDeg): #Arduino next state not updated
             jsonhandler.send({"servo":currDeg,"next":nextDeg})
+            reach(curr,currvel)
     except:
         pass 
         
@@ -174,17 +186,19 @@ def turnState(currDeg, nextDeg, curr, currvel, nextName, stopName):
     if state != prev_state:
         jsonhandler.send({"servo":currDeg,"next":nextDeg})
     try:
-        if(jsonhandler.getPlaybot()["servo"]==currDeg):
-            pass
-        elif(jsonhandler.getPlaybot()["servo"]==nextDeg):
+        if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
+            if reach(curr,currvel):
+                pass
+        elif(jsonhandler.getPlaybot()["servo"]==nextDeg): #Arduino completed the current state
                 state=nextName
-        if(jsonhandler.getPlaybot()["next"]!=nextDeg):
+        if(jsonhandler.getPlaybot()["next"]!=nextDeg): #Arduino next state not updated
             jsonhandler.send({"servo":currDeg,"next":nextDeg})
     except:
         pass  
-
-while True:
-    jsonhandler.loop()
+#END SET UP THE FINITE-STATE AUTOMATON
+    
+def loop():
+    global state, resetting, stopping, turnLeft, turnRight, forward, backward
     """  
     x = ard.read()
     if x == b'{':
@@ -210,9 +224,29 @@ while True:
     
     completed = False
     prev_state = state
-       
+    
+    #IR SENSOR STOP SIMULATION GIMMICK
+    try:
+        if jsonhandler.getPlaybot()["irsensor"] and False:
+            state = '0'
+            stopping = True
+            turnRight = False
+            turnLeft = False
+            forward = False
+            backward = False
+    except:
+        pass
+    
+    #BEGIN STATES 
+    
+    #INITIAL STATE   
     if state=='0':
-        doState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
+        turnState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
+        try:
+            if(jsonhandler.getPlaybot()["servo"] != ZEROdeg):
+                jsonhandler.send({"servo":ZEROdeg,"next":ZEROdeg})
+        except:
+            pass
         #reach([ZERO,ZERO,ZERO,ZERO],[1,1,1,1])
         stopping = False
         if turnLeft:
@@ -224,6 +258,7 @@ while True:
         if forward:
             state='pA'                
     """
+    #OLD STATES BEFORE FUNCTIONS
     if state=='tlA':  
         if reach(tlA,[2,2,2,1]):
             state='tlB'
@@ -253,10 +288,9 @@ while True:
         if reach(trD,[2,2,2,2]):
             state='0'  
     """   
+    #TURN LEFT STATES
     if state=='tlA':  
         turnState(tlAdeg, tlBdeg, tlA, vlA, 'tlB', 'tlB')
-        #if reach(trA,[2,1,2,2]):
-            #state='trB'
     if state=='tlB':
         turnState(tlBdeg, tlCdeg, tlB, vlB, 'tlC', 'tlC')  
     if state=='tlC': 
@@ -264,17 +298,21 @@ while True:
     if state=='tlD':
         turnState(tlDdeg, ZEROdeg, tlD, vlD, '0', '0')
     
+    #TURN RIGHT STATES
     if state=='trA':  
-        turnState(trAdeg, trBdeg, trA, [2,1,2,2], 'trB', 'trB')
+        turnState(trAdeg, trBdeg, trA, vrA, 'trB', 'trB')
         #if reach(trA,[2,1,2,2]):
             #state='trB'
     if state=='trB':
-        turnState(trBdeg, trCdeg, trB, [2,2,2,2], 'trC', 'trC')  
+        turnState(trBdeg, trCdeg, trB, vrB, 'trC', 'trC')  
     if state=='trC': 
-        turnState(trCdeg, trDdeg, trC, [2,2,2,1], 'trD', 'trD') 
+        turnState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
     if state=='trD':
-        turnState(trDdeg, ZEROdeg, trD, [2,2,2,2], '0', '0')  
-    """                
+        turnState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
+         
+    """        
+    #OLD STATES BEFORE FUNCTIONS
+            
     if state=='pA':
         if state != prev_state:
             jsonhandler.send({"servo":pAdeg,"next":pBdeg})
@@ -294,23 +332,14 @@ while True:
         except:
             pass
     """
+    
+    #GO FORWARD STATES
     if state=='pA':
         doState(pAdeg, pBdeg, pA, vA, 'pB', '0')
             
     if state=='pZ':
-        doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')
-    """
-        if state != prev_state:
-            jsonhandler.send({"servo":pZdeg})
-        try:
-            if(jsonhandler.getPlaybot()["servo"]==pZdeg):
-                if reach(pZ,vZ):
-                    pass
-                if(jsonhandler.getPlaybot()["ready"]):
-                    state = '0'
-        except:
-            pass
-    """        
+        doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')  
+              
     if state=='pB':
         doState(pBdeg, pCdeg, pB, vB, 'pC', 'pA')
             
@@ -322,7 +351,22 @@ while True:
                            
     if state=='pE':
         doState(pEdeg, pBdeg, pE, vE, 'pB', 'pA')
+        
+    """
+    #OLD STATES BEFORE FUNCTIONS
+        if state != prev_state:
+            jsonhandler.send({"servo":pZdeg})
+        try:
+            if(jsonhandler.getPlaybot()["servo"]==pZdeg):
+                if reach(pZ,vZ):
+                    pass
+                if(jsonhandler.getPlaybot()["ready"]):
+                    state = '0'
+        except:
+            pass
+    """
     """        
+    #OLD STATES BEFORE FUNCTIONS
     if state=='bA':
         if reach(bA,vA):
             state='bB'
@@ -353,6 +397,7 @@ while True:
                 state='bA'
     """
     
+    #GO BACKWARD STATES
     if state=='bA':
         doState(bAdeg, bBdeg, bA, vA, 'bB', '0')
         
@@ -370,7 +415,11 @@ while True:
         
     if state=='bE':
         doState(bEdeg, bBdeg, bE, vE, 'bB', 'bA')
-            
+    
+    if state != prev_state:
+        print(state)
+         
+    #READ INPUT        
     if keyboard.is_pressed('x'):
         stopping = True
         turnRight = False
@@ -390,7 +439,7 @@ while True:
         forward = False
         backward = False
         
-    if keyboard.is_pressed('s'):
+    if keyboard.is_pressed('a'):
         if not backward:
             stopping = True
         turnRight = False
@@ -404,11 +453,5 @@ while True:
         turnRight = False
         turnLeft = False
         backward = False
-        forward = True
-        
-    if keyboard.is_pressed('q'): 
-        ard.write(b'{"servo":{"hip_right":0,"leg_right":0,"hip_left":0,"leg_left":0}}')
-        
-    if state != prev_state:
-        print(state)
+        forward = True 
     

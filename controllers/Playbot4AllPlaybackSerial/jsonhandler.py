@@ -3,6 +3,7 @@ USAGE:
 loop() to do one step
 send(json) to send a json, NOTE max size is 64 bytes due to arduinouino serial buffer limit
 
+IMPORTANT:
 """
 
 import time
@@ -15,7 +16,15 @@ SEND_RATE = REC_RATE * 3
 
 tosend = 0
 
-arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+
+tosend = 0
+for i in range(10):
+    try:
+        arduino = serial.Serial('COM'+str(i), 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+        
+        break
+    except:
+        pass
 arduino.flushInput()
 arduino.flushOutput()
 
@@ -30,7 +39,7 @@ sent = 0
 sendqueuestring = []
 
 playbot = 0
-    
+
 def loop():
     global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot
     
@@ -50,7 +59,7 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            print(received)
+            #print(received)
         
         prevtime = currtime
         
@@ -77,18 +86,28 @@ def loop():
 staging = dict() 
 stamp = 0
 sending = 0
+prevSend = 0
+isSending = False
 
 def send(toSend):
-    global sending
+    global sending, prevSend, isSending
+    prevSend = sending
     sending = toSend
-    print('SEND')
+    if prevSend != sending:
+        print("send")
+        isSending = True
     return 1
 
 def ack():
-    global sending
+    global sending, isSending   
     arduino.write(json.dumps(sending).encode())
+    """if isSending: #Send only when message is different
+        print(sending)
+        arduino.write(json.dumps(sending).encode())
+        isSending = False
+    """
     #print(json.dumps(sending).encode())
-    '''
+"""
 def send(toSend):
     global sending, sent, sendqueuestring, sendqueue, staging
     
@@ -107,7 +126,7 @@ def send(toSend):
         #print(sendqueue)
         
         return 1
-        """
+        ##
         #print(toSend["servo"])
         for i in sendqueue:
                 
@@ -130,7 +149,7 @@ def send(toSend):
             sendqueuestring = sendqueuestring[:2]
             return 0
         print(len(sendqueue))
-        """
+        ##
     except:
         pass
         #print("push error")
@@ -160,6 +179,6 @@ def ack():
         pass
         #print("send error")
         #traceback.#print_exc()
-    '''
+"""
 def getPlaybot():
     return playbot

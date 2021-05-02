@@ -1,4 +1,6 @@
 """4wheelController controller."""
+#REQUIREMENT TO RUN: arduino connected to serial with 
+#aaPlaybotArduino running on it, otherwise states will not advance
 
 #GENERAL LOGIC:
 #The python states machine sends current and next state to arduino,
@@ -6,14 +8,16 @@
 #doing so the python state machine notices arduino has advanced and sends the next pair of states.
 #the case of interruptions is not currently completely managed
 #the simulated robot moves at a different speed from the real one, so it is possible that it skids or skips steps
+#
+#this robot is a REFLECTION of the actual implemented robot on arduino
+#if arduino moves too fast the simulation can't keep up and the robot
+#skids and turns
 
 # You may need to import some classes of the controller module. Ex:
 #  from controller import Robot, Motor, DistanceSensor
 from controller import Robot
 from controller import Keyboard
 from controller import Motor, Brake, PositionSensor
-import tkinter as tk
-import threading
 import time
 import serial
 import json
@@ -22,39 +26,32 @@ import jsonhandler
 RATE = 0.1
 # create the Robot instance.
 robot = Robot()
-window = tk.Tk()
-greeting = tk.Label(text="Hello, Webots")
-greeting.pack()
 
-
-#x = threading.Thread(target=serialRead)
-#x.start() 
 state = '0'
 prev_state = '0'
 
 def remote():
     global state, prev_state
-    # get the time step of the current world.
+    #SET UP THE ROBOT
     timestep = int(robot.getBasicTimeStep())
     
+    #START KEYBOARD DETECTION
     keyboard=Keyboard()
     keyboard.enable(timestep)
-    # You should insert a getDevice-like function in order to get the
-    # instance of a device of the robot. Something like:
-    #  motor = robot.getMotor('motorname')
-    #  ds = robot.getDistanceSensor('dsname')
-    #  ds.enable(timestep)
     
-    # initialize motors
-   
+    #ROBOT GAIT PARAMETERS
+    #each of these variables defines the target angles for the gait
+    #0.4, 0.15 tall robot, 0.4,0.3 short robot
+    #THURST AND MAXIMUM LEAN ARE COUPLED, MINIMUM LEAN AND TURN ARE DECOUPLED
     AAA = 0.4
-    BBB = 0.3
+    BBB = 0.25
     CCC = -0.4
-    DDD = -0.3
+    DDD = -0.25
     TURNA = -0.5
     TURNB = 0.5
     ZERO = 0
     
+    #SET UP THE ROBOT
     wheels = []
     jointNames = ['hip_right','leg_right','hip_left','leg_left']
     positionLimits = { 'leg_left': [AAA,DDD], 'leg_right': [BBB,CCC], 'hip_left': [AAA, CCC], 'hip_right': [AAA, CCC] }
@@ -64,7 +61,7 @@ def remote():
     def pos(joint):
         return joints[joint].getPositionSensor().getValue()
     completed = False
-    
+
     def reach(positions,velocities):
            if complete(positions):
                return True
@@ -88,7 +85,7 @@ def remote():
        #print('completed '+str(dest[step]))
        completed = True
        return True
-       
+
     def reset():
         for joint in joints:
             joints[joint].setVelocity(1)
@@ -98,15 +95,15 @@ def remote():
         #wheels.append(robot.getDevice(name))
         joints[name] = robot.getDevice(name)
         joints[name].getPositionSensor().enable(1)
-        
-    print(joints['leg_left'])
-    
+
     left_step = True
-    VEL = 2
+    VEL = 6
     # Main loop:
     # - perform simulation steps until Webots is stopping the controller
     prev_key = -1
+    #END SET UP THE ROBOT
     
+    #SET UP THE FINITE-STATE AUTOMATON
     def stateToDeg(array):
         array = [round(array[0]*57.29+90), round(array[1]*57.29+90), round(array[2]*57.29+90), round(array[3]*57.29+90)]
         return array    
@@ -205,6 +202,8 @@ def remote():
     dest = (pA, pB, pC, pD, pE)#, pF)# [CCC, CCC, CCC, DDD])#, [AAA, CCC, AAA, DDD])
     stop = (pA, pBb, pCb, pDb, pEb)
     vel = (vA, vB, vC, vD, vE)#, vF)#, [2, 1, 2, 2])#, [2, 2, 2, 1], [2, 2, 2, 1])
+
+    
     
     go = True
     resetting = False
@@ -224,23 +223,25 @@ def remote():
     
     prevtime = 0
     
+    
     def doState(currDeg, nextDeg, curr, currvel, nextName, stopName):
         global state, prev_state
         if state != prev_state:
             jsonhandler.send({"servo":currDeg,"next":nextDeg})
         try:
-            if(jsonhandler.getPlaybot()["servo"]==currDeg):
+            if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
                 if reach(curr,currvel):
                     pass
                 if stopping:
-                    state = stopName
-            elif(jsonhandler.getPlaybot()["servo"]==nextDeg):
+                    reach(stopName,currvel)
+            elif(jsonhandler.getPlaybot()["servo"]==nextDeg): #Arduino completed the current state
                     if stopping:
                         state = stopName
                     else: 
                         state=nextName
-            if(jsonhandler.getPlaybot()["next"]!=nextDeg):
+            if(jsonhandler.getPlaybot()["next"]!=nextDeg): #Arduino next state not updated
                 jsonhandler.send({"servo":currDeg,"next":nextDeg})
+                reach(curr,currvel)
         except:
             pass 
             
@@ -249,18 +250,21 @@ def remote():
         if state != prev_state:
             jsonhandler.send({"servo":currDeg,"next":nextDeg})
         try:
-            if(jsonhandler.getPlaybot()["servo"]==currDeg):
+            if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
                 if reach(curr,currvel):
                     pass
-            elif(jsonhandler.getPlaybot()["servo"]==nextDeg):
+            elif(jsonhandler.getPlaybot()["servo"]==nextDeg): #Arduino completed the current state
                     state=nextName
-            if(jsonhandler.getPlaybot()["next"]!=nextDeg):
+            if(jsonhandler.getPlaybot()["next"]!=nextDeg): #Arduino next state not updated
                 jsonhandler.send({"servo":currDeg,"next":nextDeg})
         except:
             pass  
+    #END SET UP THE FINITE-STATE AUTOMATON
     
     while robot.step(timestep) != -1:
+        #USB RECEIVER AND SENDER
         jsonhandler.loop()
+        
         """  
         x = ard.read()
         if x == b'{':
@@ -284,9 +288,13 @@ def remote():
             recjson = ''
         """
         
+        #READ KEYBOARD
         key=keyboard.getKey()
+        
         completed = False
         prev_state = state
+        
+        #IR SENSOR STOP SIMULATION GIMMICK
         try:
             if jsonhandler.getPlaybot()["irsensor"] and False:
                 state = '0'
@@ -297,7 +305,10 @@ def remote():
                 backward = False
         except:
             pass
-            
+        
+        #BEGIN STATES 
+        
+        #INITIAL STATE   
         if state=='0':
             turnState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
             try:
@@ -316,6 +327,7 @@ def remote():
             if forward:
                 state='pA'                
         """
+        #OLD STATES BEFORE FUNCTIONS
         if state=='tlA':  
             if reach(tlA,[2,2,2,1]):
                 state='tlB'
@@ -345,10 +357,9 @@ def remote():
             if reach(trD,[2,2,2,2]):
                 state='0'  
         """   
+        #TURN LEFT STATES
         if state=='tlA':  
             turnState(tlAdeg, tlBdeg, tlA, vlA, 'tlB', 'tlB')
-            #if reach(trA,[2,1,2,2]):
-                #state='trB'
         if state=='tlB':
             turnState(tlBdeg, tlCdeg, tlB, vlB, 'tlC', 'tlC')  
         if state=='tlC': 
@@ -356,17 +367,21 @@ def remote():
         if state=='tlD':
             turnState(tlDdeg, ZEROdeg, tlD, vlD, '0', '0')
         
+        #TURN RIGHT STATES
         if state=='trA':  
-            turnState(trAdeg, trBdeg, trA, [2,1,2,2], 'trB', 'trB')
+            turnState(trAdeg, trBdeg, trA, vrA, 'trB', 'trB')
             #if reach(trA,[2,1,2,2]):
                 #state='trB'
         if state=='trB':
-            turnState(trBdeg, trCdeg, trB, [2,2,2,2], 'trC', 'trC')  
+            turnState(trBdeg, trCdeg, trB, vrB, 'trC', 'trC')  
         if state=='trC': 
-            turnState(trCdeg, trDdeg, trC, [2,2,2,1], 'trD', 'trD') 
+            turnState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
         if state=='trD':
-            turnState(trDdeg, ZEROdeg, trD, [2,2,2,2], '0', '0')  
-        """                
+            turnState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
+             
+        """        
+        #OLD STATES BEFORE FUNCTIONS
+                
         if state=='pA':
             if state != prev_state:
                 jsonhandler.send({"servo":pAdeg,"next":pBdeg})
@@ -386,23 +401,14 @@ def remote():
             except:
                 pass
         """
+        
+        #GO FORWARD STATES
         if state=='pA':
             doState(pAdeg, pBdeg, pA, vA, 'pB', '0')
                 
         if state=='pZ':
-            doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')
-        """
-            if state != prev_state:
-                jsonhandler.send({"servo":pZdeg})
-            try:
-                if(jsonhandler.getPlaybot()["servo"]==pZdeg):
-                    if reach(pZ,vZ):
-                        pass
-                    if(jsonhandler.getPlaybot()["ready"]):
-                        state = '0'
-            except:
-                pass
-        """        
+            doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')  
+                  
         if state=='pB':
             doState(pBdeg, pCdeg, pB, vB, 'pC', 'pA')
                 
@@ -414,7 +420,22 @@ def remote():
                                
         if state=='pE':
             doState(pEdeg, pBdeg, pE, vE, 'pB', 'pA')
+            
+        """
+        #OLD STATES BEFORE FUNCTIONS
+            if state != prev_state:
+                jsonhandler.send({"servo":pZdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pZdeg):
+                    if reach(pZ,vZ):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        state = '0'
+            except:
+                pass
+        """
         """        
+        #OLD STATES BEFORE FUNCTIONS
         if state=='bA':
             if reach(bA,vA):
                 state='bB'
@@ -445,6 +466,7 @@ def remote():
                     state='bA'
         """
         
+        #GO BACKWARD STATES
         if state=='bA':
             doState(bAdeg, bBdeg, bA, vA, 'bB', '0')
             
@@ -462,7 +484,11 @@ def remote():
             
         if state=='bE':
             doState(bEdeg, bBdeg, bE, vE, 'bB', 'bA')
-                
+        
+        if state != prev_state:
+            print(state)
+             
+        #READ INPUT        
         if key==ord('X'):
             stopping = True
             turnRight = False
@@ -496,14 +522,8 @@ def remote():
             turnRight = False
             turnLeft = False
             backward = False
-            forward = True
-            
-        if key==ord('Q'): 
-            ard.write(b'{"servo":{"hip_right":0,"leg_right":0,"hip_left":0,"leg_left":0}}')
-            
-        if state != prev_state:
-            print(state)
-    
-x = threading.Thread(target=remote)
-x.start() 
-#window.mainloop()
+            forward = True 
+        
+
+#START THE CONTROLLER
+remote()
