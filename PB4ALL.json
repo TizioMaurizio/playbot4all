@@ -8,5 +8,5 @@
 	"imu": float["x","y","z"], //may be better just traslation
 	"irsensor": bool["left","front","right"]
 	"servo": float["hip_right","leg_right","hip_left","leg_left"]
-	"pos": int [3], //standard, walk, lying down... something else? 
+	"pose": int [3], //standard, walk, lying down... something else? 
 }
