@@ -439,7 +439,7 @@ def loop():
         forward = False
         backward = False
         
-    if keyboard.is_pressed('a'):
+    if keyboard.is_pressed('s'):
         if not backward:
             stopping = True
         turnRight = False

@@ -1,0 +1,4 @@
+stringere buco orizzontale
+allargare buco verticale
+stringere base agganci 
+assottigliare lato più spesso

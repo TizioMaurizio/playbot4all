@@ -1,6 +1,8 @@
-import jsonhandler
-import keyboard
+import games_catchthebug
+
+p='0'
+GAME_TICK = 3
+prevtime = 0
 
 def loop():
-    if keyboard.is_pressed('p'):
-        jsonhandler.send({"led":[0,1,[0,1,2],[0,1,2]]})
+    games_catchthebug.loop() #start with key Y

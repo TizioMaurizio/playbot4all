@@ -625,14 +625,25 @@ void read_json(){
       Serial.println(inData);
       return;
     }
+    Serial.println(inData);
     // Fetch values.
     //
     // Most of the time, you can rely on the implicit casts.
     // In other case, you can do received["time"].as<long>();
-    if(received["led"][0])
-      JSON["led"][LED_TOP] = received["led"][0];
-    if(received["led"][1])
-      JSON["led"][LED_RIGHT] = received["led"][1];
+    if(received["led"]){
+      JSON["led"][LED_TOP] = int(received["led"][0]);
+      JSON["led"][LED_RIGHT] = int(received["led"][1]);
+      JSON["led"][2] = int(received["led"][2]);
+      JSON["led"][3] = int(received["led"][3]);
+    }
+    if(received["rgb"]){
+      JSON["rgb"][0][0] = int(received["rgb"][0][0]);
+      JSON["rgb"][0][1] = int(received["rgb"][0][1]);
+      JSON["rgb"][0][2] = int(received["rgb"][0][2]);
+      JSON["rgb"][1][0] = int(received["rgb"][1][0]);
+      JSON["rgb"][1][1] = int(received["rgb"][1][1]);
+      JSON["rgb"][1][2] = int(received["rgb"][1][2]);
+    }
     /*if(received["led"][2])
       JSON["led"][LED_LEFT] = received["led"][2];
     if(received["led"][3])
