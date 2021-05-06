@@ -439,7 +439,7 @@ Servo SERVO_myservo;  // for use without drive, signal on pin 9
 Adafruit_PWMServoDriver SERVO_pwm = Adafruit_PWMServoDriver();
 
 // MOTOR STARTING POSITIONS
-int SERVO_servos[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};
+int SERVO_servos[16] = {110, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};
 //SERVO ARM
 //Hand 'a' >=30
 //Swing 'd' >=80
@@ -447,6 +447,7 @@ int SERVO_servos[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 
 //Motor variables
 int SERVO_targetPoses[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90}; //OLD COMMENT from hand to swing
 int SERVO_velocities[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int SERVO_old[4] = {0, 0, 0, 0};
 unsigned long SERVO_previousMillis = 0;
 const long SERVO_INTERVAL = 25; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
 int SERVO_INCREMENT = 2; //change this to speed up movement once interval is minimized
@@ -460,6 +461,8 @@ void SERVO_setup() {
   for(int i=0; i<SERVO_SERVONUM; i++){  // power motors to starting position
     SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
     SERVO_targetPoses[i] = SERVO_servos[i];
+    JSON["servo"][i] = SERVO_targetPoses[i];
+    JSON["next"][i] = SERVO_targetPoses[i];
     //JSON["servo"][i] = SERVO_servos[i];
     //JSON["vel"][i] = SERVO_velocities[i];
   }
@@ -472,14 +475,18 @@ void SERVO_loop() {
   if(toUpdate--){
     if(JSON["ready"]){
         for(int i=0; i<SERVO_SERVONUM; i++){
+          //SERVO_old[i] = SERVO_targetPoses[i];
           SERVO_targetPoses[i] = int(JSON["next"][i]);
           JSON["servo"][i] = SERVO_targetPoses[i];
           //SERVO_velocities[i] = int(JSON["vel"][i]);
         }
+        //JSON["ready"]=false;
     }
     else{
       for(int i=0; i<SERVO_SERVONUM; i++){
-        SERVO_targetPoses[i] = int(JSON["servo"][i]);
+        //int value = int(JSON["servo"][i]);
+        //if(SERVO_old[i]!=int(JSON["servo"][i]))
+          SERVO_targetPoses[i] = int(JSON["servo"][i]);
         //SERVO_velocities[i] = int(JSON["vel"][i]);
       }
     }

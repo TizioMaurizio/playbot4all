@@ -59,7 +59,14 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            print(received)
+            #print(received)
+            try:
+                if(1):
+                    print(getPlaybot()["servo"])
+                    print(getPlaybot()["next"])
+                    print(' ')
+            except:
+                pass
         
         prevtime = currtime
         
