@@ -72,24 +72,26 @@ void LED_setup(){
   pinMode(LED_red_light_pin, OUTPUT);
   pinMode(LED_green_light_pin, OUTPUT);
   pinMode(LED_blue_light_pin, OUTPUT);
+  pinMode(7, OUTPUT); 
+  pinMode(6, OUTPUT); //rosso
   // initialize serial communication at 9600 bits per second:
   // make the pushbutton's pin an input:
   pinMode(LED_pushButton, INPUT);
   if(LED_SERIAL){
     Serial.println("-LED");
   }
-  JSON["led"][LED_TOP][0] = 0;
-  JSON["led"][LED_TOP][1] = 0;
-  JSON["led"][LED_TOP][2] = 0;
+  JSON["led"][0] = 0;
+  JSON["led"][1] = 0;
+  /*JSON["led"][LED_TOP][2] = 0;
   JSON["led"][LED_RIGHT][0] = 0;
   JSON["led"][LED_RIGHT][1] = 0;
-  JSON["led"][LED_RIGHT][2] = 0;
+  JSON["led"][LED_RIGHT][2] = 0;*/
   componentsAmount++;
 }
 
 void LED_loop(){
   // read the input pin:
-  int LED_button_state = digitalRead(LED_pushButton);
+  /*int LED_button_state = digitalRead(LED_pushButton);
   
   if(LED_prev_state != LED_button_state && LED_button_state == 1){
     LED_color++;
@@ -103,6 +105,12 @@ void LED_loop(){
   
   if(toUpdate--){
     //update JSON
+  }*/
+  for(int i=0;i<2;i++){
+    if(JSON["led"][i])
+      digitalWrite(i+6, HIGH);
+    else
+      digitalWrite(i+6, LOW);
   }
 }
 
@@ -118,17 +126,19 @@ void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_b
 bool BUTTON_btn[4];
 
 void BUTTON_setup(){
-  
+  pinMode(2, INPUT);
+  pinMode(3, INPUT);
   componentsAmount++;
 }
 
 void BUTTON_loop(){
-  
+  BUTTON_btn[0] = digitalRead(2);
+  BUTTON_btn[1] = digitalRead(3);
   if(toUpdate--){
     //update JSON
-    /*JSON["button"]["top"] = BUTTON_btn[0];
-    JSON["button"]["right"] = BUTTON_btn[1];
-    JSON["button"]["left"] = BUTTON_btn[2];
+    JSON["button"][0] = BUTTON_btn[0];
+    JSON["button"][1] = BUTTON_btn[1];
+    /*JSON["button"]["left"] = BUTTON_btn[2];
     JSON["button"]["back"] = BUTTON_btn[3];*/
   }
 }
@@ -438,8 +448,8 @@ int SERVO_servos[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 
 int SERVO_targetPoses[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90}; //OLD COMMENT from hand to swing
 int SERVO_velocities[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 unsigned long SERVO_previousMillis = 0;
-const long SERVO_INTERVAL = 100; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
-int SERVO_INCREMENT = 4; //change this to speed up movement once interval is minimized
+const long SERVO_INTERVAL = 25; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
+int SERVO_INCREMENT = 2; //change this to speed up movement once interval is minimized
 unsigned long SERVO_currentMillis = millis();
 int SERVO_deltaMove;
 bool SERVO_speedSet = false;
@@ -577,7 +587,7 @@ void setup() {
   Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
-  //LED_setup();
+  LED_setup();
   BUTTON_setup();
   CAPACITIVE_setup();
   ANALOG_setup();
@@ -590,7 +600,7 @@ void setup() {
 }
 
 void loop() {
-  //LED_loop();
+  LED_loop();
   BUTTON_loop();
   CAPACITIVE_loop();
   ANALOG_loop();

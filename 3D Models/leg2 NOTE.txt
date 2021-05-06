@@ -1,0 +1,3 @@
+Allineati agganci rotondi verticali
+allargati tutti i buchi di circa 1.1x
+spostato l'aggancio verticale 
