@@ -18,7 +18,7 @@ def loop():
             print("Start catch the bug")
             playing = True
         if playing:
-            if keyboard.is_pressed('u') and p != 'u' or jsonhandler.getPlaybot()["led"][0]:
+            if keyboard.is_pressed('u') and p != 'u':
                 p = 'u'
                 if jsonhandler.getPlaybot()["led"][0] == 1:
                     print("PRESO")
@@ -27,7 +27,7 @@ def loop():
                     print("PRESO")
                     print("PRESO")
                     p = 0
-            if keyboard.is_pressed('i') and p != 'i' or jsonhandler.getPlaybot()["led"][1]:
+            if keyboard.is_pressed('i') and p != 'i':
                 p = 'i'
                 if jsonhandler.getPlaybot()["led"][1] == 1:
                     print("PRESO")

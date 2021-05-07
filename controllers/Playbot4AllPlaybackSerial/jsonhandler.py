@@ -59,9 +59,9 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            #print(received)
+            print(received)
             try:
-                if(1):
+                if(0):
                     print(getPlaybot()["servo"])
                     print(getPlaybot()["next"])
                     print(' ')
