@@ -4,10 +4,10 @@
 //INDEX: (ctrl+F, check capital letters)
 
 ////////JSON state manager
-//Led r:11*,g:10,b:9,2
-//Button 
-//Capacitive 8
-//Analog x:A0,y:A1
+//Led rgb1,2:8*,9,10,leds:(servo)15...8
+//Button 2,3,4,5
+//Capacitive 6
+//Analog x:A0,y:A1,p
 //Rotary sw:3,dt:4,clk:5
 //IMU A4**, A5
 
@@ -53,6 +53,8 @@ int toUpdate = 0; //see below
 ////////JSON state manager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Led
 //Led
+//Led rgb1,2:8*,9,10,leds:(servo)15...8
+
 int LED_red_light_pin= 11;
 int LED_green_light_pin = 10;
 int LED_blue_light_pin = 9;
@@ -111,7 +113,10 @@ void LED_loop(){
       digitalWrite(i+6, HIGH);
     else
       digitalWrite(i+6, LOW);
+      
+    servoLed(i,JSON["led"][i]);
   }
+  
 }
 
 void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_blue_light_value)
@@ -123,6 +128,8 @@ void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_b
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Button
 //Button
+//Button 2,3,4,5
+
 bool BUTTON_btn[4];
 
 void BUTTON_setup(){
@@ -187,6 +194,8 @@ void CAPACITIVE_loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Analog
 //Analog
+//Analog x:A0,y:A1,p
+
 #define ANALOG_joyX A0
 #define ANALOG_joyY A1
 
@@ -220,6 +229,8 @@ void ANALOG_loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Rotary
 //Rotary
+//Rotary sw:3,dt:4,clk:5
+
 // Rotary Encoder Inputs
 #define ROTARY_CLK 5
 #define ROTARY_DT 3
@@ -304,6 +315,8 @@ void ROTARY_loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IMU
 //IMU
+//IMU A4**, A5
+
 // MPU-6050 Short Example Sketch
 // By Arduino User JohnChi
 // August 17, 2014
@@ -364,14 +377,19 @@ void IMU_loop(){
 ////////Locomotion manager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IR Sensor
 //IR Sensor
-int IR_IRSensor = 12; // connect ir sensor to arduino pin 2
-bool IR_detected = false;
-bool IR_already = false;
+//IR Sensor 11,12,13
+
+int IR_IR[3] = {11,12,13};
+bool IR_detected[3] = {false,false,false};
+bool IR_already[3] = {false,false,false};
 //int IR_LED = 13; // conect Led to arduino pin 13
 
 void IR_setup() 
 {
-  pinMode (IR_IRSensor, INPUT); // sensor pin INPUT
+  for(int i=0; i<3; i++){
+    pinMode (IR_IR[i], INPUT); // sensor pin INPUT
+  }
+  
   //pinMode (IR_LED, OUTPUT); // Led pin OUTPUT
   if(IR_SERIAL){
     Serial.println("-IR Sensor");
@@ -381,34 +399,41 @@ void IR_setup()
 
 void IR_loop()
 {
-  int IR_statusSensor = digitalRead (IR_IRSensor);
-  
-  if (IR_statusSensor == 1){
-    IR_detected = false;
-    IR_already = false; //to be sure
-    //digitalWrite(IR_LED, LOW); // LED LOW
-    //if(IR_SERIAL){
-      //Serial.print("IR sensor: ");
-      //Serial.println(IR_statusSensor);
-    //}
+  int IR_statusSensor[3] = {0,0,0};
+  for(int i=0; i<3; i++){
+    IR_statusSensor[i] = digitalRead (IR_IR[i]);
   }
   
-  else
-  {
-    IR_detected = true;
-    //testing
-    //digitalWrite(IR_LED, HIGH); // LED High
-    if(IR_detected && !IR_already){
-      if(IR_SERIAL){
-        Serial.println("IR_Sensor: obstacle detected");
-      }
+  for(int i=0; i<3; i++){
+    if (IR_statusSensor[i] == 1){
+      IR_detected[i] = false;
+      IR_already[i] = false; //to be sure
+      //digitalWrite(IR_LED, LOW); // LED LOW
+      //if(IR_SERIAL){
+        //Serial.print("IR sensor: ");
+        //Serial.println(IR_statusSensor);
+      //}
     }
-    IR_already = true;
+    else
+    {
+      IR_detected[i] = true;
+      //testing
+      //digitalWrite(IR_LED, HIGH); // LED High
+      if(IR_detected[i] && !IR_already[i]){
+        if(IR_SERIAL){
+          Serial.print("IR_Sensor: obstacle detected on sensor ");
+          Serial.println(i);
+        }
+      }
+      IR_already[i] = true;
+    }
   }
   
   if(toUpdate--){
     //update JSON
-    JSON["irsensor"] = IR_detected;
+    for(int i=0; i<3; i++){
+      JSON["irsensor"][i] = IR_detected[i];
+    }
   }
 }
 
@@ -546,10 +571,10 @@ void SERVO_loop() {
   
   
   
-  for(int i=0;i<3;i++){
+  /*for(int i=0;i<3;i++){
     if(JSON["led"][LED_TOP][i]<=255 || JSON["led"][LED_TOP][i]>=0 )
       SERVO_pwm.setPWM(13+i, 0, rgbToPulse(JSON["led"][LED_TOP][i]));
-  }
+  }*/
 }
 
 
@@ -577,6 +602,10 @@ int rgbToPulse(int SERVO_ang){
    return SERVO_pulse;
 }
 
+int servoLed(int p, int l){
+   SERVO_pwm.setPWM(15-p, 0, int(JSON["led"][p])*4095);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -599,7 +628,7 @@ void setup() {
   CAPACITIVE_setup();
   ANALOG_setup();
   ROTARY_setup();
-  //IMU_setup();
+  IMU_setup();
   IR_setup();
   SERVO_setup();
   Serial.print(componentsAmount);
@@ -612,7 +641,7 @@ void loop() {
   CAPACITIVE_loop();
   ANALOG_loop();
   ROTARY_loop();
-  //IMU_loop();
+  IMU_loop();
   IR_loop();
   SERVO_loop();
   
