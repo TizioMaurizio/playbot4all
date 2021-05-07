@@ -227,7 +227,7 @@ def loop():
     
     #IR SENSOR STOP SIMULATION GIMMICK
     try:
-        if jsonhandler.getPlaybot()["irsensor"] and False:
+        if jsonhandler.getPlaybot()["irsensor"][1] and True:
             state = '0'
             stopping = True
             turnRight = False

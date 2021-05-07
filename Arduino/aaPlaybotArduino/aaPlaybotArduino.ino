@@ -628,7 +628,7 @@ void setup() {
   CAPACITIVE_setup();
   ANALOG_setup();
   ROTARY_setup();
-  IMU_setup();
+  //IMU_setup();
   IR_setup();
   SERVO_setup();
   Serial.print(componentsAmount);
@@ -641,7 +641,7 @@ void loop() {
   CAPACITIVE_loop();
   ANALOG_loop();
   ROTARY_loop();
-  IMU_loop();
+  //IMU_loop();
   IR_loop();
   SERVO_loop();
   
