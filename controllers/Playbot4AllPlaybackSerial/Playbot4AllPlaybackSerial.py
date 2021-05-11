@@ -359,25 +359,25 @@ def remote():
         """   
         #TURN LEFT STATES
         if state=='tlA':  
-            turnState(tlAdeg, tlBdeg, tlA, vlA, 'tlB', 'tlB')
+            doState(tlAdeg, tlBdeg, tlA, vlA, 'tlB', 'tlB')
         if state=='tlB':
-            turnState(tlBdeg, tlCdeg, tlB, vlB, 'tlC', 'tlC')  
+            doState(tlBdeg, tlCdeg, tlB, vlB, 'tlC', 'tlC')  
         if state=='tlC': 
-            turnState(tlCdeg, tlDdeg, tlC, vlC, 'tlD', 'tlD') 
+            doState(tlCdeg, tlDdeg, tlC, vlC, 'tlD', 'tlD') 
         if state=='tlD':
-            turnState(tlDdeg, ZEROdeg, tlD, vlD, '0', '0')
+            doState(tlDdeg, ZEROdeg, tlD, vlD, '0', '0')
         
         #TURN RIGHT STATES
         if state=='trA':  
-            turnState(trAdeg, trBdeg, trA, vrA, 'trB', 'trB')
+            doState(trAdeg, trBdeg, trA, vrA, 'trB', 'trB')
             #if reach(trA,[2,1,2,2]):
                 #state='trB'
         if state=='trB':
-            turnState(trBdeg, trCdeg, trB, vrB, 'trC', 'trC')  
+            doState(trBdeg, trCdeg, trB, vrB, 'trC', 'trC')  
         if state=='trC': 
-            turnState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
+            doState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
         if state=='trD':
-            turnState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
+            doState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
              
         """        
         #OLD STATES BEFORE FUNCTIONS
@@ -501,12 +501,14 @@ def remote():
             turnRight = True
             forward = False
             backward = False
+            turnLeft = False
             
         if key==ord('D'):
             stopping = True
             turnLeft = True
             forward = False
             backward = False
+            turnRight = False
             
         if key==ord('S'):
             if not backward:

@@ -1,9 +1,11 @@
 //comments are added for understanding, they don't exist in JSON
+//this document is a reference for the Arduino status sent back and forth between Arduino and Raspberry with serial communication
 {
-	"led": int[3,["top","right","left","back"]], //4 RGB leds
-	"button": bool[4], //4 buttons
+	"led": int[8] //8 leds of different colors (catchthebug and simon)
+	"RGB": int[2][3] //2 RGB leds (emotions)
+	"button": bool[4], //4 buttons (games)
 	"capacitive": bool[1], //1 capacitive sensor (pet on head)
-	"analogstick": int["x","y"],
+	"analogstick": int[3], //analog stick for simon(?) [x,y,pressed]
 	"rotary": int, //trim when too big
 	"imu": float["x","y","z"], //may be better just traslation
 	"irsensor": bool["left","front","right"]
