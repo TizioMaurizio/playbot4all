@@ -10,73 +10,59 @@ i = 0
 prevled = 4
 first_start = True
 playing = False
+prevtime = 0
+LIGHTS_CLOCK = 0.2
+next_start = False
 
 
 """Game of light to introduce the main game"""
 def loop():
     
-    global prevled, first_start, i, j, playing
+    global prevled, first_start, i, j, playing, prevtime, next_start
     
     try:
         if keyboard.is_pressed('x'):
             print("Start Simon")
             playing = True
         if playing == True:    
+            """the game is initialized"""
+            
+            currtime = time.time()
+            
+            """Game of lights"""
             if first_start == True:
                 ledValues = [0,0,0,0]
-                for i in range(10):
-                    r = random.randint(0,3)
-                    while prevled == r:
-                        r = random.randint(0,3)
-                    for j in range(4):
-                        if j == r:
-                            ledValues[j] = 1
-                        else:
-                            ledValues[j] = 0
-                    jsonhandler.send({"led": ledValues})
-                    prevled = r
-                    time.sleep(0.1)
+                r = random.randint(0,3)
+                for j in range(4):
+                    if j == r:
+                        ledValues[j] = 1
+                    else:
+                        ledValues[j] = 0
+                jsonhandler.send({"led": ledValues})
+            if (currtime - prevtime) >= LIGHTS_CLOCK and next_start == False:
+                first_start = True
+                prevtime = currtime
+                i += 1
+            else:
                 first_start = False
+            if i == 12 and first_start == True:
+                first_start = False
+                next_start = True
+                ledValues = [0,0,0,0]
+                jsonhandler.send({"led": ledValues})
             
 
 
             """3...2...1...GO! (to implement)"""
 
 
-            """Game first_started"""
-            if first_start == False:
-                flag = 1
-                while flag == 1:
-                    
-                    
-                    """start condition: keep number by the list of switched on Leds (to implement)"""
-                    
-                    
-                    """new led for the list"""
-                    r = random.randint(0,3)
-                    ledValues = [0,0,0,0]
-                    while prevled == r:
-                        r = random.randint(0,3)
-                    for j in range(4):
-                        if r == j:
-                            ledValues[r] = 1
-                        else:
-                            ledValues[r] = 0
-                    if r == 0:
-                        jsonhandler.send({"led":ledValues})
-                    if r == 1:
-                        jsonhandler.send({"led":ledValues})
-                    if r == 2:
-                        jsonhandler.send({"led":ledValues})
-                    if r == 3:
-                        jsonhandler.send({"led":ledValues})
+            """Game starts"""
+            
 
 
-                    """update the list (to implement)"""
 
 
-                    if """button is wrong""" :
-                        flag = 0                                                                  |    """end of the game"""
+
 
     except:
         print("simon exception")
