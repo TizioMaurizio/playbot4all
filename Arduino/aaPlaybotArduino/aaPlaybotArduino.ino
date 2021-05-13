@@ -145,8 +145,14 @@ void LED_setup(){
   pinMode(LED_red_light_pin, OUTPUT);
   pinMode(LED_green_light_pin, OUTPUT);
   pinMode(LED_blue_light_pin, OUTPUT);
-  pinMode(7, OUTPUT); 
-  pinMode(6, OUTPUT); //rosso
+  pinMode(2, OUTPUT); //giallo
+  pinMode(3, OUTPUT); //giallo
+  pinMode(4, OUTPUT); //giallo
+  pinMode(5, OUTPUT); //giallo
+  pinMode(8, OUTPUT); //blu
+  pinMode(9, OUTPUT); //bianco
+  pinMode(10, OUTPUT); //arancione
+  pinMode(11, OUTPUT); //rosso
   // initialize serial communication at 9600 bits per second:
   // make the pushbutton's pin an input:
   pinMode(LED_pushButton, INPUT);
@@ -155,6 +161,12 @@ void LED_setup(){
   }
   JSON["led"][0] = 0;
   JSON["led"][1] = 0;
+  JSON["led"][2] = 0;
+  JSON["led"][3] = 0;
+  JSON["led"][4] = 0;
+  JSON["led"][5] = 0;
+  JSON["led"][6] = 0;
+  JSON["led"][7] = 0;
   /*JSON["led"][LED_TOP][2] = 0;
   JSON["led"][LED_RIGHT][0] = 0;
   JSON["led"][LED_RIGHT][1] = 0;
@@ -225,7 +237,7 @@ void BUTTON_loop(){
 //Capacitive
 //["capacitive"][1] {6}
 
-#define CAPACITIVE_touchpin 8 // sets the capactitive touch sensor @pin 4
+#define CAPACITIVE_touchpin 6 // sets the capactitive touch sensor @pin 4
 
 bool CAPACITIVE_already = false;
 bool CAPACITIVE_detected = false;
@@ -267,12 +279,14 @@ void CAPACITIVE_loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Analog
 //Analog
-//["analog"][3] {x:A0,y:A1,pressed:}
+//["analog"][3] {x:A0,y:A1,pressed:7}
 
 #define ANALOG_joyX A0
 #define ANALOG_joyY A1
+#define ANALOG_button 7
 
 void ANALOG_setup() {
+  pinMode(ANALOG_button, INPUT_PULLUP);
   if(ANALOG_SERIAL){
     Serial.println("-Analog Stick");
   }
@@ -283,6 +297,7 @@ void ANALOG_loop() {
   // put your main code here, to run repeatedly:
   int ANALOG_xValue = analogRead(ANALOG_joyX);
   int ANALOG_yValue = analogRead(ANALOG_joyY);
+  int ANALOG_buttonValue = !digitalRead(ANALOG_button);
  
   //print the values with to plot or view
   if(ANALOG_xValue < 500 || ANALOG_yValue < 500 || ANALOG_xValue > 510 || ANALOG_yValue > 510){ //INTRODUCES DEAD ZONE ON JOYSTICK
@@ -292,11 +307,16 @@ void ANALOG_loop() {
       Serial.println(ANALOG_yValue);
     }
   }
+  if(ANALOG_SERIAL){
+    Serial.print(ANALOG_buttonValue);
+  }
+  
   
   if(toUpdateREMOVE--){
     //update JSON
     JSON["analog"]["x"] = ANALOG_xValue;
     JSON["analog"]["y"] = ANALOG_yValue;
+    JSON["analog"]["pressed"] = ANALOG_buttonValue;
   }
 }
 
@@ -504,9 +524,12 @@ void IR_loop()
   
   if(toUpdateREMOVE--){
     //update JSON
-    for(int i=0; i<3; i++){
-      JSON["irsensor"][i] = IR_detected[i];
-    }
+    //for(int i=0; i<3; i++){
+      //JSON["irsensor"][i] = IR_detected[i];
+    //}
+    JSON["irsensor"][0] = IR_detected[0];
+    JSON["irsensor"][1] = IR_detected[1];
+    JSON["irsensor"][2] = IR_detected[2];
   }
 }
 
@@ -667,10 +690,10 @@ void setup() {
   BUTTON_setup();
   CAPACITIVE_setup();
   ANALOG_setup();
-  ROTARY_setup();
+  //ROTARY_setup();
   IMU_setup();
   IR_setup();
-  SERVO_setup();
+  //SERVO_setup();
   Serial.print(componentsAmountREMOVE);
   Serial.println(" components reflected by JSON");
 }
@@ -681,10 +704,10 @@ void loop() {
   BUTTON_loop();
   CAPACITIVE_loop();
   ANALOG_loop();
-  ROTARY_loop();
+  //ROTARY_loop();
   IMU_loop();
   IR_loop();
-  SERVO_loop();
+  //SERVO_loop();
   
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
   int currTime = millis();
