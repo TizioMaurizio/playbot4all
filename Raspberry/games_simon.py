@@ -31,9 +31,9 @@ def loop():
             
             """Game of lights"""
             if first_start == True:
-                ledValues = [0,0,0,0]
-                r = random.randint(0,3)
-                for j in range(4):
+                ledValues = [0,0,0,0,0,0,0,0]
+                r = random.randint(4,7)
+                for j in range(4, 7, 1):
                     if j == r:
                         ledValues[j] = 1
                     else:
@@ -48,7 +48,7 @@ def loop():
             if i == 12 and first_start == True:
                 first_start = False
                 next_start = True
-                ledValues = [0,0,0,0]
+                ledValues = [0,0,0,0,0,0,0,0]
                 jsonhandler.send({"led": ledValues})
             
 
@@ -57,7 +57,20 @@ def loop():
 
 
             """Game starts"""
-            
+            if next_start == True:
+                r = random.randint(4,7)
+                for j in range(4, 7, 1):
+                    if j == r:
+                        ledValues[j] = 1
+                    else:
+                        ledValues[j] = 0
+                jsonhandler.send({"led": ledValues})
+            if (currtime - prevtime) >= LIGHTS_CLOCK and next_start == False:
+                first_start = True
+                prevtime = currtime
+                i += 1
+            else:
+                first_start = False
 
 
 
