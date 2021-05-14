@@ -149,10 +149,10 @@ void LED_setup(){
   pinMode(14, OUTPUT); //giallo
   pinMode(13, OUTPUT); //giallo
   pinMode(12, OUTPUT); //giallo
-  pinMode(8, OUTPUT); //blu
-  pinMode(9, OUTPUT); //bianco
-  pinMode(10, OUTPUT); //arancione
-  pinMode(11, OUTPUT); //rosso
+  pinMode(11, OUTPUT); //blu
+  pinMode(10, OUTPUT); //bianco
+  pinMode(9, OUTPUT); //arancione
+  pinMode(8, OUTPUT); //rosso
   // initialize serial communication at 9600 bits per second:
   // make the pushbutton's pin an input:
   pinMode(LED_pushButton, INPUT); ///////////////////////////////////////////////////?? forse usato per cambiare colore all'RGB
