@@ -128,7 +128,7 @@ void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_b
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Led
 //Led
 //["led"][8] (servodrive ports){S15...S8}
-
+//
 int LED_red_light_pin= 11;
 int LED_green_light_pin = 10;
 int LED_blue_light_pin = 9;
@@ -216,7 +216,7 @@ int BUTTON_pins[4] = {2,3,4,5};
 void BUTTON_setup(){
   for(int i=0; i<BUTTON_NUM; i++){
     pinMode(BUTTON_pins[i], INPUT);
-  }
+  } 
   componentsAmountREMOVE++;
 }
 
@@ -224,6 +224,7 @@ void BUTTON_loop(){
   for(int i=0; i<BUTTON_NUM; i++){
     BUTTON_btn[i] = digitalRead(BUTTON_pins[i]);
   }
+  
   if(toUpdateREMOVE--){
     //update JSON
     JSON["button"][0] = BUTTON_btn[0];
