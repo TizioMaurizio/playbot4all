@@ -4,6 +4,7 @@ import jsonhandler
 import random
 import time
 import keyboard
+import winsound
 
 j = 0
 i = 0
@@ -13,12 +14,13 @@ playing = False
 prevtime = 0
 LIGHTS_CLOCK = 0.2
 next_start = False
+sound = False
 
 
 """Game of light to introduce the main game"""
 def loop():
     
-    global prevled, first_start, i, j, playing, prevtime, next_start
+    global prevled, first_start, i, j, playing, prevtime, next_start, sound
     
     try:
         if keyboard.is_pressed('x'):
@@ -48,12 +50,23 @@ def loop():
             if i == 12 and first_start == True:
                 first_start = False
                 next_start = True
+                sound = True
+                i = 0
                 ledValues = [0,0,0,0,0,0,0,0]
                 jsonhandler.send({"led": ledValues})
             
 
 
             """3...2...1...GO! (to implement)"""
+            if sound == True:    
+                winsound.Beep(522, 600)
+                time.sleep(0.3)
+                winsound.Beep(522, 600)
+                time.sleep(0.3)
+                winsound.Beep(522, 600)
+                time.sleep(0.3)
+                winsound.Beep(522*2, 750)
+                sound = False
 
 
             """Game starts"""
@@ -69,8 +82,6 @@ def loop():
                 first_start = True
                 prevtime = currtime
                 i += 1
-            else:
-                first_start = False
 
 
 
