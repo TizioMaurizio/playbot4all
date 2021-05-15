@@ -11,6 +11,8 @@ import winsound
 
 j = 0
 i = 0
+k = 0
+l = 0
 prevled = 4 
 ready = True
 playing = False
@@ -19,7 +21,7 @@ LIGHTS_CLOCK = 0.2
 go = False
 set = False
 ledValues = [0,0,0,0,0,0,0,0]
-ledList = []
+ledList = [0,0,0,0,0,0,0,0,0,0]
 DO = 522 
 MI = 658 
 SOL = 784 
@@ -29,7 +31,7 @@ SI = 986
 """Game of light to introduce the main game"""
 def loop():
     
-    global prevled, ready, i, j, playing, prevtime, go, set,ledValues, ledList
+    global prevled, ready, i, j, playing, prevtime, go, set,ledValues, ledList, k, l
     
     try:
         if keyboard.is_pressed('x'):
@@ -89,9 +91,15 @@ def loop():
 
             """Game starts -GO""" #da fare/completare
             if go == True:
-                if (currtime - prevtime) >= 1 and i == 3:
-                    
-                    #for k in range(j):
+                if (currtime - prevtime) >= 1:
+                    if k > 0:     
+                        for i in range(k-1):
+                            for j in range(4, 7, 1):
+                                if j == ledList[i]:
+                                    ledValues[j] = 1
+                                else:
+                                    ledValues[j] = 0
+                            jsonhandler.send({"led": ledValues})
                         
                     r = random.randint(4,7)
                     for j in range(4, 7, 1):
@@ -101,6 +109,12 @@ def loop():
                             ledValues[j] = 0
                     jsonhandler.send({"led": ledValues})
                     
+                    ledList[k] = r
+                    k += 1
+
+                    if k >= 10:
+                        playing = False
+
                     #for j in range(30):
                         #ledList[j] =
 
