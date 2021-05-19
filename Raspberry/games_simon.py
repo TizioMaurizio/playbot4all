@@ -6,11 +6,7 @@ import random
 import time
 import keyboard
 import winsound
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
 
 j = 0
 i = 0
@@ -45,14 +41,14 @@ def loop():
             
             currtime = time.time()
             
-<<<<<<< HEAD
+
             """Game of lights"""
             if first_start == True:
                 ledValues = [0,0,0,0,0,0,0,0]
-=======
+
             """Game of lights -READY"""
             if ready == True:
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
+
                 r = random.randint(4,7)
                 for j in range(4, 7, 1):
                     if j == r:
@@ -73,15 +69,15 @@ def loop():
                 prevtime = currtime
                 i += 1
             else:
-<<<<<<< HEAD
+
                 first_start = False
             if i == 12 and first_start == True:
                 first_start = False
                 next_start = True
-=======
+
                 ready = False
             if i == 12:
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
+
                 ledValues = [0,0,0,0,0,0,0,0]
                 jsonhandler.send({"led": ledValues})
                 ready = False
@@ -93,10 +89,10 @@ def loop():
             
 
 
-<<<<<<< HEAD
+
             """3...2...1...GO! (to implement)"""
             
-=======
+
             """3...2...1...start! -SET"""
             if set == True:
                 if (currtime - prevtime) >= 1 and i < 3:
@@ -143,7 +139,7 @@ def loop():
                  #   ready = True
                   #  prevtime = currtime
                    # i += 1
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
+
 
 
 
