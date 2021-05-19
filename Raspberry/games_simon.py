@@ -4,6 +4,7 @@ import jsonhandler
 import random
 import time
 import keyboard
+import winsound
 
 j = 0
 i = 0
@@ -31,9 +32,9 @@ def loop():
             
             """Game of lights"""
             if first_start == True:
-                ledValues = [0,0,0,0]
-                r = random.randint(0,3)
-                for j in range(4):
+                ledValues = [0,0,0,0,0,0,0,0]
+                r = random.randint(4,7)
+                for j in range(4, 7, 1):
                     if j == r:
                         ledValues[j] = 1
                     else:
@@ -48,17 +49,13 @@ def loop():
             if i == 12 and first_start == True:
                 first_start = False
                 next_start = True
-                ledValues = [0,0,0,0]
+                ledValues = [0,0,0,0,0,0,0,0]
                 jsonhandler.send({"led": ledValues})
             
 
 
             """3...2...1...GO! (to implement)"""
-
-
-            """Game starts"""
             
-
 
 
 
