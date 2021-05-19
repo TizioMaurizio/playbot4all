@@ -6,11 +6,6 @@ import random
 import time
 import keyboard
 import winsound
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
 
 j = 0
 i = 0
@@ -19,12 +14,14 @@ l = 0
 prevled = 4 
 ready = True
 playing = False
+lights = True
 prevtime = 0
-LIGHTS_CLOCK = 0.2
-go = False
-set = False
 ledValues = [0,0,0,0,0,0,0,0]
 ledList = [0,0,0,0,0,0,0,0,0,0]
+go = False
+set = False
+
+LIGHTS_CLOCK = 0.2
 DO = 522 
 MI = 658 
 SOL = 784 
@@ -34,7 +31,7 @@ SI = 986
 """Game of light to introduce the main game"""
 def loop():
     
-    global prevled, ready, i, j, playing, prevtime, go, set,ledValues, ledList, k, l
+    global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, lights
     
     try:
         if keyboard.is_pressed('x'):
@@ -44,15 +41,10 @@ def loop():
             """the game is initialized"""
             
             currtime = time.time()
-            
-<<<<<<< HEAD
-            """Game of lights"""
-            if first_start == True:
-                ledValues = [0,0,0,0,0,0,0,0]
-=======
+
+
             """Game of lights -READY"""
             if ready == True:
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
                 r = random.randint(4,7)
                 for j in range(4, 7, 1):
                     if j == r:
@@ -73,15 +65,8 @@ def loop():
                 prevtime = currtime
                 i += 1
             else:
-<<<<<<< HEAD
-                first_start = False
-            if i == 12 and first_start == True:
-                first_start = False
-                next_start = True
-=======
                 ready = False
             if i == 12:
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
                 ledValues = [0,0,0,0,0,0,0,0]
                 jsonhandler.send({"led": ledValues})
                 ready = False
@@ -89,14 +74,8 @@ def loop():
                 if (currtime - prevtime) >= LIGHTS_CLOCK+0.3:
                     set = True
                     i = 0
-                
-            
 
 
-<<<<<<< HEAD
-            """3...2...1...GO! (to implement)"""
-            
-=======
             """3...2...1...start! -SET"""
             if set == True:
                 if (currtime - prevtime) >= 1 and i < 3:
@@ -110,7 +89,7 @@ def loop():
 
 
             """Game starts -GO""" #da fare/completare
-            if go == True:
+            if go == True and set == False and i != 12:
                 if (currtime - prevtime) >= 1:
                     if k > 0:     
                         for i in range(k-1):
@@ -120,6 +99,7 @@ def loop():
                                 else:
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
+
                         
                     r = random.randint(4,7)
                     for j in range(4, 7, 1):
@@ -129,8 +109,13 @@ def loop():
                             ledValues[j] = 0
                     jsonhandler.send({"led": ledValues})
                     
+                    #if (currtime - prevtime) >= 0.5 and lights == True:
+
+
+
                     ledList[k] = r
                     k += 1
+                    prevtime = currtime
 
                     if k >= 10:
                         playing = False
@@ -143,7 +128,6 @@ def loop():
                  #   ready = True
                   #  prevtime = currtime
                    # i += 1
->>>>>>> 98678b8a1799d28b7b529119aace59123d6d8544
 
 
 
