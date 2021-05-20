@@ -19,12 +19,8 @@ tosend = 0
 
 for i in range(10):
     try:
-<<<<<<< HEAD
         
         arduino = serial.Serial('COM5', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
-=======
-        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
->>>>>>> 3564d0c23661ab2c6e03c25afe3ad8abe777ddbd
 
 
         break
