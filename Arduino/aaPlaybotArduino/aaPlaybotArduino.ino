@@ -129,9 +129,9 @@ void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_b
 //Led
 //["led"][8] (servodrive ports){S15...S8}
 //
-int LED_red_light_pin= 11;
-int LED_green_light_pin = 10;
-int LED_blue_light_pin = 9;
+int LED_red_light_pin= 13;
+int LED_green_light_pin = 14;
+int LED_blue_light_pin = 15;
 int LED_prev_state = 0;
 int LED_color = 0; //module 8 gets the color
 #define RED {255,0,0}
@@ -167,22 +167,22 @@ void LED_setup(){
   JSON["led"][5] = 0;
   JSON["led"][6] = 0;
   JSON["led"][7] = 0;
-  /*JSON["led"][LED_TOP][2] = 0;
-  JSON["led"][LED_RIGHT][0] = 0;
-  JSON["led"][LED_RIGHT][1] = 0;
-  JSON["led"][LED_RIGHT][2] = 0;*/
+  //JSON["led"][LED_TOP][2] = 0;
+//  JSON["led"][LED_RIGHT][0] = 0;
+//  JSON["led"][LED_RIGHT][1] = 0;
+//  JSON["led"][LED_RIGHT][2] = 0;
   componentsAmountREMOVE++;
 }
 
 void LED_loop(){
   // read the input pin:
-  /*int LED_button_state = digitalRead(LED_pushButton);
+  int LED_button_state = digitalRead(LED_pushButton);
   
   if(LED_prev_state != LED_button_state && LED_button_state == 1){
     LED_color++;
     LED_RGB_color(LED_colors[LED_color%8][0], LED_colors[LED_color%8][1], LED_colors[LED_color%8][2]);
   }
-  if(LED_SERIAL){
+  /*if(LED_SERIAL){
     // print out the state of the button:
     Serial.println(LED_button_state);
   }
@@ -695,7 +695,7 @@ void setup() {
   //ROTARY_setup();
   //IMU_setup();
   IR_setup();
-  //SERVO_setup();
+  SERVO_setup();
   Serial.print(componentsAmountREMOVE);
   Serial.println(" components reflected by JSON");
 }
@@ -709,7 +709,10 @@ void loop() {
   //ROTARY_loop();
   //IMU_loop();
   IR_loop();
-  //SERVO_loop();
+  SERVO_loop();
+  digitalWrite(11,HIGH);
+  delay(200);
+  digitalWrite(11,LOW);
   
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
   int currTime = millis();

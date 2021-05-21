@@ -2,25 +2,31 @@ import jsonhandler
 import keyboard
 import random
 import time
+import winsound
+from threading import Thread
+
 #y starts the game
 p='0'
 GAME_TICK = 1
 prevtime = 0
 playing = False
+def play_sound():
+    winsound.PlaySound("Pop", winsound.SND_ALIAS)
 
 def loop():
     global p, prevtime, playing
 
     currtime = time.time()
-
     try:
         if keyboard.is_pressed('y') and p != 'u':
             print("Start catch the bug")
             playing = True
         if playing:
+            thread = Thread(target=play_sound)
             if keyboard.is_pressed('u') and p != 'u':
                 p = 'u'
                 if jsonhandler.getPlaybot()["led"][0] == 1:
+                    thread.start()
                     print("PRESO")
                     print("PRESO")
                     print("PRESO")
@@ -30,6 +36,7 @@ def loop():
             if keyboard.is_pressed('i') and p != 'i':
                 p = 'i'
                 if jsonhandler.getPlaybot()["led"][1] == 1:
+                    thread.start()
                     print("PRESO")
                     print("PRESO")
                     print("PRESO")
@@ -39,6 +46,7 @@ def loop():
             if keyboard.is_pressed('o') and p != 'o':
                 p = 'o'
                 if jsonhandler.getPlaybot()["led"][2] == 1:
+                    thread.start()
                     print("PRESO")
                     print("PRESO")
                     print("PRESO")
@@ -48,6 +56,7 @@ def loop():
             if keyboard.is_pressed('p') and p != 'p':
                 p = 'p'
                 if jsonhandler.getPlaybot()["led"][3] == 1:
+                    thread.start()
                     print("PRESO")
                     print("PRESO")
                     print("PRESO")

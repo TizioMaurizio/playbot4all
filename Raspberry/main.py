@@ -4,7 +4,10 @@ import games
 from jsonhandler import playbot
 import keyboard
 import traceback
+
 import emotions
+
+
 
 
 while True:
@@ -13,6 +16,14 @@ while True:
         locomotion.loop()
         #chatbot.loop()
         games.loop()
+
         #emotions.loop()
+
+
+        emotions.loop()
+
+        #emotions.loop()
+
+
     except:
         print("exception")
