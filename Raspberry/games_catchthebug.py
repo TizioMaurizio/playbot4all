@@ -2,23 +2,32 @@ import jsonhandler
 import keyboard
 import random
 import time
-import winsound
+import pygame
+#import winsound
 from threading import Thread
+# Setup for sounds. Defaults are good.
+pygame.mixer.init()
+
+# Initialize pygame
+pygame.init()
 
 #y starts the game
 p='0'
 GAME_TICK = 1
 prevtime = 0
 playing = False
+move_up_sound = pygame.mixer.Sound("Pop.wav")
 def play_sound():
-    winsound.PlaySound("Pop", winsound.SND_ALIAS)
+    move_up_sound.play()
+    #winsound.PlaySound("Pop", winsound.SND_ALIAS)
+
 
 def loop():
     global p, prevtime, playing
 
     currtime = time.time()
     try:
-        if keyboard.is_pressed('y') and p != 'u':
+        if keyboard.is_pressed('y') and p != 'y':
             print("Start catch the bug")
             playing = True
         if playing:
