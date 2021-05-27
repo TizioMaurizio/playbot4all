@@ -37,15 +37,15 @@
 #define SERVODRIVE_SERIAL false
 
 //serial communication rate in milliseconds
-#define UPDATE_TIME 100 //milliseconds
+#define UPDATE_TIME 50 //milliseconds
 
 
 #include <ArduinoJson.h>
 // Allocate the JSON document
 //
-// Inside the brackets, 200 is the RAM allocated to this document, increasing this can finish the memory on the arduino
+// Inside the brackets, 300 is the RAM allocated to this document, increasing this can finish the memory on the arduino
 // INCREASE JSON SIZE IF TOO SMALL
-StaticJsonDocument<200> JSON;
+StaticJsonDocument<300> JSON;
 
 int componentsAmountREMOVE = 0;
 int toUpdateREMOVE = 0; //see below
@@ -693,7 +693,7 @@ void setup() {
   //ROTARY_setup();
   //IMU_setup();
   IR_setup();
-  //SERVO_setup();
+  SERVO_setup();
   Serial.print(componentsAmountREMOVE);
   Serial.println(" components reflected by JSON");
 }
@@ -707,7 +707,7 @@ void loop() {
   //ROTARY_loop();
   //IMU_loop();
   IR_loop();
-  //SERVO_loop();
+  SERVO_loop();
   
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
   int currTime = millis();
