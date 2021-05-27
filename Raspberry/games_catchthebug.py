@@ -28,6 +28,9 @@ def loop():
     currtime = time.time()
     try:
         if keyboard.is_pressed('y') and p != 'y':
+            p = 'y'
+            thread = Thread(target=play_sound)
+            thread.start()
             print("Start catch the bug")
             playing = True
         if playing:
@@ -78,7 +81,7 @@ def loop():
 
             if (currtime - prevtime > GAME_TICK):
                 bug = round(random.random()*40)%4
-                ledValues = [0,0,0,0]
+                ledValues = [0,0,4,5,6,0,0,0]
                 for i in range(4):
                     if i == bug:
                         ledValues[i] = 1

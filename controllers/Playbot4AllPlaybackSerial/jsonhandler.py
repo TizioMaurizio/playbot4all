@@ -11,7 +11,7 @@ import serial
 import json
 import traceback
 
-REC_RATE = 0.05
+REC_RATE = 0.1
 SEND_RATE = REC_RATE * 3
 
 tosend = 0
