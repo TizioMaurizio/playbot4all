@@ -37,7 +37,11 @@
 #define SERVODRIVE_SERIAL false
 
 //serial communication rate in milliseconds
+<<<<<<< HEAD
 #define UPDATE_TIME 50 //milliseconds
+=======
+#define UPDATE_TIME 150 //milliseconds
+>>>>>>> a52f2190821e05ae7985f1a12e9ed70df8135253
 
 
 #include <ArduinoJson.h>
@@ -45,7 +49,11 @@
 //
 // Inside the brackets, 300 is the RAM allocated to this document, increasing this can finish the memory on the arduino
 // INCREASE JSON SIZE IF TOO SMALL
+<<<<<<< HEAD
 StaticJsonDocument<300> JSON;
+=======
+StaticJsonDocument<400> JSON;
+>>>>>>> a52f2190821e05ae7985f1a12e9ed70df8135253
 
 int componentsAmountREMOVE = 0;
 int toUpdateREMOVE = 0; //see below
@@ -57,7 +65,7 @@ int toUpdateREMOVE = 0; //see below
 ////////JSON state manager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Led
 //RGB
-//["rgb"][2][3] {8*,9,10},{11,12,13}
+//["rgb"][1] {8*,9,10},{11,12,13}
 /*
 int LED_red_light_pin= 11;
 int LED_green_light_pin = 10;
@@ -686,13 +694,13 @@ void setup() {
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
   //RGB_setup();
-  LED_setup();
-  BUTTON_setup();
-  CAPACITIVE_setup();
-  ANALOG_setup();
+  //LED_setup();
+  //BUTTON_setup();
+  //CAPACITIVE_setup();
+  //ANALOG_setup();
   //ROTARY_setup();
   //IMU_setup();
-  IR_setup();
+  //IR_setup();
   SERVO_setup();
   Serial.print(componentsAmountREMOVE);
   Serial.println(" components reflected by JSON");
@@ -700,13 +708,13 @@ void setup() {
 
 void loop() {
   //RGB_loop();
-  LED_loop();
-  BUTTON_loop();
-  CAPACITIVE_loop();
-  ANALOG_loop();
+  //LED_loop();
+  //BUTTON_loop();
+  //CAPACITIVE_loop();
+  //ANALOG_loop();
   //ROTARY_loop();
   //IMU_loop();
-  IR_loop();
+  //IR_loop();
   SERVO_loop();
   
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
@@ -746,12 +754,7 @@ void read_json(){
       }
     }
     if(received["rgb"]){
-      JSON["rgb"][0][0] = int(received["rgb"][0][0]);
-      JSON["rgb"][0][1] = int(received["rgb"][0][1]);
-      JSON["rgb"][0][2] = int(received["rgb"][0][2]);
-      JSON["rgb"][1][0] = int(received["rgb"][1][0]);
-      JSON["rgb"][1][1] = int(received["rgb"][1][1]);
-      JSON["rgb"][1][2] = int(received["rgb"][1][2]);
+      JSON["rgb"] = int(received["rgb"]);
     }
     /*if(received["led"][2])
       JSON["led"][LED_LEFT] = received["led"][2];

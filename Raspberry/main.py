@@ -16,13 +16,7 @@ while True:
         locomotion.loop()
         #chatbot.loop()
         games.loop()
-
-        #emotions.loop()
-
-
         emotions.loop()
-
-        #emotions.loop()
 
 
     except:
