@@ -5,8 +5,18 @@ import jsonhandler
 import random
 import time
 import keyboard
-import winsound
+import pygame
 from threading import Thread
+
+pygame.mixer.init()
+
+pygame.init()
+
+get_simon_sound = pygame.mixer.Sound("Pop.wav")
+
+def play_sound():
+    get_simon_sound.play()
+
 
 #class Suono (Thread):
     #def __init__(self, nome, durata):
@@ -52,7 +62,8 @@ def loop():
         if keyboard.is_pressed('x'):
             print("Start Simon")
             playing = True
-        if playing == True:    
+        if playing == True:
+            thread1 = Thread(target=play_sound)    
             """the game is initialized"""
             currtime = time.time()
 
@@ -66,14 +77,8 @@ def loop():
                     else:
                         ledValues[j] = 0
                 jsonhandler.send({"led": ledValues})
-                if r == 4:
-                    winsound.Beep(DO, 50)
-                if r == 5:
-                    winsound.Beep(MI, 50)
-                if r == 6:
-                    winsound.Beep(SOL, 50)
-                if r == 7:
-                    winsound.Beep(SI, 50)
+                thread1.start()
+
             if (currtime - prevtime) >= LIGHTS_CLOCK and go == False:
                 ready = True
                 prevtime = currtime
@@ -114,29 +119,6 @@ def loop():
                                 else:
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            print(ledList[i])
-                            #if ledList[i] == 4:
-                                #winsound.Beep(DO, 500)
-                            #if ledList[i] == 5:
-                                #winsound.Beep(MI, 500)
-                            #if ledList[i] == 6:
-                                #winsound.Beep(SOL, 500)
-                            #if ledList[i] == 7:
-                                #winsound.Beep(SI, 500)
-
-
-
 
                         
                     r = random.randint(4,7)
