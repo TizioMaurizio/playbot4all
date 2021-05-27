@@ -335,6 +335,7 @@ def loop():
     
     #GO FORWARD STATES
     if state=='pA':
+        print("YOLOOOOOOOOOOO")
         doState(pAdeg, pBdeg, pA, vA, 'pB', '0')
             
     if state=='pZ':
