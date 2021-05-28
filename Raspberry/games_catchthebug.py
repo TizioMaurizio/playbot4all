@@ -31,11 +31,13 @@ def loop():
             p = 'y'
             thread = Thread(target=play_sound)
             thread.start()
+            jsonhandler.send({"rgb": [0,0,0]})
             print("Start catch the bug")
             playing = True
+            
         if playing:
             thread = Thread(target=play_sound)
-            if keyboard.is_pressed('u') and p != 'u':
+            if keyboard.is_pressed('u') and p != 'u' or jsonhandler.getPlaybot()["button"][3]:#ORDINE INVERTITO##########################################################
                 p = 'u'
                 if jsonhandler.getPlaybot()["led"][0] == 1:
                     thread.start()
@@ -45,7 +47,7 @@ def loop():
                     print("PRESO")
                     print("PRESO")
                     p = 0
-            if keyboard.is_pressed('i') and p != 'i':
+            if keyboard.is_pressed('i') and p != 'i' or jsonhandler.getPlaybot()["button"][2]:
                 p = 'i'
                 if jsonhandler.getPlaybot()["led"][1] == 1:
                     thread.start()
@@ -55,7 +57,7 @@ def loop():
                     print("PRESO")
                     print("PRESO")
                     p = 0
-            if keyboard.is_pressed('o') and p != 'o':
+            if keyboard.is_pressed('o') and p != 'o' or jsonhandler.getPlaybot()["button"][1]:
                 p = 'o'
                 if jsonhandler.getPlaybot()["led"][2] == 1:
                     thread.start()
@@ -65,7 +67,7 @@ def loop():
                     print("PRESO")
                     print("PRESO")
                     p = 0
-            if keyboard.is_pressed('p') and p != 'p':
+            if keyboard.is_pressed('p') and p != 'p' or jsonhandler.getPlaybot()["button"][0]:
                 p = 'p'
                 if jsonhandler.getPlaybot()["led"][3] == 1:
                     thread.start()
@@ -81,7 +83,7 @@ def loop():
 
             if (currtime - prevtime > GAME_TICK):
                 bug = round(random.random()*40)%4
-                ledValues = [0,0,4,5,6,0,0,0]
+                ledValues = [0,0,0,0,0,0,0,0]
                 for i in range(4):
                     if i == bug:
                         ledValues[i] = 1
