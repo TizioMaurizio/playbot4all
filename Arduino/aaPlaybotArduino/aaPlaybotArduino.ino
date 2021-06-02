@@ -108,20 +108,6 @@ int LED_pushButton = 2;/////////////////////////////////////////////////////////
 #define LED_NUM 8
 
 void LED_setup(){
-  pinMode(LED_red_light_pin, OUTPUT);
-  pinMode(LED_green_light_pin, OUTPUT);
-  pinMode(LED_blue_light_pin, OUTPUT);
-  pinMode(15, OUTPUT); //giallo
-  pinMode(14, OUTPUT); //giallo
-  pinMode(13, OUTPUT); //giallo
-  pinMode(12, OUTPUT); //giallo
-  pinMode(8, OUTPUT); //blu
-  pinMode(9, OUTPUT); //bianco
-  pinMode(10, OUTPUT); //arancione
-  pinMode(11, OUTPUT); //rosso
-  // initialize serial communication at 9600 bits per second:
-  // make the pushbutton's pin an input:
-  pinMode(LED_pushButton, INPUT); ///////////////////////////////////////////////////?? forse usato per cambiare colore all'RGB
   if(LED_SERIAL){
     Serial.println("-LED");
   }
@@ -527,21 +513,23 @@ Servo SERVO_myservo;  // for use without drive, signal on pin 9
 Adafruit_PWMServoDriver SERVO_pwm = Adafruit_PWMServoDriver();
 
 // MOTOR STARTING POSITIONS
-int SERVO_servos[16] = {90, 90, 90, 90};
+int SERVO_servos[4] = {90, 90, 90, 90};
+int SERVO_offset[4] = {-10, 0, -5, 10};
 //SERVO ARM
 //Hand 'a' >=30
 //Swing 'd' >=80
 
 //Motor variables
-int SERVO_targetPoses[16] = {90, 90, 90, 90}; //OLD COMMENT from hand to swing
-int SERVO_velocities[16] = {1, 1, 1, 1};
+int SERVO_targetPoses[4] = {90, 90, 90, 90}; //OLD COMMENT from hand to swing
+int SERVO_velocities[4] = {1, 1, 1, 1};
 int SERVO_old[4] = {0, 0, 0, 0};
 unsigned long SERVO_previousMillis = 0;
 const long SERVO_INTERVAL = 25; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
-int SERVO_INCREMENT = 2; //change this to speed up movement once interval is minimized
+int SERVO_INCREMENT = 50; //change this to speed up movement once interval is minimized
 unsigned long SERVO_currentMillis = millis();
 int SERVO_deltaMove;
 bool SERVO_speedSet = false;
+bool SERVO_ready = false;
 
 void SERVO_setup() {
   SERVO_pwm.begin();
@@ -561,15 +549,15 @@ void SERVO_loop() {
   SERVO_currentMillis = millis();
   //read angles every INTERVAL milliseconds
   if(toUpdateREMOVE--){
-    if(JSON["ready"]){ //move to next state target and ask for the state after it
+    if(SERVO_ready){ //move to next state target and ask for the state after it
         for(int i=0; i<SERVO_SERVONUM; i++){
-          SERVO_targetPoses[i] = int(JSON["next"][i]);
-          JSON["servo"][i] = SERVO_targetPoses[i];
+          SERVO_targetPoses[i] = int(JSON["next"][i]) + SERVO_offset[i];
+          JSON["servo"][i] = SERVO_targetPoses[i] - SERVO_offset[i];
         }
     }
     else{
       for(int i=0; i<SERVO_SERVONUM; i++){ //move to current state target
-          SERVO_targetPoses[i] = int(JSON["servo"][i]);
+          SERVO_targetPoses[i] = int(JSON["servo"][i]) + SERVO_offset[i];
       }
     }
   }
@@ -598,10 +586,10 @@ void SERVO_loop() {
   }
   
   if(complete == SERVO_SERVONUM){
-    JSON["ready"]=true;
+    SERVO_ready=true;
   }
   else{
-    JSON["ready"]=false;
+    SERVO_ready=false;
   }
 }
 

@@ -29,11 +29,11 @@ prev_state = '0'
 #0.4, 0.15 tall robot, 0.4,0.3 short robot
 #THURST AND MAXIMUM LEAN ARE COUPLED, MINIMUM LEAN AND TURN ARE DECOUPLED
 AAA = 0.4
-BBB = 0.25
+BBB = 0.25*1.5
 CCC = -0.4
-DDD = -0.25
-TURNA = -0.5
-TURNB = 0.5
+DDD = -0.25*1.5
+TURNA = -0.3
+TURNB = 0.3
 ZERO = 0
 
 prev_key = -1

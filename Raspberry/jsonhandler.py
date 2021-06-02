@@ -63,7 +63,7 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            print(received)
+            #print(received)
         
         prevtime = currtime
         
