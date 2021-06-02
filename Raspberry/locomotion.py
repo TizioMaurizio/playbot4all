@@ -28,12 +28,12 @@ prev_state = '0'
 #each of these variables defines the target angles for the gait
 #0.4, 0.15 tall robot, 0.4,0.3 short robot
 #THURST AND MAXIMUM LEAN ARE COUPLED, MINIMUM LEAN AND TURN ARE DECOUPLED
-AAA = 0.4
-BBB = 0.25*1.5
-CCC = -0.4
-DDD = -0.25*1.5
-TURNA = -0.3
-TURNB = 0.3
+AAA = 0.4 #left push and forward
+BBB = 0.25*1.5 #left lean
+CCC = -0.4 #right push and forward
+DDD = -0.25*1.5 #right lean
+TURNA = -0.3 #left turn
+TURNB = 0.3 #right turn
 ZERO = 0
 
 prev_key = -1
@@ -100,13 +100,13 @@ vrB = [2*s,2*s,2*s,2*s]
 vrC = [2*s,2*s,2*s,1*s]
 vrD = [2*s,2*s,2*s,2*s] 
       
-tlA = [ZERO, BBB, ZERO, AAA]
+tlA = [ZERO, -DDD, ZERO, -CCC]
 tlAdeg = stateToDeg(tlA)
-tlB = [TURNA, BBB, ZERO, AAA]
+tlB = [TURNA, -DDD, ZERO, -CCC]
 tlBdeg = stateToDeg(tlB)
-tlC = [TURNA, CCC, ZERO, DDD]
+tlC = [TURNA, -AAA, ZERO, -BBB]
 tlCdeg = stateToDeg(tlC)
-tlD = [ZERO, CCC, ZERO, DDD]
+tlD = [ZERO, -AAA, ZERO, -BBB]
 tlDdeg = stateToDeg(tlD)
 
 vlA = [2*s,2*s,2*s,1*s]
@@ -227,13 +227,14 @@ def loop():
     
     #IR SENSOR STOP SIMULATION GIMMICK
     try:
-        if jsonhandler.getPlaybot()["irsensor"] and False:
-            state = '0'
-            stopping = True
-            turnRight = False
-            turnLeft = False
-            forward = False
-            backward = False
+        for i in range(3):
+            if jsonhandler.getPlaybot()["irsensor"][i] and False:
+                state = '0'
+                stopping = True
+                turnRight = False
+                turnLeft = False
+                forward = False
+                backward = False
     except:
         pass
     
