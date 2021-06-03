@@ -189,7 +189,10 @@ void BUTTON_setup(){
 
 void BUTTON_loop(){
   for(int i=0; i<BUTTON_NUM; i++){
-    BUTTON_btn[i] = digitalRead(BUTTON_pins[i]);
+    bool BUTTON_press = digitalRead(BUTTON_pins[i]);
+    if BUTTON_press{
+      BUTTON_btn[i] = BUTTON_press;
+    }
   }
   
   if(toUpdateREMOVE--){
