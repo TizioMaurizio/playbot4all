@@ -13,9 +13,12 @@ pygame.mixer.init()
 pygame.init()
 
 get_simon_sound = pygame.mixer.Sound("Pop.wav")
+ready_sound = pygame.mixer.Sound("Ready-set-go")
+first_led_sound = pygame.mixer.Sound("Puro_440_Hz")
+second_led_sound = 
+third_led_sound =
+fourth_led_sound =
 
-def play_sound():
-    get_simon_sound.play()
 
 
 #class Suono (Thread):
@@ -41,22 +44,40 @@ ready = True
 playing = False
 lights = True
 prevtime = 0
+prevtime_2 = 0
 ledValues = [0,0,0,0,0,0,0,0]
 ledList = [0,0,0,0,0,0,0,0,0,0]
 go = False
 set = False
-
+end_turn = False
 LIGHTS_CLOCK = 0.2
 DO = 522 
 MI = 658 
 SOL = 784 
 SI = 986
 
+def play_sound():
+    #get_simon_sound.play()
+    if ledValues == [0,0,0,0,1,0,0,0]:
+        first_led_sound.play()
+    if ledValues == [0,0,0,0,0,1,0,0]:
+        second_led_sound.play()
+    if ledValues == [0,0,0,0,0,0,1,0]:
+        third_led_sound.play()
+    if ledValues == [0,0,0,0,0,0,0,1]:
+        fourth_led_sound.play()
+
+    if set == True:
+        ready_sound.play()
+        
+
+def play_sound_ready():
+    ready_sound.play()
 
 """Game of light to introduce the main game"""
 def loop():
     
-    global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, lights
+    global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, lights, end_turn, prevtime_2
     
     try:
         if keyboard.is_pressed('x'):
@@ -98,19 +119,27 @@ def loop():
 
             """3...2...1...start! -SET"""
             if set == True:
-                if (currtime - prevtime) >= 1 and i < 3:
-                    winsound.Beep(DO, 200)
-                    i += 1
-                    prevtime = currtime
-                if (currtime - prevtime) >= 1 and i == 3:
-                    winsound.Beep(DO*2, 300)
-                    set = False
-                    prevtime = currtime
+                thread1.start()
+
+                #if (currtime - prevtime) >= 1 and i < 3:
+                    #winsound.Beep(DO, 200)
+                    #i += 1
+                    #prevtime = currtime
+                #if (currtime - prevtime) >= 1 and i == 3:
+                    #winsound.Beep(DO*2, 300)
+                
+                prevtime = currtime
+                set = False
 
 
             """Game starts -GO""" #da fare/completare
-            if go == True and set == False and i != 12:
-                if (currtime - prevtime) >= 1:
+            if go == True and set == False:
+                if (currtime - prevtime) >= 4: #time of ready-set-go
+                    if end_turn == True:
+                        if (currtime - prevtime_2) >= 3:
+                            #sound
+                            playing = False
+
                     if k > 0:     
                         for i in range(k-1):
                             for j in range(4, 7, 1):
@@ -119,6 +148,7 @@ def loop():
                                 else:
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
+                            if (currtime - prevtime3) > 3
 
                         
                     r = random.randint(4,7)
@@ -128,6 +158,9 @@ def loop():
                         else:
                             ledValues[j] = 0
                     jsonhandler.send({"led": ledValues})
+                    prevtime_2 = currtime
+                    end_turn = True
+
                     print("OKOKOKOKOK")
                     print("OKOKOKOKOK")
                     print("OKOKOKOKOK")
@@ -158,7 +191,8 @@ def loop():
                     prevtime = currtime
 
                     if k >= 10:
-                        winsound.PlaySound('trumpet-win-super.wav', winsound.SND_FILENAME)
+                        #winsound.PlaySound('trumpet-win-super.wav', winsound.SND_FILENAME)
+                        #sound
                         playing = False
 
                     #for j in range(30):
