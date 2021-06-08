@@ -190,7 +190,7 @@ void BUTTON_setup(){
 void BUTTON_loop(){
   for(int i=0; i<BUTTON_NUM; i++){
     bool BUTTON_press = digitalRead(BUTTON_pins[i]);
-    if BUTTON_press{
+    if(BUTTON_press){
       BUTTON_btn[i] = BUTTON_press;
     }
   }

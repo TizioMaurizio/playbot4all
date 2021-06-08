@@ -1,5 +1,5 @@
 import games_catchthebug
-import games_simon
+#import games_simon
 
 p='0'
 GAME_TICK = 3

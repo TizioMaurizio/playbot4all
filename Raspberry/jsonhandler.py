@@ -19,11 +19,7 @@ tosend = 0
 
 for i in range(10):
     try:
-        
         arduino = serial.Serial('COM5', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
-
-
-        break
     except:
         pass
 arduino.flushInput()
