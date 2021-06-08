@@ -86,6 +86,7 @@ def loop():
                         ledValues[i] = 1
                     else:
                         ledValues[i] = 0
+                #buttonValues = [False,False,True,True] #TODO FALSIFY BUTTONS ON ARDUINO
                 jsonhandler.send({"led": ledValues,"button": buttonValues})
                 prevtime = currtime
                 print(ledValues)
