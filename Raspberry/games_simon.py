@@ -14,10 +14,13 @@ pygame.init()
 
 get_simon_sound = pygame.mixer.Sound("Pop.wav")
 ready_sound = pygame.mixer.Sound("Ready-set-go")
-first_led_sound = pygame.mixer.Sound("Puro_440_Hz")
-second_led_sound = 
-third_led_sound =
-fourth_led_sound =
+up_led_sound = pygame.mixer.Sound("up_sound")
+right_led_sound = pygame.mixer.Sound("right_sound")
+down_led_sound = pygame.mixer.Sound("down_sound")
+left_led_sound = pygame.mixer.Sound("left_sound")
+win_sound = pygame.mixer.Sound("trumpet-win-super")
+lose_sound = pygame.mixer.Sound("negative-beeps(lost)")
+
 
 
 
@@ -42,7 +45,6 @@ l = 0
 prevled = 4 
 ready = True
 playing = False
-lights = True
 prevtime = 0
 prevtime_2 = 0
 ledValues = [0,0,0,0,0,0,0,0]
@@ -54,41 +56,36 @@ flag = 0
 LIGHTS_CLOCK = 0.2
 WIN = 10
 LOSE = 20
-DO = 522 
-MI = 658 
-SOL = 784 
-SI = 986
 
 def play_sound():
     #get_simon_sound.play()
     if ledValues == [0,0,0,0,1,0,0,0]:
-        first_led_sound.play()
+        up_led_sound.play()
     if ledValues == [0,0,0,0,0,1,0,0]:
-        second_led_sound.play()
+        right_led_sound.play()
     if ledValues == [0,0,0,0,0,0,1,0]:
-        third_led_sound.play()
+        down_led_sound.play()
     if ledValues == [0,0,0,0,0,0,0,1]:
-        fourth_led_sound.play()
+        left_led_sound.play()
     if ledList[l-k] == 4:
-
+        up_led_sound.play()
     if ledList[l-k] == 5:
-
+        right_led_sound.play()
     if ledList[l-k] == 6:
-
+        down_led_sound.play()
     if ledList[l-k] == 7:
-
+        left_led_sound.play()
     if set == True:
         ready_sound.play()
-        
-
-def play_sound_ready():
-    ready_sound.play()
+    if k == WIN:
+        win_sound.play()
+    if k == LOSE:
+        lose_sound.play()
 
 """Game of light to introduce the main game"""
 def loop(): 
     
-    global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, lights, end_turn, prevtime_2, flag
-    
+    global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag
     try:
         if keyboard.is_pressed('x'):
             print("Start Simon")
@@ -140,6 +137,7 @@ def loop():
                 
                 prevtime = currtime
                 set = False
+                flag = 1
 
 
             """Game starts -GO""" #da fare/completare
@@ -152,19 +150,20 @@ def loop():
                             #sound
                             k = LOSE
                             end_turn = False
-                        if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analogstick"][1] >= 1000 and (l-k) < k:
+                            break
+                        if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analogstick"][1] >= 600 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
-                        if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analogstick"][0] >= 1000 and (l-k) < k:
+                        if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analogstick"][0] <= 400 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
-                        if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analogstick"][1] <= 23 and (l-k) < k:
+                        if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analogstick"][1] <= 400 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
-                        if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analogstick"][0] <= 23 and (l-k) < k:
+                        if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analogstick"][0] >= 600 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
@@ -176,12 +175,29 @@ def loop():
                     if k == WIN:
                         #winsound.PlaySound('trumpet-win-super.wav', winsound.SND_FILENAME)
                         #sound
+                        thread1.start()
                         playing = False
 
                     if k == LOSE:
                          #winsound.PlaySound('lose.wav', winsound.SND_FILENAME)
                         #sound
+                        thread1.start()
                         playing = False
+                        j = 0
+                        i = 0
+                        k = 0
+                        l = 0
+                        flag = 0
+                        prevled = 4 
+                        ready = True
+                        playing = False
+                        prevtime = 0
+                        prevtime_2 = 0
+                        ledValues = [0,0,0,0,0,0,0,0]
+                        ledList = [0,0,0,0,0,0,0,0,0,0]
+                        go = False
+                        set = False
+                        end_turn = False
 
 
 
@@ -198,7 +214,7 @@ def loop():
                             for j in range(10000):
                                 j = j
 
-                    if k < 10:    
+                    if k < 10 and flag == 1:    
                         r = random.randint(4,7)
                         for j in range(4, 7, 1):
                             if j == r:
