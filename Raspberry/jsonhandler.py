@@ -10,19 +10,18 @@ import time
 import serial
 import json
 import traceback
- 
+import keyboard
 
 REC_RATE = 0.05
 SEND_RATE = REC_RATE * 3
 
 tosend = 0
 
-
-tosend = 0
 for i in range(10):
     try:
         
-        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+        arduino = serial.Serial('COM5', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+
 
         break
     except:
@@ -44,7 +43,10 @@ playbot = 0
 
 def loop():
     global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot
-    
+    if keyboard.is_pressed('m'):
+            send({"rgb": [0,255,255]})
+    if keyboard.is_pressed('n'):
+            send({"rgb": [255,0,255]})
     currtime = time.time()
     if(currtime-prevtime > REC_RATE):
         tosend += REC_RATE

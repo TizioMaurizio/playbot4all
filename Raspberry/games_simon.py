@@ -5,8 +5,34 @@ import jsonhandler
 import random
 import time
 import keyboard
-import winsound
+import pygame
+from threading import Thread
 
+pygame.mixer.init()
+
+pygame.init()
+
+get_simon_sound = pygame.mixer.Sound("Pop.wav")
+ready_sound = pygame.mixer.Sound("Ready-set-go")
+first_led_sound = pygame.mixer.Sound("Puro_440_Hz")
+second_led_sound = 
+third_led_sound =
+fourth_led_sound =
+
+
+
+#class Suono (Thread):
+    #def __init__(self, nome, durata):
+      #Thread.__init__(self)
+      #self.nome = nome
+      #self.durata = durata
+   #def run(self):
+       
+
+
+#thread1 = Suono("Thread#1", randint(1,100))
+#thread2 = Suono("Thread#2", randint(1,100))
+#thread3 = Suono("Thread#3", randint(1,100))
 
 
 j = 0
@@ -16,32 +42,53 @@ l = 0
 prevled = 4 
 ready = True
 playing = False
+lights = True
 prevtime = 0
-LIGHTS_CLOCK = 0.2
-go = False
-set = False
+prevtime_2 = 0
 ledValues = [0,0,0,0,0,0,0,0]
 ledList = [0,0,0,0,0,0,0,0,0,0]
+go = False
+set = False
+end_turn = False
+LIGHTS_CLOCK = 0.2
 DO = 522 
 MI = 658 
 SOL = 784 
 SI = 986
 
+def play_sound():
+    #get_simon_sound.play()
+    if ledValues == [0,0,0,0,1,0,0,0]:
+        first_led_sound.play()
+    if ledValues == [0,0,0,0,0,1,0,0]:
+        second_led_sound.play()
+    if ledValues == [0,0,0,0,0,0,1,0]:
+        third_led_sound.play()
+    if ledValues == [0,0,0,0,0,0,0,1]:
+        fourth_led_sound.play()
+
+    if set == True:
+        ready_sound.play()
+        
+
+def play_sound_ready():
+    ready_sound.play()
 
 """Game of light to introduce the main game"""
 def loop():
     
-    global prevled, ready, i, j, playing, prevtime, go, set,ledValues, ledList, k, l
+    global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, lights, end_turn, prevtime_2
     
     try:
         if keyboard.is_pressed('x'):
             print("Start Simon")
             playing = True
-        if playing == True:    
+        if playing == True:
+            thread1 = Thread(target=play_sound)    
             """the game is initialized"""
-            
             currtime = time.time()
-            
+
+
             """Game of lights -READY"""
             if ready == True:
                 r = random.randint(4,7)
@@ -51,20 +98,15 @@ def loop():
                     else:
                         ledValues[j] = 0
                 jsonhandler.send({"led": ledValues})
-                if r == 4:
-                    winsound.Beep(DO, 50)
-                if r == 5:
-                    winsound.Beep(MI, 50)
-                if r == 6:
-                    winsound.Beep(SOL, 50)
-                if r == 7:
-                    winsound.Beep(SI, 50)
+                thread1.start()
+
             if (currtime - prevtime) >= LIGHTS_CLOCK and go == False:
                 ready = True
                 prevtime = currtime
                 i += 1
             else:
                 ready = False
+
             if i == 12:
                 ledValues = [0,0,0,0,0,0,0,0]
                 jsonhandler.send({"led": ledValues})
@@ -73,25 +115,31 @@ def loop():
                 if (currtime - prevtime) >= LIGHTS_CLOCK+0.3:
                     set = True
                     i = 0
-                
-            
 
 
             """3...2...1...start! -SET"""
             if set == True:
-                if (currtime - prevtime) >= 1 and i < 3:
-                    winsound.Beep(DO, 200)
-                    i += 1
-                    prevtime = currtime
-                if (currtime - prevtime) >= 1 and i == 3:
-                    winsound.Beep(DO*2, 300)
-                    set = False
-                    prevtime = currtime
+                thread1.start()
+
+                #if (currtime - prevtime) >= 1 and i < 3:
+                    #winsound.Beep(DO, 200)
+                    #i += 1
+                    #prevtime = currtime
+                #if (currtime - prevtime) >= 1 and i == 3:
+                    #winsound.Beep(DO*2, 300)
+                
+                prevtime = currtime
+                set = False
 
 
             """Game starts -GO""" #da fare/completare
-            if go == True:
-                if (currtime - prevtime) >= 1:
+            if go == True and set == False:
+                if (currtime - prevtime) >= 4: #time of ready-set-go
+                    if end_turn == True:
+                        if (currtime - prevtime_2) >= 3:
+                            #sound
+                            playing = False
+
                     if k > 0:     
                         for i in range(k-1):
                             for j in range(4, 7, 1):
@@ -100,6 +148,8 @@ def loop():
                                 else:
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
+                            if (currtime - prevtime3) > 3
+
                         
                     r = random.randint(4,7)
                     for j in range(4, 7, 1):
@@ -108,11 +158,41 @@ def loop():
                         else:
                             ledValues[j] = 0
                     jsonhandler.send({"led": ledValues})
+                    prevtime_2 = currtime
+                    end_turn = True
+
+                    print("OKOKOKOKOK")
+                    print("OKOKOKOKOK")
+                    print("OKOKOKOKOK")
+                    print("OKOKOKOKOK")
+                    print(r)
+                    print(r)
+                    print(r)
+                    print(r)
+                    print(r)
+                    #if r == 4:
+                        #winsound.Beep(DO, 500)
+                    #if r == 5:
+                        #winsound.Beep(MI, 500)
+                    #if r == 6:
+                         #winsound.Beep(SOL, 500)
+                    #if r == 7:
+                        #winsound.Beep(SI, 500)
                     
+                    #if (currtime - prevtime) >= 1:
+
+                    
+                    #if (currtime - prevtime) >= 0.5 and lights == True:
+
+
+
                     ledList[k] = r
                     k += 1
+                    prevtime = currtime
 
                     if k >= 10:
+                        #winsound.PlaySound('trumpet-win-super.wav', winsound.SND_FILENAME)
+                        #sound
                         playing = False
 
                     #for j in range(30):
@@ -124,9 +204,7 @@ def loop():
                   #  prevtime = currtime
                    # i += 1
 
-
-
-
+    
 
 
     except:
