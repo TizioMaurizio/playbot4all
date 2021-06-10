@@ -13,7 +13,7 @@ import traceback
 import keyboard
 
 REC_RATE = 0.05
-SEND_RATE = REC_RATE * 3
+SEND_RATE = REC_RATE * 4
 
 tosend = 0
 

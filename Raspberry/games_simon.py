@@ -7,19 +7,20 @@ import time
 import keyboard
 import pygame
 from threading import Thread
+import traceback
 
 pygame.mixer.init()
 
 pygame.init()
 
 get_simon_sound = pygame.mixer.Sound("Pop.wav")
-ready_sound = pygame.mixer.Sound("Ready-set-go")
-up_led_sound = pygame.mixer.Sound("up_sound")
-right_led_sound = pygame.mixer.Sound("right_sound")
-down_led_sound = pygame.mixer.Sound("down_sound")
-left_led_sound = pygame.mixer.Sound("left_sound")
-win_sound = pygame.mixer.Sound("trumpet-win-super")
-lose_sound = pygame.mixer.Sound("negative-beeps(lost)")
+ready_sound = pygame.mixer.Sound("Ready-set-go.wav")
+up_led_sound = pygame.mixer.Sound("up_sound.wav")
+right_led_sound = pygame.mixer.Sound("right_sound.wav")
+down_led_sound = pygame.mixer.Sound("down_sound.wav")
+left_led_sound = pygame.mixer.Sound("left_sound.wav")
+win_sound = pygame.mixer.Sound("trumpet-win-super.wav")
+lose_sound = pygame.mixer.Sound("negative-beeps(lost).wav")
 
 
 
@@ -86,6 +87,7 @@ def play_sound():
 def loop(): 
     
     global prevled, ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag
+    
     try:
         if keyboard.is_pressed('x'):
             print("Start Simon")
@@ -151,19 +153,19 @@ def loop():
                             k = LOSE
                             end_turn = False
                             break
-                        if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analogstick"][1] >= 600 and (l-k) < k:
+                        if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analog"]["y"] >= 600 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
-                        if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analogstick"][0] <= 400 and (l-k) < k:
+                        if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analog"]["x"] <= 400 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
-                        if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analogstick"][1] <= 400 and (l-k) < k:
+                        if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analog"]["y"] <= 400 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
-                        if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analogstick"][0] >= 600 and (l-k) < k:
+                        if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analog"]["x"] >= 600 and (l-k) < k:
                             thread1.start()
                             prevtime_2 = currtime
                             l += 1
@@ -211,7 +213,7 @@ def loop():
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
                             thread1.start()
-                            for j in range(10000):
+                            for j in range(10000):       #da cambiare
                                 j = j
 
                     if k < 10 and flag == 1:    
@@ -263,7 +265,7 @@ def loop():
 
 
     except:
-        print("simon exception")
+        traceback.print_exc()
 
 
             
