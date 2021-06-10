@@ -37,7 +37,7 @@
 #define SERVODRIVE_SERIAL false
 
 //serial communication rate in milliseconds
-#define UPDATE_TIME 150 //milliseconds
+#define UPDATE_TIME 200 //milliseconds
 
 
 #include <ArduinoJson.h>
