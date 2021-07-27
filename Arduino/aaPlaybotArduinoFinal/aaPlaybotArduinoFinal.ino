@@ -37,7 +37,7 @@
 #define SERVODRIVE_SERIAL false
 
 //serial communication rate in milliseconds
-#define UPDATE_TIME 200 //milliseconds
+#define UPDATE_TIME 100 //milliseconds
 
 
 #include <ArduinoJson.h>
@@ -154,16 +154,13 @@ void BUTTON_loop(){
   for(int i=0; i<BUTTON_NUM; i++){
     bool BUTTON_press = digitalRead(BUTTON_pins[i]);
     if(BUTTON_press){
-      BUTTON_btn[i] = BUTTON_press;
+      JSON["button"][i] = BUTTON_press;
+      //JSON["led"][i] = 0; //TURN OFF LED CATCH THE BUG
     }
   }
   
   if(toUpdateREMOVE--){
     //update JSON
-    JSON["button"][0] = BUTTON_btn[0];
-    JSON["button"][1] = BUTTON_btn[1];
-    JSON["button"][2] = BUTTON_btn[2];
-    JSON["button"][3] = BUTTON_btn[3];
   }
 }
 
@@ -506,8 +503,8 @@ int SERVO_targetPoses[4] = {90, 90, 90, 90}; //OLD COMMENT from hand to swing
 int SERVO_velocities[4] = {1, 1, 1, 1};
 int SERVO_old[4] = {0, 0, 0, 0};
 unsigned long SERVO_previousMillis = 0;
-const long SERVO_INTERVAL = 25; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
-int SERVO_INCREMENT = 50; //change this to speed up movement once interval is minimized
+const long SERVO_INTERVAL = 50; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
+int SERVO_INCREMENT = 5; //change this to speed up movement once interval is minimized
 unsigned long SERVO_currentMillis = millis();
 int SERVO_deltaMove;
 bool SERVO_speedSet = false;
@@ -658,6 +655,10 @@ void loop() {
     read_json();
     Serial.println();
     prevTime = millis();
+    
+    for(int i=0; i<4; i++){
+      JSON["button"][i] = false;
+    }
   }
 }
 

@@ -15,34 +15,39 @@ pygame.init()
 #y starts the game
 p='0'
 buttonValues = [0, 0, 0, 0]
-GAME_TICK = 3
-DIFFICULTY = 1.5
-GAME_DURATION = 20
+GAME_TICK = 5
+DIFFICULTY = 1.1
+MAX_DIFFICULTY = 2
+GAME_DURATION = 10
 prevtime = 0
 playing_sound = False
-move_up_sound = pygame.mixer.Sound("Pop.wav")
+pop_sound = pygame.mixer.Sound("Pop.wav")
+defeat_sound = pygame.mixer.Sound("negative-beeps(lost).wav")
+victory_sound = pygame.mixer.Sound("success-fanfare-trumpets.wav")
 playing = False
 taken = False
 sending = False
 progress = 0
 score = 0
+sound = pop_sound
 
 def play_sound():
     global playing_sound
     if not playing_sound:
         playing_sound = True
-        move_up_sound.play()
+        sound.play()
         #winsound.PlaySound("Pop", winsound.SND_ALIAS)
         playing_sound = False
 
 
 def loop():
-    global p, prevtime, playing_sound, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY
+    global p, prevtime, playing_sound, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY, MAX_DIFFICULTY, sound
 
     currtime = time.time()
     try:
         if keyboard.is_pressed('y') and not playing:
             p = 'y'
+            sound = pop_sound
             thread = Thread(target=play_sound)
             thread.start()
             print("Start catch the bug")
@@ -58,6 +63,7 @@ def loop():
                 if (jsonhandler.getPlaybot()["led"][0] == 1) and not taken:
                     taken = True
                     sending = True
+                    sound = pop_sound
                     thread.start()
                     print("PRESO")
                     print("PRESO")
@@ -69,6 +75,7 @@ def loop():
                 if (jsonhandler.getPlaybot()["led"][1] == 1) and not taken:
                     taken = True
                     sending = True
+                    sound = pop_sound
                     thread.start()
                     print("PRESO")
                     print("PRESO")
@@ -80,6 +87,7 @@ def loop():
                 if (jsonhandler.getPlaybot()["led"][2] == 1) and not taken:
                     taken = True
                     sending = True
+                    sound = pop_sound
                     thread.start()
                     print("PRESO")
                     print("PRESO")
@@ -91,6 +99,7 @@ def loop():
                 if (jsonhandler.getPlaybot()["led"][3] == 1) and not taken:
                     taken = True
                     sending = True
+                    sound = pop_sound
                     thread.start()
                     print("PRESO")
                     print("PRESO")
@@ -106,6 +115,13 @@ def loop():
             if progress > GAME_DURATION:
                 playing = False
                 print("FINE, score ", score)
+                if(score > GAME_DURATION/2):
+                    sound = victory_sound
+                    thread.start()
+                else:
+                    sound = defeat_sound
+                    thread.start()
+                    
                 jsonhandler.send({"led": [0,0,0,0,0,0,0,0]})
                 return
             
@@ -120,10 +136,11 @@ def loop():
                         ledValues[i] = 0
                 #buttonValues = [False,False,True,True] #TODO FALSIFY BUTTONS ON ARDUINO
                 jsonhandler.send({"led": ledValues})#,"button": buttonValues})
+                jsonhandler.send({"button": [0,0,0,0]})
                 if taken:
                     score = score + 1
                     GAME_TICK = GAME_TICK / DIFFICULTY
-                else:
+                elif DIFFICULTY <= MAX_DIFFICULTY:
                     GAME_TICK = GAME_TICK * DIFFICULTY
                 taken = False
                 sending = False
@@ -131,10 +148,16 @@ def loop():
                 print(ledValues)
                 
             if taken and sending and jsonhandler.getPlaybot()["led"] != [0,0,0,0,0,0,0,0]:
+                if progress == GAME_DURATION:
+                    progress = progress + 1
                 sending = False
                 jsonhandler.send({"led": [0,0,0,0,0,0,0,0]})#, "button": [0,0,0,0]})
                 jsonhandler.send({"button": [0,0,0,0]})#, )
-            
+        else:
+            if (currtime - prevtime > GAME_TICK):
+                if jsonhandler.getPlaybot()["led"] != [0,0,0,0,0,0,0,0]:
+                    jsonhandler.send({"led": [0,0,0,0,0,0,0,0]})
+                prevtime = currtime
             
     except:
         p = 0
