@@ -34,11 +34,12 @@ sendqueue = []
 sending = 0
 sent = 0
 sendqueuestring = []
-
+ERROR = 0
 playbot = 0
+CONNECTION_RESET = False
 
 def loop():
-    global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot
+    global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot, ERROR, CONNECTION_RESET
     if keyboard.is_pressed('m'):
             send({"rgb": [0,255,255]})
     if keyboard.is_pressed('n'):
@@ -46,9 +47,22 @@ def loop():
     currtime = time.time()
     if(currtime-prevtime > REC_RATE):
         tosend += REC_RATE
-        
-        received = arduino.readline()
+        try:
+            received = arduino.readline()
+        except:
+            CONNECTION_RESET = True
+            print('RESETTING SERIAL')
+            arduino.close()
+            for i in range(10):
+                try:
+                    arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                except:
+                    pass
+            arduino.flushInput()
+            arduino.flushOutput()
+            
         if(received):
+            ERROR = 0
             #print(asd)
             #print('\n')
             
@@ -60,7 +74,20 @@ def loop():
                 pass
                 #print("Json error")
             print(received)
-        
+        else:
+            ERROR = ERROR + 1
+            if(ERROR > 100):
+                CONNECTION_RESET = True
+                print('RESETTING SERIAL')
+                arduino.close()
+                for i in range(10):
+                    try:
+                        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                    except:
+                        pass
+                arduino.flushInput()
+                arduino.flushOutput()
+                ERROR = 0
         prevtime = currtime
         
         if(tosend >= SEND_RATE):

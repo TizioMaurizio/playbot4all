@@ -13,7 +13,7 @@
 //IMU         ["imu"][3] I2C A4**, A5
 
 ////////Locomotion manager
-//IR Sensor   ["irsensor"][3] {11,12,13}
+//IR Sensor   ["irsensor"][3] {10,11,12}
 //ServoDrive  I2C A4, A5
 
 
@@ -403,7 +403,7 @@ void IMU_loop(){
 //IR Sensor
 //["irsensor"][3] {,,}
 
-int IR_IR[3] = {11,12,13};
+int IR_IR[3] = {10,11,12};
 bool IR_detected[3] = {false,false,false};
 bool IR_already[3] = {false,false,false};
 //int IR_LED = 13; // conect Led to arduino pin 13
