@@ -7,4 +7,4 @@ prevtime = 0
 
 def loop():
     games_catchthebug.loop() #start with key Y
-    #games_simon.loop() #start with key X
+    games_simon.loop() #start with key X

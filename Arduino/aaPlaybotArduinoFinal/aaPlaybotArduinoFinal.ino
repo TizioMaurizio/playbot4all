@@ -4,16 +4,16 @@
 //INDEX
 
 ////////JSON state manager
-//RGB         ["1"][2][3] {8*,9,10},(servodrive ports){S5,s6,s7}
-//Led         ["2"][8] (servodrive ports){S15...S8}
-//Button      ["3"][4] {2,3,4,5}
-//Capacitive  ["4"][1] {6}
-//Analog      ["5"][3] {x:A0,y:A1,pressed:7}
+//RGB         ["rgb"][2][3] {8*,9,10},(servodrive ports){S5,s6,s7}
+//Led         ["led"][8] (servodrive ports){S15...S8}
+//Button      ["button"][4] {2,3,4,5}
+//Capacitive  ["capacitive"][1] {6}
+//Analog      ["analog"][3] {x:A0,y:A1,pressed:7}
 //Rotary      (?) sw:3,dt:4,clk:5
-//IMU         ["6"][3] I2C A4**, A5
+//IMU         ["imu"][3] I2C A4**, A5
 
 ////////Locomotion manager
-//IR Sensor   ["7"][3] {11,12,13}
+//IR Sensor   ["irsensor"][3] {10,11,12}
 //ServoDrive  I2C A4, A5
 
 
@@ -37,13 +37,13 @@
 #define SERVODRIVE_SERIAL false
 
 //serial communication rate in milliseconds
-#define UPDATE_TIME 50 //milliseconds
+#define UPDATE_TIME 100 //milliseconds
 
 
 #include <ArduinoJson.h>
 // Allocate the JSON document
 //
-// Inside the brackets, 200 is the RAM allocated to this document, increasing this can finish the memory on the arduino
+// Inside the brackets, 300 is the RAM allocated to this document, increasing this can finish the memory on the arduino
 // INCREASE JSON SIZE IF TOO SMALL
 StaticJsonDocument<400> JSON;
 
@@ -56,23 +56,17 @@ int toUpdateREMOVE = 0; //see below
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////JSON state manager
 ////////JSON state manager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Led
+//Led
 //RGB
-//["1"][3] {8*,9,10} //,{11,12,13}
-
-int RGB_red_light_pin= 8;
-int RGB_green_light_pin = 9;
-int RGB_blue_light_pin = 10;
+//["rgb"][3] {8*,9,10} //,{11,12,13}
 
 void RGB_setup(){
-  pinMode(RGB_red_light_pin, OUTPUT);
-  pinMode(RGB_green_light_pin, OUTPUT);
-  pinMode(RGB_blue_light_pin, OUTPUT);
   if(RGB_SERIAL){
     Serial.println("-RGB");
   }
-  JSON["1"][0] = 255;
-  JSON["1"][1] = 255;
-  JSON["1"][2] = 0;
+  JSON["rgb"][0] = 255;
+  JSON["rgb"][1] = 255;
+  JSON["rgb"][2] = 0;
   componentsAmountREMOVE++;
 }
 
@@ -82,73 +76,50 @@ void RGB_loop(){
     Serial.println("nope");
   }
   
-  if(toUpdateREMOVE--){
+  //if(toUpdateREMOVE--){
     //update JSON
-  }
-  for(int i=0;i<8;i++){
-    servoLed(i,JSON["2"][i]);
+  //}
+  for(int i=0;i<3;i++){
+    servoRgb(i,JSON["rgb"][i]);
   }
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Led
 //Led
-//["2"][8] (servodrive ports){S15...S8}
-//
-int LED_red_light_pin= 13;
-int LED_green_light_pin = 14;
-int LED_blue_light_pin = 15;
+//["led"][8] (servodrive ports){S15...S8}
+
 int LED_prev_state = 0;
-int LED_color = 0; //module 8 gets the color
-#define RED {255,0,0}
-#define YELLOW {255,255,125}
-int LED_colors[8][3] = {RED,{0,255,0},{0,0,255},YELLOW,{0,255,255},{255,0,255},{255,255,0},{255,255,255}};
-int LED_pushButton = 2;//////////////////////////////////////////////////////////////////////////////////////////??
 
 #define LED_NUM 8
 
 void LED_setup(){
-  pinMode(LED_red_light_pin, OUTPUT);
-  pinMode(LED_green_light_pin, OUTPUT);
-  pinMode(LED_blue_light_pin, OUTPUT);
-  pinMode(15, OUTPUT); //giallo
-  pinMode(14, OUTPUT); //giallo
-  pinMode(13, OUTPUT); //giallo
-  pinMode(12, OUTPUT); //giallo
-  pinMode(11, OUTPUT); //blu
-  pinMode(10, OUTPUT); //bianco
-  pinMode(9, OUTPUT); //arancione
-  pinMode(8, OUTPUT); //rosso
-  // initialize serial communication at 9600 bits per second:
-  // make the pushbutton's pin an input:
-  pinMode(LED_pushButton, INPUT); ///////////////////////////////////////////////////?? forse usato per cambiare colore all'RGB
   if(LED_SERIAL){
     Serial.println("-LED");
   }
-  JSON["2"][0] = 0;
-  JSON["2"][1] = 0;
-  JSON["2"][2] = 0;
-  JSON["2"][3] = 0;
-  JSON["2"][4] = 0;
-  JSON["2"][5] = 0;
-  JSON["2"][6] = 0;
-  JSON["2"][7] = 0;
-  //JSON["2"][LED_TOP][2] = 0;
-//  JSON["2"][LED_RIGHT][0] = 0;
-//  JSON["2"][LED_RIGHT][1] = 0;
-//  JSON["2"][LED_RIGHT][2] = 0;
+  JSON["led"][0] = 0;
+  JSON["led"][1] = 0;
+  JSON["led"][2] = 0;
+  JSON["led"][3] = 0;
+  JSON["led"][4] = 0;
+  JSON["led"][5] = 0;
+  JSON["led"][6] = 0;
+  JSON["led"][7] = 0;
+  /*JSON["led"][LED_TOP][2] = 0;
+  JSON["led"][LED_RIGHT][0] = 0;
+  JSON["led"][LED_RIGHT][1] = 0;
+  JSON["led"][LED_RIGHT][2] = 0;*/
   componentsAmountREMOVE++;
 }
 
 void LED_loop(){
   // read the input pin:
-  int LED_button_state = digitalRead(LED_pushButton);
+  /*int LED_button_state = digitalRead(LED_pushButton);
   
   if(LED_prev_state != LED_button_state && LED_button_state == 1){
     LED_color++;
     LED_RGB_color(LED_colors[LED_color%8][0], LED_colors[LED_color%8][1], LED_colors[LED_color%8][2]);
   }
-  /*if(LED_SERIAL){
+  if(LED_SERIAL){
     // print out the state of the button:
     Serial.println(LED_button_state);
   }
@@ -157,23 +128,15 @@ void LED_loop(){
   if(toUpdateREMOVE--){
     //update JSON
   }*/
-  
   for(int i=0;i<8;i++){
-    servoLed(i,JSON["2"][i]);
+    servoLed(i,JSON["led"][i]);
   }
   
 }
 
-void LED_RGB_color(int LED_red_light_value, int LED_green_light_value, int LED_blue_light_value)
- {
-  analogWrite(LED_red_light_pin, LED_red_light_value);
-  analogWrite(LED_green_light_pin, LED_green_light_value);
-  analogWrite(LED_blue_light_pin, LED_blue_light_value);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Button
-//Button
-//["3"][4] {2,3,4,5}
+//Button --NOTE: button stays true until set to false by the master
+//["button"][4] {2,3,4,5}
 
 #define BUTTON_NUM 4
 
@@ -183,7 +146,7 @@ int BUTTON_pins[4] = {2,3,4,5};
 void BUTTON_setup(){
   for(int i=0; i<BUTTON_NUM; i++){
     pinMode(BUTTON_pins[i], INPUT);
-  } 
+  }
   componentsAmountREMOVE++;
 }
 
@@ -191,22 +154,19 @@ void BUTTON_loop(){
   for(int i=0; i<BUTTON_NUM; i++){
     bool BUTTON_press = digitalRead(BUTTON_pins[i]);
     if(BUTTON_press){
-      BUTTON_btn[i] = BUTTON_press;
+      JSON["button"][i] = BUTTON_press;
+      //JSON["led"][i] = 0; //TURN OFF LED CATCH THE BUG
     }
   }
   
   if(toUpdateREMOVE--){
     //update JSON
-    JSON["3"][0] = BUTTON_btn[0];
-    JSON["3"][1] = BUTTON_btn[1];
-    JSON["3"][2] = BUTTON_btn[2];
-    JSON["3"][3] = BUTTON_btn[3];
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Capacitive
 //Capacitive
-//["4"][1] {6}
+//["capacitive"][1] {6}
 
 #define CAPACITIVE_touchpin 6 // sets the capactitive touch sensor @pin 4
 
@@ -243,14 +203,14 @@ void CAPACITIVE_loop() {
   
   if(toUpdateREMOVE--){
     //update JSON
-    JSON["4"] = CAPACITIVE_detected;
+    JSON["capacitive"] = CAPACITIVE_detected;
   } 
   //delay(300);   //delay of 300milliseconds
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Analog
 //Analog
-//["5"][3] {x:A0,y:A1,pressed:7}
+//["analog"][3] {x:A0,y:A1,pressed:7}
 
 #define ANALOG_joyX A0
 #define ANALOG_joyY A1
@@ -285,9 +245,9 @@ void ANALOG_loop() {
   
   if(toUpdateREMOVE--){
     //update JSON
-    JSON["5"]["x"] = ANALOG_xValue;
-    JSON["5"]["y"] = ANALOG_yValue;
-    JSON["5"]["pressed"] = ANALOG_buttonValue;
+    JSON["analog"]["x"] = ANALOG_xValue;
+    JSON["analog"]["y"] = ANALOG_yValue;
+    JSON["analog"]["pressed"] = ANALOG_buttonValue;
   }
 }
 
@@ -379,7 +339,7 @@ void ROTARY_loop() {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IMU
 //IMU
-//["6"][3] I2C A4**, A5
+//["imu"][3] I2C A4**, A5
 
 // MPU-6050 Short Example Sketch
 // By Arduino User JohnChi
@@ -429,9 +389,9 @@ void IMU_loop(){
   
   if(toUpdateREMOVE--){
     //update JSON
-    JSON["6"]["x"] = IMU_AcX;
-    JSON["6"]["y"] = IMU_AcY;
-    JSON["6"]["z"] = IMU_AcZ;
+    JSON["imu"]["x"] = IMU_AcX;
+    JSON["imu"]["y"] = IMU_AcY;
+    JSON["imu"]["z"] = IMU_AcZ;
     //gyro?
   }
   //delay(333);
@@ -441,9 +401,9 @@ void IMU_loop(){
 ////////Locomotion manager
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////IR Sensor
 //IR Sensor
-//["7"][3] {,,}
+//["irsensor"][3] {,,}
 
-int IR_IR[3] = {11,12,13};
+int IR_IR[3] = {10,11,12};
 bool IR_detected[3] = {false,false,false};
 bool IR_already[3] = {false,false,false};
 //int IR_LED = 13; // conect Led to arduino pin 13
@@ -496,11 +456,11 @@ void IR_loop()
   if(toUpdateREMOVE--){
     //update JSON
     //for(int i=0; i<3; i++){
-      //JSON["7"][i] = IR_detected[i];
+      //JSON["irsensor"][i] = IR_detected[i];
     //}
-    JSON["7"][0] = IR_detected[0];
-    JSON["7"][1] = IR_detected[1];
-    JSON["7"][2] = IR_detected[2];
+    JSON["irsensor"][0] = IR_detected[0];
+    JSON["irsensor"][1] = IR_detected[1];
+    JSON["irsensor"][2] = IR_detected[2];
   }
 }
 
@@ -532,18 +492,19 @@ Servo SERVO_myservo;  // for use without drive, signal on pin 9
 Adafruit_PWMServoDriver SERVO_pwm = Adafruit_PWMServoDriver();
 
 // MOTOR STARTING POSITIONS
-int SERVO_servos[16] = {110, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90};
+int SERVO_servos[4] = {90, 90, 90, 90};
+int SERVO_offset[4] = {-10, 0, -5, 10};
 //SERVO ARM
 //Hand 'a' >=30
 //Swing 'd' >=80
 
 //Motor variables
-int SERVO_targetPoses[16] = {90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90}; //OLD COMMENT from hand to swing
-int SERVO_velocities[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int SERVO_targetPoses[4] = {90, 90, 90, 90}; //OLD COMMENT from hand to swing
+int SERVO_velocities[4] = {1, 1, 1, 1};
 int SERVO_old[4] = {0, 0, 0, 0};
 unsigned long SERVO_previousMillis = 0;
-const long SERVO_INTERVAL = 25; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
-int SERVO_INCREMENT = 2; //change this to speed up movement once interval is minimized
+const long SERVO_INTERVAL = 50; //OLD COMMENT 1 degree every 17ms (about 60 degrees per second) --NOTE one cycle seems to take around 10ms, lowering the value under that is harmful for performance
+int SERVO_INCREMENT = 5; //change this to speed up movement once interval is minimized
 unsigned long SERVO_currentMillis = millis();
 int SERVO_deltaMove;
 bool SERVO_speedSet = false;
@@ -555,9 +516,9 @@ void SERVO_setup() {
   for(int i=0; i<SERVO_SERVONUM; i++){  // power motors to starting position
     SERVO_pwm.setPWM(i, 0, angleToPulse(SERVO_servos[i]));
     SERVO_targetPoses[i] = SERVO_servos[i];
-    JSON["s"][i] = SERVO_targetPoses[i];
-    JSON["n"][i] = SERVO_targetPoses[i];
-    //JSON["s"][i] = SERVO_servos[i];
+    JSON["servo"][i] = SERVO_targetPoses[i];
+    JSON["next"][i] = SERVO_targetPoses[i];
+    //JSON["servo"][i] = SERVO_servos[i];
     //JSON["vel"][i] = SERVO_velocities[i];
   }
   componentsAmountREMOVE++;
@@ -569,13 +530,13 @@ void SERVO_loop() {
   if(toUpdateREMOVE--){
     if(SERVO_ready){ //move to next state target and ask for the state after it
         for(int i=0; i<SERVO_SERVONUM; i++){
-          SERVO_targetPoses[i] = int(JSON["n"][i]);
-          JSON["s"][i] = SERVO_targetPoses[i];
+          SERVO_targetPoses[i] = int(JSON["next"][i]) + SERVO_offset[i];
+          JSON["servo"][i] = SERVO_targetPoses[i] - SERVO_offset[i];
         }
     }
     else{
       for(int i=0; i<SERVO_SERVONUM; i++){ //move to current state target
-          SERVO_targetPoses[i] = int(JSON["s"][i]);
+          SERVO_targetPoses[i] = int(JSON["servo"][i]) + SERVO_offset[i];
       }
     }
   }
@@ -637,9 +598,14 @@ int rgbToPulse(int SERVO_ang){
 
 int servoLed(int p, int l){
   if(p>=0 && p<=LED_NUM)
-    SERVO_pwm.setPWM(15-p, 0, int(JSON["2"][p])*4095);
+    SERVO_pwm.setPWM(15-p, 0, l*4095);
 }
 
+int servoRgb(int p, int l){
+  if(p>=0 && p<3)
+    SERVO_pwm.setPWM(5+p, 0, l*16);
+  //SERVO_pwm.setPWM(5, 0, 4095);
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -680,9 +646,6 @@ void loop() {
   IMU_loop();
   IR_loop();
   SERVO_loop();
-  digitalWrite(11,HIGH);
-  delay(200);
-  digitalWrite(11,LOW);
   
   //JSON fields are filled in the functions' loops, then sent via serial every 50ms
   int currTime = millis();
@@ -692,6 +655,10 @@ void loop() {
     read_json();
     Serial.println();
     prevTime = millis();
+    
+    for(int i=0; i<4; i++){
+      JSON["button"][i] = false;
+    }
   }
 }
 
@@ -701,7 +668,7 @@ void read_json(){
     int prevTime = millis();
     //String inData = Serial.readStringUntil('\n');
     String inData = Serial.readString();
-    StaticJsonDocument<200> received;
+    StaticJsonDocument<100> received;
     // Deserialize the JSON document
     DeserializationError error = deserializeJson(received, inData);
     if (error) {
@@ -715,41 +682,44 @@ void read_json(){
     //
     // Most of the time, you can rely on the implicit casts.
     // In other case, you can do received["time"].as<long>();
-    if(received["2"]){
+    if(received["led"]){
       for(int i=0; i<LED_NUM; i++){
-        JSON["2"][i] = int(received["2"][i]);
+        JSON["led"][i] = int(received["led"][i]);
       }
     }
-    if(received["1"]){
-      JSON["1"][0] = int(received["1"][0]);
-      JSON["1"][1] = int(received["1"][1]);
-      JSON["1"][2] = int(received["1"][2]);
+    if(received["rgb"]){
+      JSON["rgb"][0] = int(received["rgb"][0]);
+      JSON["rgb"][1] = int(received["rgb"][1]);
+      JSON["rgb"][2] = int(received["rgb"][2]);
     }
-    /*if(received["2"][2])
-      JSON["2"][LED_LEFT] = received["2"][2];
-    if(received["2"][3])
-      JSON["2"][LED_BACK] = received["2"][3];*/
-    if(received["s"][HIP_RIGHT])
-      JSON["s"][HIP_RIGHT] = float(received["s"][0]);
-    if(received["s"][LEG_RIGHT])
-      JSON["s"][LEG_RIGHT] = float(received["s"][1]);
-    if(received["s"][HIP_LEFT])
-      JSON["s"][HIP_LEFT] = float(received["s"][2]);
-    if(received["s"][LEG_LEFT])
-      JSON["s"][LEG_LEFT] = float(received["s"][3]);
-    if(received["n"][HIP_RIGHT])
-      JSON["n"][HIP_RIGHT] = received["n"][0];
-    if(received["n"][LEG_RIGHT])
-      JSON["n"][LEG_RIGHT] = received["n"][1];
-    if(received["n"][HIP_LEFT])
-      JSON["n"][HIP_LEFT] = received["n"][2];
-    if(received["n"][LEG_LEFT])
-      JSON["n"][LEG_LEFT] = received["n"][3];
+    /*if(received["led"][2])
+      JSON["led"][LED_LEFT] = received["led"][2];
+    if(received["led"][3])
+      JSON["led"][LED_BACK] = received["led"][3];*/
+    if(received["servo"][HIP_RIGHT])
+      JSON["servo"][HIP_RIGHT] = int(received["servo"][0]);
+    if(received["servo"][LEG_RIGHT])
+      JSON["servo"][LEG_RIGHT] = int(received["servo"][1]);
+    if(received["servo"][HIP_LEFT])
+      JSON["servo"][HIP_LEFT] = int(received["servo"][2]);
+    if(received["servo"][LEG_LEFT])
+      JSON["servo"][LEG_LEFT] = int(received["servo"][3]);
+    if(received["next"][HIP_RIGHT])
+      JSON["next"][HIP_RIGHT] = received["next"][0];
+    if(received["next"][LEG_RIGHT])
+      JSON["next"][LEG_RIGHT] = received["next"][1];
+    if(received["next"][HIP_LEFT])
+      JSON["next"][HIP_LEFT] = received["next"][2];
+    if(received["next"][LEG_LEFT])
+      JSON["next"][LEG_LEFT] = received["next"][3];
 
-    /*JSON["s"]["hip_right"] = received["s"]["hip_right"];
-    JSON["s"]["leg_right"] = received["s"]["leg_right"];
-    JSON["s"]["hip_left"] = received["s"]["hip_left"];
-    JSON["s"]["leg_left"] = received["s"]["leg_left"];*/
+    /*JSON["servo"]["hip_right"] = received["servo"]["hip_right"];
+    JSON["servo"]["leg_right"] = received["servo"]["leg_right"];
+    JSON["servo"]["hip_left"] = received["servo"]["hip_left"];
+    JSON["servo"]["leg_left"] = received["servo"]["leg_left"];*/
     // Print values.
+    while (Serial.available()) {
+      byte temp = Serial.read();
+    }
   }
 }

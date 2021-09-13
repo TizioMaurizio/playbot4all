@@ -13,17 +13,13 @@ import traceback
 import keyboard
 
 REC_RATE = 0.05
-SEND_RATE = REC_RATE * 3
+SEND_RATE = REC_RATE * 4
 
 tosend = 0
 
 for i in range(10):
     try:
-        
-        arduino = serial.Serial('COM5', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
-
-
-        break
+        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
     except:
         pass
 arduino.flushInput()
@@ -38,11 +34,12 @@ sendqueue = []
 sending = 0
 sent = 0
 sendqueuestring = []
-
+ERROR = 0
 playbot = 0
+CONNECTION_RESET = False
 
 def loop():
-    global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot
+    global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot, ERROR, CONNECTION_RESET
     if keyboard.is_pressed('m'):
             send({"rgb": [0,255,255]})
     if keyboard.is_pressed('n'):
@@ -50,9 +47,22 @@ def loop():
     currtime = time.time()
     if(currtime-prevtime > REC_RATE):
         tosend += REC_RATE
-        
-        received = arduino.readline()
+        try:
+            received = arduino.readline()
+        except:
+            CONNECTION_RESET = True
+            print('RESETTING SERIAL')
+            arduino.close()
+            for i in range(10):
+                try:
+                    arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                except:
+                    pass
+            arduino.flushInput()
+            arduino.flushOutput()
+            
         if(received):
+            ERROR = 0
             #print(asd)
             #print('\n')
             
@@ -64,7 +74,20 @@ def loop():
                 pass
                 #print("Json error")
             print(received)
-        
+        else:
+            ERROR = ERROR + 1
+            if(ERROR > 100):
+                CONNECTION_RESET = True
+                print('RESETTING SERIAL')
+                arduino.close()
+                for i in range(10):
+                    try:
+                        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                    except:
+                        pass
+                arduino.flushInput()
+                arduino.flushOutput()
+                ERROR = 0
         prevtime = currtime
         
         if(tosend >= SEND_RATE):
@@ -92,19 +115,34 @@ stamp = 0
 sending = 0
 prevSend = 0
 isSending = False
+sendQueue = list()
 
 def send(toSend):
-    global sending, prevSend, isSending
+    global sending, prevSend, isSending, sendQueue
     prevSend = sending
     sending = toSend
     if prevSend != sending:
-        print("send")
+        if len(sendQueue) == 4:
+            sendQueue.pop(0)
+        if sending not in sendQueue:
+            sendQueue.append(sending)
+        else:
+            for i in sendQueue:
+                if i == sending:
+                    sendQueue.remove(i)
+            sendQueue.append(sending)
+        print("QUEUE", sendQueue)
         isSending = True
     return 1
 
 def ack():
-    global sending, isSending   
-    arduino.write(json.dumps(sending).encode())
+    global sending, isSending  
+    try:
+        sendElement = sendQueue.pop(0)
+        arduino.write(json.dumps(sendElement).encode())
+        print("SEND", sendElement)
+    except:
+        pass
     """if isSending: #Send only when message is different
         print(sending)
         arduino.write(json.dumps(sending).encode())
