@@ -1,6 +1,6 @@
 import jsonhandler
 import locomotion
-#import games
+import games
 from jsonhandler import playbot
 import keyboard
 import traceback
@@ -15,7 +15,7 @@ while True:
         jsonhandler.loop()
         locomotion.loop()
         #chatbot.loop()
-        #games.loop()
+        games.loop()
         #emotions.loop()
 
 
