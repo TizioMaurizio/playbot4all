@@ -10,16 +10,19 @@ import time
 import serial
 import json
 import traceback
-import keyboard
+#import keyboard
 
 REC_RATE = 0.05
 SEND_RATE = REC_RATE * 4
 
 tosend = 0
 
-for i in range(10):
+for i in range(1000):
     try:
-        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+        usbport = str('/dev/ttyACM0')
+        arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE)#CHANGE FOR RASPBERRY
+        
+        break
     except:
         pass
 arduino.flushInput()

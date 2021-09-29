@@ -13,7 +13,8 @@
 #if arduino moves too fast the simulation can't keep up and the robot
 #skids and turns
 
-import keyboard
+#import keyboard
+import pygame
 import time
 import serial
 import json
