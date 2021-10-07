@@ -13,7 +13,8 @@
 #if arduino moves too fast the simulation can't keep up and the robot
 #skids and turns
 
-import keyboard
+#import keyboard
+import pygame
 import time
 import serial
 import json
@@ -83,6 +84,24 @@ bEdeg = stateToDeg(bE)
 #bEb = [ZERO, BBB, ZERO, AAA]
 bZ = [ZERO, CCC, ZERO, DDD]
 bZdeg = stateToDeg(bZ)
+
+dA = [ZERO, CCC, ZERO, AAA]
+dAdeg = stateToDeg(dA)
+dB = [ZERO, AAA, ZERO, CCC]
+dBdeg = stateToDeg(dB)
+#bBb = [ZERO, BBB, ZERO, AAA]
+dC = [ZERO, CCC, ZERO, AAA]
+dCdeg = stateToDeg(dC)
+#bCb = [ZERO, CCC, ZERO, DDD]
+dD = [ZERO, AAA, ZERO, CCC]
+dDdeg = stateToDeg(dD)
+#bDb = [ZERO, CCC, ZERO, DDD]
+dE = [ZERO, CCC, ZERO, AAA]
+dEdeg = stateToDeg(dE)
+#bEb = [ZERO, BBB, ZERO, AAA]
+dZ = [ZERO, AAA, ZERO, CCC]
+dZdeg = stateToDeg(dZ)
+
 #pF = [CCC, BBB, CCC, AAA]
 trA = [ZERO, CCC, ZERO, DDD]
 trAdeg = stateToDeg(trA)
@@ -149,7 +168,8 @@ turnLeft = False
 turnRight = False
 forward = False
 backward = False
-
+avoiding = [False, False, False]
+walking = False
 """
 receiving = False
 jsonready = False
@@ -198,7 +218,7 @@ def turnState(currDeg, nextDeg, curr, currvel, nextName, stopName):
 #END SET UP THE FINITE-STATE AUTOMATON
     
 def loop():
-    global state, resetting, stopping, turnLeft, turnRight, forward, backward
+    global state, resetting, stopping, turnLeft, turnRight, forward, backward, avoiding, walking
     """  
     x = ard.read()
     if x == b'{':
@@ -225,16 +245,36 @@ def loop():
     completed = False
     prev_state = state
     
-    #IR SENSOR STOP SIMULATION GIMMICK
+    #IR SENSOR 
     try:
-        for i in range(3):
-            if jsonhandler.getPlaybot()["irsensor"][i] and False:
+        if walking:
+            if not avoiding[0] and not jsonhandler.getPlaybot()["irsensor"][0]:# and False:
+                avoiding[0] = True
+                stopping = True
+                turnRight = True
+                turnLeft = False
+                forward = False
+                backward = False
+            if not avoiding[2] and not jsonhandler.getPlaybot()["irsensor"][2]:# and False:
+                avoiding[2] = True
+                stopping = True
+                turnRight = False
+                turnLeft = True
+                forward = False
+                backward = False
+            if not avoiding[1] and jsonhandler.getPlaybot()["irsensor"][1]:# and False:
+                avoiding[1] = True
                 state = '0'
                 stopping = True
                 turnRight = False
                 turnLeft = False
                 forward = False
                 backward = False
+            if jsonhandler.getPlaybot()["irsensor"][0]:
+                if not jsonhandler.getPlaybot()["irsensor"][1]:
+                    if jsonhandler.getPlaybot()["irsensor"][2]:
+                        avoiding = [False,False,False]
+            
     except:
         pass
     
@@ -250,13 +290,18 @@ def loop():
             pass
         #reach([ZERO,ZERO,ZERO,ZERO],[1,1,1,1])
         stopping = False
+        walking = False
         if turnLeft:
+            walking = True
             state='tlA'
         if turnRight:
+            walking = True
             state='trA'
         if backward:
+            walking = True
             state='bA'
         if forward:
+            walking = True
             state='pA'                
     """
     #OLD STATES BEFORE FUNCTIONS
@@ -417,9 +462,37 @@ def loop():
     if state=='bE':
         doState(bEdeg, bBdeg, bE, vE, 'bB', 'bA')
     
+    #DANCE STATES
+    if state=='dA':
+        doState(dAdeg, dBdeg, dA, vA, 'dB', '0')
+        
+    if state=='dZ':
+        doState(dZdeg, ZEROdeg, dZ, vZ, '0', '0')
+        
+    if state=='dB':
+        doState(dBdeg, dCdeg, dB, vB, 'dC', 'dA')
+        
+    if state=='dC':
+        doState(dCdeg, dDdeg, dC, vC, 'dD', 'dZ')
+        
+    if state=='dD':
+        doState(dDdeg, dEdeg, dD, vD, 'dE', 'dZ')
+        
+    if state=='dE':
+        doState(dEdeg, dBdeg, dE, vE, 'dB', 'dA')
+    
     if state != prev_state:
         print(state)
-         
+        
+    if jsonhandler.CONNECTION_RESET == True:
+        jsonhandler.CONNECTION_RESET = False
+        state = '0'
+        stopping = True
+        turnRight = False
+        turnLeft = False
+        forward = False
+        backward = False
+    
     #READ INPUT        
     if keyboard.is_pressed('x'):
         stopping = True
@@ -455,4 +528,7 @@ def loop():
         turnLeft = False
         backward = False
         forward = True 
+
+    if keyboard.is_pressed('q'):
+        state = 'dA'
     

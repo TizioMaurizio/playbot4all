@@ -37,7 +37,7 @@
 #define SERVODRIVE_SERIAL false
 
 //serial communication rate in milliseconds
-#define UPDATE_TIME 150 //milliseconds
+#define UPDATE_TIME 300 //milliseconds
 
 
 #include <ArduinoJson.h>
@@ -702,6 +702,11 @@ void read_json(){
     if(received["led"]){
       for(int i=0; i<LED_NUM; i++){
         JSON["led"][i] = int(received["led"][i]);
+      }
+    }
+    if(received["button"]){
+      for(int i=0; i<4; i++){
+        JSON["button"][i] = int(received["button"][i]);
       }
     }
     if(received["rgb"]){
