@@ -88,19 +88,34 @@ stamp = 0
 sending = 0
 prevSend = 0
 isSending = False
+sendQueue = list()
 
 def send(toSend):
-    global sending, prevSend, isSending
+    global sending, prevSend, isSending, sendQueue
     prevSend = sending
     sending = toSend
     if prevSend != sending:
-        print("send")
+        if len(sendQueue) == 4:
+            sendQueue.pop(0)
+        if sending not in sendQueue:
+            sendQueue.append(sending)
+        else:
+            for i in sendQueue:
+                if i == sending:
+                    sendQueue.remove(i)
+            sendQueue.append(sending)
+        print("QUEUE", sendQueue)
         isSending = True
     return 1
 
 def ack():
-    global sending, isSending   
-    arduino.write(json.dumps(sending).encode())
+    global sending, isSending  
+    try:
+        sendElement = sendQueue.pop(0)
+        arduino.write(json.dumps(sendElement).encode())
+        print("SEND", sendElement)
+    except:
+        pass
     """if isSending: #Send only when message is different
         print(sending)
         arduino.write(json.dumps(sending).encode())
