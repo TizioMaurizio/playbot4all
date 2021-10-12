@@ -4,7 +4,16 @@ import time
 import speech_recognition as sr
 import pyttsx3
 
-engine = pyttsx3.init() 
+engine = pyttsx3.init()
+
+rate = engine.getProperty('rate')   # getting details of current speaking rate
+print (rate)                        #printing current voice rate
+engine.setProperty('rate', 130)     # setting up new voice rate
+
+voices = engine.getProperty('voices')       #getting details of current voice
+
+#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
+engine.setProperty('voice', voices[37].id) 
 
 def recognize_speech_from_mic(recognizer, microphone):
     """Transcribe speech from recorded from `microphone`.
@@ -56,7 +65,8 @@ def recognize_speech_from_mic(recognizer, microphone):
 
 if __name__ == "__main__":
     # set the list of words, maxnumber of guesses, and prompt limit
-    WORDS = ["apple", "banana", "grape", "orange", "mango", "lemon"]
+    #WORDS = ["apple", "banana", "grape", "orange", "mango", "lemon"]
+    WORDS = ["mela", "banana", "uva", "arancia", "mango", "limone"]
     NUM_GUESSES = 3
     PROMPT_LIMIT = 5
 
@@ -69,16 +79,16 @@ if __name__ == "__main__":
 
     # format the instructions string
     instructions = (
-        "I'm thinking of one of these words:\n"
+        "Sto pensando a una di queste parole:\n"
         "{words}\n"
-        "You have {n} tries to guess which one.\n"
+        "Hai {n} tentativi per indovinare quale\n"
     ).format(words=', '.join(WORDS), n=NUM_GUESSES)
 
     # show instructions and wait 3 seconds before starting the game
     print(instructions)
     engine.say(instructions) 
     engine.runAndWait()
-    time.sleep(3)
+    time.sleep(10)
 
     for i in range(NUM_GUESSES):
         # get the guess from the user
@@ -91,13 +101,18 @@ if __name__ == "__main__":
         #     to PROMPT_LIMIT times
         for j in range(PROMPT_LIMIT):
             print('Guess {}. Speak!'.format(i+1))
+            engine.say('Tentativo {}. Parla!'.format(i+1)) 
+            engine.runAndWait()
+            time.sleep(3)
             guess = recognize_speech_from_mic(recognizer, microphone)
             if guess["transcription"]:
                 break
             if not guess["success"]:
                 break
             print("I didn't catch that. What did you say?\n")
-
+            engine.say("Non ho capito. Cosa hai detto?") 
+            engine.runAndWait()
+            time.sleep(3)
         # if there was an error, stop the game
         if guess["error"]:
             print("ERROR: {}".format(guess["error"]))
@@ -105,7 +120,9 @@ if __name__ == "__main__":
 
         # show the user the transcription
         print("You said: {}".format(guess["transcription"]))
-
+        engine.say("Hai detto: {}".format(guess["transcription"])) 
+        engine.runAndWait()
+        time.sleep(3)
         # determine if guess is correct and if any attempts remain
         guess_is_correct = guess["transcription"].lower() == word.lower()
         user_has_more_attempts = i < NUM_GUESSES - 1
@@ -115,9 +132,18 @@ if __name__ == "__main__":
         # if no attempts left, the user loses the game
         if guess_is_correct:
             print("Correct! You win!".format(word))
+            engine.say("Giusto! Hai vinto!".format(word)) 
+            engine.runAndWait()
+            time.sleep(3)
             break
         elif user_has_more_attempts:
             print("Incorrect. Try again.\n")
+            engine.say("Sbagliato. Prova ancora.") 
+            engine.runAndWait()
+            time.sleep(3)
         else:
             print("Sorry, you lose!\nI was thinking of '{}'.".format(word))
+            engine.say("Mi spiace hai peso! Stavo pensando a'{}'.".format(word)) 
+            engine.runAndWait()
+            time.sleep(5)
             break
