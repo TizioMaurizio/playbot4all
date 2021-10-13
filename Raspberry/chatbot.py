@@ -26,7 +26,7 @@ mixer.init()
 # Language in which you want to convert (text to speech with gTTS google)
 language = 'it'  #put 'it' to speak in italian
 
-def recognize_speech_from_mic(recognizer, microphone):
+def recognize_speech_from_mic(recognizer, microphone):     
     """Transcribe speech from recorded from `microphone`.
 
     Returns a dictionary with three keys:
@@ -38,7 +38,8 @@ def recognize_speech_from_mic(recognizer, microphone):
     "transcription": `None` if speech could not be transcribed,
                otherwise a string containing the transcribed text
     """
-    # check that recognizer and microphone arguments are appropriate type
+    # check that recognizer and microphone arguments are appropriate type   
+
     if not isinstance(recognizer, sr.Recognizer):
         raise TypeError("`recognizer` must be `Recognizer` instance")
 
@@ -144,3 +145,4 @@ print("File salvato!")
 mixer.music.load('Ciao1.mp3')
 mixer.music.play()
 time.sleep(4)
+
