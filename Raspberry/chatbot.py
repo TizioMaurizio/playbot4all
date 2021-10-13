@@ -11,19 +11,117 @@ OUTPUTS: voice message to speaker, walk direction/state (locomotion), selected g
 
 """ text to speech offline  """
 
-import pyttsx3, time             #text to speech
+import time
 
-#pip3 install pyttsx3
-#apt-get install alsa-utils
+import speech_recognition as sr
+import pyttsx3
+# Import the required module for text 
+# to speech conversion
+from gtts import gTTS 
+from pygame import mixer
 
-engine = pyttsx3.init()
-voices = engine.getProperty('voices')       #getting details of current voice
+engine = pyttsx3.init() 
+mixer.init()
 
-#engine.setProperty('voice', voices[0].id)  #changing index, changes voices. o for male
-engine.setProperty('voice', voices[36].id)   #changing index, changes voices. 1 for female
+# Language in which you want to convert (text to speech with gTTS google)
+language = 'it'  #put 'it' to speak in italian
+
+def recognize_speech_from_mic(recognizer, microphone):
+    """Transcribe speech from recorded from `microphone`.
+
+    Returns a dictionary with three keys:
+    "success": a boolean indicating whether or not the API request was
+               successful
+    "error":   `None` if no error occured, otherwise a string containing
+               an error message if the API could not be reached or
+               speech was unrecognizable
+    "transcription": `None` if speech could not be transcribed,
+               otherwise a string containing the transcribed text
+    """
+    # check that recognizer and microphone arguments are appropriate type
+    if not isinstance(recognizer, sr.Recognizer):
+        raise TypeError("`recognizer` must be `Recognizer` instance")
+
+    if not isinstance(microphone, sr.Microphone):
+        raise TypeError("`microphone` must be `Microphone` instance")
+
+    # adjust the recognizer sensitivity to ambient noise and record audio
+    # from the microphone
+    with microphone as source:
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+
+    # set up the response object
+    response = {
+        "success": True,
+        "error": None,
+        "transcription": None
+    }
+
+    # try recognizing the speech in the recording
+    # if a RequestError or UnknownValueError exception is caught,
+    #     update the response object accordingly
+    try:
+        response["transcription"] = recognizer.recognize_google(audio)
+    except sr.RequestError:
+        # API was unreachable or unresponsive
+        response["success"] = False
+        response["error"] = "API unavailable"
+        engine.say("Non sono connesso a internet! Non posso parlare!") 
+        engine.runAndWait()
+        time.sleep(3)
+    except sr.UnknownValueError:
+        # speech was unintelligible
+        response["error"] = "Unable to recognize speech"
+
+    return response
 
 
-#engine.say("Hi, say something!") 
-engine.say("Ciao, sono pinguino. Dimmi qualcosa!")
 
-engine.runAndWait()
+RANGE = 5
+PROMPT_LIMIT=10
+recognizer = sr.Recognizer()
+microphone = sr.Microphone()
+
+for i in range(PROMPT_LIMIT):
+    
+    for j in range(RANGE):
+
+    
+        mytext = "Ciao, sono Pinguino. Dimmi qualcosa!"
+        myobj = gTTS(text=mytext, lang=language, slow=False)
+        
+        myobj.save("Ciao.mp3")
+        print("File salvato!")
+        # Playing the converted file
+        mixer.music.load('Ciao.mp3')
+        mixer.music.play()
+        time.sleep(4)
+
+        guess = recognize_speech_from_mic(recognizer, microphone)
+        if guess["transcription"]:
+            break
+        if not guess["success"]:
+            break
+        
+        print("I didn't catch that. What did you say?\n")
+        mytext = "I didn't catch that. What did you say?"
+        engine.say(mytext) 
+        engine.runAndWait()
+        time.sleep(3)
+
+    # if there was an error, stop the game
+    if guess["error"]:
+        print("ERROR: {}".format(guess["error"]))
+        break
+
+    # show the user the transcription
+    print("You said: {}".format(guess["transcription"]))
+    mytext= "You said: {}".format(guess["transcription"])
+    myobj = gTTS(text=mytext, lang=language, slow=False)
+    myobj.save("you_said.mp3")
+    print("File salvato!")
+    # Playing the converted file
+    mixer.music.load('you_said.mp3')
+    mixer.music.play()
+    time.sleep(3)
