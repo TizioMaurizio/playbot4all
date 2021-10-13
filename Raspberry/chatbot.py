@@ -78,8 +78,8 @@ def recognize_speech_from_mic(recognizer, microphone):
 
 
 
-RANGE = 5
-PROMPT_LIMIT=10
+RANGE = 3
+PROMPT_LIMIT=3
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
@@ -105,10 +105,18 @@ for i in range(PROMPT_LIMIT):
             break
         
         print("I didn't catch that. What did you say?\n")
-        mytext = "I didn't catch that. What did you say?"
-        engine.say(mytext) 
-        engine.runAndWait()
-        time.sleep(3)
+        mytext = "Non ho capito. Cosa hai detto?"
+        myobj = gTTS(text=mytext, lang=language, slow=False)
+        
+        myobj.save("Not_catch.mp3")
+        print("File salvato!")
+        # Playing the converted file
+        mixer.music.load('Not_catch.mp3')
+        mixer.music.play()
+        time.sleep(4)
+#         engine.say(mytext) 
+#         engine.runAndWait()
+#         time.sleep(3)
 
     # if there was an error, stop the game
     if guess["error"]:
@@ -117,11 +125,22 @@ for i in range(PROMPT_LIMIT):
 
     # show the user the transcription
     print("You said: {}".format(guess["transcription"]))
-    mytext= "You said: {}".format(guess["transcription"])
+    mytext= "Hai detto: {}".format(guess["transcription"])
     myobj = gTTS(text=mytext, lang=language, slow=False)
     myobj.save("you_said.mp3")
     print("File salvato!")
     # Playing the converted file
     mixer.music.load('you_said.mp3')
     mixer.music.play()
-    time.sleep(3)
+    time.sleep(6)
+
+
+mytext = "Ciao,ciao. Alla prossima!"
+myobj = gTTS(text=mytext, lang=language, slow=False)
+
+myobj.save("Ciao1.mp3")
+print("File salvato!")
+# Playing the converted file
+mixer.music.load('Ciao1.mp3')
+mixer.music.play()
+time.sleep(4)
