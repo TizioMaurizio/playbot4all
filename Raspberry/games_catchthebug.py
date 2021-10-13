@@ -1,5 +1,5 @@
 import jsonhandler
-import keyboard
+#import keyboard
 import random
 import time
 import pygame
@@ -44,8 +44,9 @@ def loop():
     global p, prevtime, playing_sound, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY, MAX_DIFFICULTY, sound
 
     currtime = time.time()
+    
     try:
-        if keyboard.is_pressed('y') and not playing:
+        if not playing:#(jsonhandler.getPlaybot()["button"][1]) and 
             p = 'y'
             sound = pop_sound
             thread = Thread(target=play_sound)
@@ -58,32 +59,8 @@ def loop():
         if playing:
             #print(jsonhandler.getPlaybot())
             thread = Thread(target=play_sound)
-            if keyboard.is_pressed('u') or jsonhandler.getPlaybot()["button"][3]:# or jsonhandler.getPlaybot()["button"][3]:#ORDINE INVERTITO##########################################################
+            if jsonhandler.getPlaybot()["button"][0]:# or jsonhandler.getPlaybot()["button"][3]:#ORDINE INVERTITO##########################################################
                 p = 'u'
-                if (jsonhandler.getPlaybot()["led"][0] == 1) and not taken:
-                    taken = True
-                    sending = True
-                    sound = pop_sound
-                    thread.start()
-                    print("PRESO")
-                    print("PRESO")
-                    print("PRESO")
-                    print("PRESO")
-                    print("PRESO")
-            elif keyboard.is_pressed('i') or jsonhandler.getPlaybot()["button"][2]:# or jsonhandler.getPlaybot()["button"][2]:
-                p = 'i'
-                if (jsonhandler.getPlaybot()["led"][1] == 1) and not taken:
-                    taken = True
-                    sending = True
-                    sound = pop_sound
-                    thread.start()
-                    print("PRESO")
-                    print("PRESO")
-                    print("PRESO")
-                    print("PRESO")
-                    print("PRESO")
-            elif keyboard.is_pressed('o') or jsonhandler.getPlaybot()["button"][1]:# or jsonhandler.getPlaybot()["button"][1]:
-                p = 'o'
                 if (jsonhandler.getPlaybot()["led"][2] == 1) and not taken:
                     taken = True
                     sending = True
@@ -94,9 +71,33 @@ def loop():
                     print("PRESO")
                     print("PRESO")
                     print("PRESO")
-            elif keyboard.is_pressed('p') or jsonhandler.getPlaybot()["button"][0]:# or jsonhandler.getPlaybot()["button"][0]:
-                p = 'p'
+            elif jsonhandler.getPlaybot()["button"][1]:# or jsonhandler.getPlaybot()["button"][2]:
+                p = 'i'
+                if (jsonhandler.getPlaybot()["led"][0] == 1) and not taken:
+                    taken = True
+                    sending = True
+                    sound = pop_sound
+                    thread.start()
+                    print("PRESO")
+                    print("PRESO")
+                    print("PRESO")
+                    print("PRESO")
+                    print("PRESO")
+            elif jsonhandler.getPlaybot()["button"][2]:# or jsonhandler.getPlaybot()["button"][1]:
+                p = 'o'
                 if (jsonhandler.getPlaybot()["led"][3] == 1) and not taken:
+                    taken = True
+                    sending = True
+                    sound = pop_sound
+                    thread.start()
+                    print("PRESO")
+                    print("PRESO")
+                    print("PRESO")
+                    print("PRESO")
+                    print("PRESO")
+            elif jsonhandler.getPlaybot()["button"][3]:# or jsonhandler.getPlaybot()["button"][0]:
+                p = 'p'
+                if (jsonhandler.getPlaybot()["led"][1] == 1) and not taken:
                     taken = True
                     sending = True
                     sound = pop_sound

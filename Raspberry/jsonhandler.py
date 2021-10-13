@@ -10,6 +10,7 @@ import time
 import serial
 import json
 import traceback
+from pbdebug import debug as debug
 #import keyboard
 
 REC_RATE = 0.05
@@ -17,17 +18,18 @@ SEND_RATE = REC_RATE * 4
 
 tosend = 0
 
+debug("jsonhandler begin")
+
 for i in range(1000):
     try:
         usbport = str('/dev/ttyACM0')
         arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE)#CHANGE FOR RASPBERRY
-        
+        debug("usb connected")
         break
     except:
         pass
 arduino.flushInput()
 arduino.flushOutput()
-
 prevtime = 0
 
 servo = True
@@ -42,11 +44,8 @@ playbot = 0
 CONNECTION_RESET = False
 
 def loop():
+    #debug("jsonhandler loop")
     global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot, ERROR, CONNECTION_RESET
-    if keyboard.is_pressed('m'):
-            send({"rgb": [0,255,255]})
-    if keyboard.is_pressed('n'):
-            send({"rgb": [255,0,255]})
     currtime = time.time()
     if(currtime-prevtime > REC_RATE):
         tosend += REC_RATE
@@ -227,3 +226,5 @@ def ack():
 """
 def getPlaybot():
     return playbot
+
+debug("jsonhandler end")

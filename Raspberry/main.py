@@ -1,13 +1,14 @@
+from pbdebug import debug as debug
 import jsonhandler
+debug("jsonhandler imported")
 import locomotion
+debug("locomotion imported")
 import games
+debug("games imported")
 from jsonhandler import playbot
-import keyboard
 import traceback
 
 import emotions
-
-
 
 
 while True:

@@ -14,6 +14,7 @@
 #skids and turns
 
 #import keyboard
+from pbdebug import debug as debug
 import pygame
 import time
 import serial
@@ -216,7 +217,7 @@ def turnState(currDeg, nextDeg, curr, currvel, nextName, stopName):
     except:
         pass  
 #END SET UP THE FINITE-STATE AUTOMATON
-    
+debug("locomotion define loop")    
 def loop():
     global state, resetting, stopping, turnLeft, turnRight, forward, backward, avoiding, walking
     """  
@@ -493,6 +494,24 @@ def loop():
         forward = False
         backward = False
     
+    """
+    if jsonhandler.getPlaybot()["button"][2]:
+        stopping = True
+        turnRight = False
+        turnLeft = False
+        forward = False
+        backward = False
+        
+    if jsonhandler.getPlaybot()["button"][3]:
+        if not forward:
+            stopping = True
+        turnRight = False
+        turnLeft = False
+        backward = False
+        forward = True
+    """
+    
+    """
     #READ INPUT        
     if keyboard.is_pressed('x'):
         stopping = True
@@ -531,4 +550,4 @@ def loop():
 
     if keyboard.is_pressed('q'):
         state = 'dA'
-    
+    """
