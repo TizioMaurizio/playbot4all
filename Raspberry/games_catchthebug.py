@@ -46,7 +46,7 @@ def loop():
     currtime = time.time()
     
     try:
-        if not playing:#(jsonhandler.getPlaybot()["button"][1]) and 
+        if not playing and (jsonhandler.getPlaybot()["button"][1]): 
             p = 'y'
             sound = pop_sound
             thread = Thread(target=play_sound)
