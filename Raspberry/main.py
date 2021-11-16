@@ -3,6 +3,8 @@ import jsonhandler
 debug("jsonhandler imported")
 import locomotion
 debug("locomotion imported")
+import chatbot
+debug("chatbot imported")
 import games
 debug("games imported")
 from jsonhandler import playbot
@@ -15,7 +17,7 @@ while True:
     try:
         jsonhandler.loop()
         locomotion.loop()
-        #chatbot.loop()
+        chatbot.loop()
         #games.loop()
         #emotions.loop()
 

@@ -18,7 +18,10 @@ EMOTION_MAX = 240 #maximum score for emotions
 #TODO
 #blink when emotion score is very high
 #smooth transition between colors
-
+def emotion(emot):
+    #todo emotion function, mind that import increases joy by 2000 as of now
+    pass
+    
 def loop():
     global prevtime
     currtime = time.time()
