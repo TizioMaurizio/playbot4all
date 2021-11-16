@@ -3,6 +3,7 @@
 import pyttsx3
 #importing speech_recognition
 import speech_recognition as sr
+import jsonhandler
 
 # creating Speak() function to giving Speaking power
 # to our voice assistant
@@ -23,12 +24,20 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
     r = sr.Recognizer()
     # opening physical microphone of computer
     with sr.Microphone() as source:
+        words = ['Ascolto...', 'Dimmi...']
+        import random
+        toSpeak = int(random.randrange(0,len(words)))
+        print(words)
+        print(toSpeak)
+        Speak(words[toSpeak])
         r.adjust_for_ambient_noise(source)
-        Speak('Dimmi qualcosa!Ascolto...')
-        print('Ascolto...')
+        
+        print(words[toSpeak])
         r.pause_threshold = 0.7
         # TURN ON RECORDING LED "C"
         # storing audio/sound to audio variable
+        import time
+        time.sleep(1)
         audio = r.listen(source)
         # TURN OFF RECORDING LED "C"
         try:
@@ -43,9 +52,8 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
             # API was unreachable or unresponsive
             response["success"] = False
             response["error"] = "API unavailable"
-            engine.say("Non sono connesso a internet! Non posso parlare!") 
-            engine.runAndWait()
-            time.sleep(3)
+            Speak("Non sono connesso a internet! Non posso parlare!") 
+            
         except sr.UnknownValueError:
             # speech was unintelligible
             response["error"] = "Unable to recognize speech"

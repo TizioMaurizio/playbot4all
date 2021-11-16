@@ -9,18 +9,17 @@ import games
 debug("games imported")
 from jsonhandler import playbot
 import traceback
-
 import emotions
-
+import time
 
 while True:
     try:
         jsonhandler.loop()
         locomotion.loop()
-        chatbot.loop()
+        #chatbot.chatbot()
         #games.loop()
         #emotions.loop()
 
 
-    except:
+    except RuntimeError:
         traceback.print_exc()
