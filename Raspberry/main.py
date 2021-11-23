@@ -15,11 +15,11 @@ import time
 while True:
     try:
         jsonhandler.loop()
-        locomotion.loop()
-        #chatbot.chatbot()
-        #games.loop()
+        #locomotion.loop()
+        chatbot.chatbot()
+        games.loop()
         #emotions.loop()
 
 
-    except RuntimeError:
+    except:# RuntimeError: #TODO CHECK BETTER BECAUSE IT'S USEFUL
         traceback.print_exc()

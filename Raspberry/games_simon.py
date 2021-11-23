@@ -3,7 +3,7 @@
 import jsonhandler
 import random
 import time
-import keyboard
+#import keyboard
 import pygame
 from threading import Thread
 import traceback
@@ -70,14 +70,14 @@ def play_sound():
         down_led_sound.play()
     if ledValues == [0,0,0,0,0,0,0,1]:
         left_led_sound.play()
-    #if ledList[l-k] == 4:
-    #    up_led_sound.play()
-    #if ledList[l-k] == 5:
-    #    right_led_sound.play()
-    #if ledList[l-k] == 6:
-    #    down_led_sound.play()
-    #if ledList[l-k] == 7:
-    #    left_led_sound.play()
+    if ledList[l-k] == 4:
+        up_led_sound.play()
+    if ledList[l-k] == 5:
+        right_led_sound.play()
+    if ledList[l-k] == 6:
+        down_led_sound.play()
+    if ledList[l-k] == 7:
+        left_led_sound.play()
     if set == True:
         ready_sound.play()
     if k == WIN:
@@ -90,7 +90,7 @@ def loop():
     
     global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2
     try:
-        if keyboard.is_pressed('x'):
+        if jsonhandler.getPlaybot()["analog"]["pressed"]:
             print("Start Simon")
             playing = True
         if playing == True:

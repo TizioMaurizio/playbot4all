@@ -7,7 +7,8 @@ pressed = False
 Speak("Ciao sono Pinguino")
 def chatbot():
     global pressed
-    if jsonhandler.getPlaybot()["button"][3] and not pressed:
+    
+    if not pressed and (jsonhandler.getPlaybot()["button"][3]):
         pressed = True
         #Speak("Ciao sono Pinguino")
         #Speak('Dimmi qualcosa!')
@@ -27,8 +28,7 @@ def chatbot():
         else:
             pass
         command = ""
-    elif not jsonhandler.getPlaybot()["button"][3]:
+    elif not (jsonhandler.getPlaybot()["button"][3]):
         pressed = False
     #Speak("Dimmi qualcosa...")
-    #usare if per far partire giochi o dare comandi camminata?
-    
+    #usare if per far partire giochi o dare comandi camminata?      
