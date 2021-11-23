@@ -11,6 +11,7 @@ from jsonhandler import playbot
 import traceback
 import emotions
 import time
+import status
 
 while True:
     try:
@@ -19,6 +20,7 @@ while True:
         chatbot.chatbot()
         games.loop()
         #emotions.loop()
+        status.loop()
 
 
     except:# RuntimeError: #TODO CHECK BETTER BECAUSE IT'S USEFUL

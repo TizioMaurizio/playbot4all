@@ -3,6 +3,7 @@ import jsonhandler
 import random
 import time
 import pygame
+from status import status as status
 #import winsound
 from threading import Thread
 import traceback
@@ -15,10 +16,10 @@ pygame.init()
 #y starts the game
 p='0'
 buttonValues = [0, 0, 0, 0]
-GAME_TICK = 5
+GAME_TICK = 3
 DIFFICULTY = 1.1
 MAX_DIFFICULTY = 2
-GAME_DURATION = 10
+GAME_DURATION = 3
 prevtime = 0
 playing_sound = False
 pop_sound = pygame.mixer.Sound("Pop.wav")
@@ -41,18 +42,19 @@ def play_sound():
 
 
 def loop():
-    global p, prevtime, playing_sound, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY, MAX_DIFFICULTY, sound
+    global p, prevtime, playing_sound, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY, MAX_DIFFICULTY, sound, status
 
     currtime = time.time()
     
     try:
-        if not playing and (jsonhandler.getPlaybot()["button"][1]): 
+        if (not playing and ((jsonhandler.getPlaybot()["button"][1]) and status["playbot"] == "free")) or (not playing and status["catchthebug"] == "startedbychatbot"):
             p = 'y'
             sound = pop_sound
             thread = Thread(target=play_sound)
             thread.start()
             print("Start catch the bug")
             playing = True
+            status["catchthebug"] = True
             score = 0
             progress = 0
         
@@ -61,7 +63,7 @@ def loop():
             thread = Thread(target=play_sound)
             if jsonhandler.getPlaybot()["button"][0]:# or jsonhandler.getPlaybot()["button"][3]:#ORDINE INVERTITO##########################################################
                 p = 'u'
-                if (jsonhandler.getPlaybot()["led"][2] == 1) and not taken:
+                if (jsonhandler.getPlaybot()["led"][0] == 1) and not taken:
                     taken = True
                     sending = True
                     sound = pop_sound
@@ -73,7 +75,7 @@ def loop():
                     print("PRESO")
             elif jsonhandler.getPlaybot()["button"][1]:# or jsonhandler.getPlaybot()["button"][2]:
                 p = 'i'
-                if (jsonhandler.getPlaybot()["led"][0] == 1) and not taken:
+                if (jsonhandler.getPlaybot()["led"][2] == 1) and not taken:
                     taken = True
                     sending = True
                     sound = pop_sound
@@ -124,6 +126,7 @@ def loop():
                     thread.start()
                     
                 jsonhandler.send({"led": [0,0,0,0,0,0,0,0]})
+                status["catchthebug"] = False
                 return
             
             if (currtime - prevtime > GAME_TICK):
@@ -160,6 +163,6 @@ def loop():
                     jsonhandler.send({"led": [0,0,0,0,0,0,0,0]})
                 prevtime = currtime
             
-    except:
+    except e as Exception:
         p = 0
         traceback.print_exc()
