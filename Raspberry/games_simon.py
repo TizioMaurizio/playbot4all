@@ -90,7 +90,8 @@ def loop():
     
     global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2
     try:
-        if jsonhandler.getPlaybot()["analog"]["pressed"]:
+        if (not playing and (jsonhandler.getPlaybot()["analog"]["pressed"]) and status["playbot"] == "free") or (not playing and status["simon"] == "startedsimon"):
+        
             print("Start Simon")
             playing = True
         if playing == True:

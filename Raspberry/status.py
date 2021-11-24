@@ -51,12 +51,13 @@ def loop():
     if check == 0:
         prevtime = time.time()
         toFree = True
+        status["playbot"] = "free"
     else:
         if not toFree:
             status["playbot"] = "busy"
     
     if (currtime - prevtime > 1) and toFree:
-        status["playbot"] = "free"
+        
         toFree = False
     #CONTROLLARE TOFREE PERCHE RIMANE A BUSY CON TRUE    
     print(status["playbot"])

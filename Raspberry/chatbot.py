@@ -33,6 +33,10 @@ def chatbot():
             Speak("Premi nota musicale per ascoltare la musica")
             Speak("Premi piede per camminare")
             Speak("Premi microfono per parlare")
+        if ""   in command:
+            Speak()
+            status["simon"] == "startedsimon"
+                
             
         else:
             pass
