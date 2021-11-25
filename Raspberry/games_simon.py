@@ -3,6 +3,7 @@
 import jsonhandler
 import random
 import time
+from status import status as status
 #import keyboard
 import pygame
 from threading import Thread
@@ -45,14 +46,16 @@ j = 0
 i = 0
 k = 0
 l = 0
+m = 0
 ready = True
 playing = False
 prevtime = 0
 prevtime_2 = 0
+prevtime_3 = 0
 ledValues = [0,0,0,0,0,0,0,0]
 ledList = [0,0,0,0,0,0,0,0,0,0]
 go = False
-set = False
+set = True
 end_turn = False
 flag = 0
 flag2 = 0
@@ -88,45 +91,15 @@ def play_sound():
 """Game of light to introduce the main game"""
 def loop(): 
     
-    global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2
+    global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2, status, m, prevtime_3
     try:
         if (not playing and (jsonhandler.getPlaybot()["analog"]["pressed"]) and status["playbot"] == "free") or (not playing and status["simon"] == "startedsimon"):
-        
             print("Start Simon")
             playing = True
         if playing == True:
             thread1 = Thread(target=play_sound)    
             """the game is initialized"""
             currtime = time.time()
-
-
-            """Game of lights -READY"""
-            if ready == True:
-                r = random.randint(4,7)
-                for j in range(4, 7, 1):
-                    if j == r:
-                        ledValues[j] = 1
-                    else:
-                        ledValues[j] = 0
-                jsonhandler.send({"led": ledValues})
-                thread1.start()
-
-            if (currtime - prevtime) >= LIGHTS_CLOCK and go == False:
-                ready = True
-                prevtime = currtime
-                i += 1
-            else:
-                ready = False
-
-            if i == 12:
-                ledValues = [0,0,0,0,0,0,0,0]
-                jsonhandler.send({"led": ledValues})
-                ready = False
-                go = True
-                if (currtime - prevtime) >= LIGHTS_CLOCK+0.3:
-                    set = True
-                    i = 0
-
 
             """3...2...1...start! -SET"""
             if set == True:
@@ -141,11 +114,12 @@ def loop():
                 
                 prevtime = currtime
                 set = False
+                go = True
                 flag = 1
 
 
             """Game starts -GO""" #da fare/completare
-            if go == True and set == False and i == 0:
+            if go == True and set == False:
                 if (currtime - prevtime) >= 5: #time of ready-set-go
                     if end_turn == True and flag2 == 1:
                         currtime = time.time()
@@ -222,6 +196,8 @@ def loop():
                             #sound
                             k = LOSE
                             end_turn = False
+                        
+                        prevtime_3 = currtime
 
 
 
@@ -230,6 +206,21 @@ def loop():
                         #sound
                         thread1.start()
                         playing = False
+                        j = 0
+                        i = 0
+                        k = 0
+                        l = 0
+                        flag = 0
+                        flag2 = 0
+                        ready = True
+                        playing = False
+                        prevtime = 0
+                        prevtime_2 = 0
+                        ledValues = [0,0,0,0,0,0,0,0]
+                        ledList = [0,0,0,0,0,0,0,0,0,0]
+                        go = False
+                        set = False
+                        end_turn = False
 
                     if k == LOSE:
                          #winsound.PlaySound('lose.wav', winsound.SND_FILENAME)
@@ -255,18 +246,33 @@ def loop():
 
 
                     #NUOVO TURNO
-                    if k > 0 and k < 10 and flag2 == 0:     
-                        for i in range(k-1):
+                    if k > 0 and k < 10 and flag == 0 and flag2 == 0:     
+                        if m < k and (currtime - prevtime_3) >= 1:
                             for j in range(4, 7, 1):
-                                if j == ledList[i]:
+                                if j == ledList[m]:
                                     ledValues[j] = 1
                                 else:
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
                             thread1 = Thread(target=play_sound)
                             thread1.start()
-                            for j in range(10000000):    #da cambiare
-                                j = j
+                            m += 1
+                        elif m >= k:
+                            flag = 1
+                        
+                        #for i in range(k-1):
+                           # for j in range(4, 7, 1):
+                              #  if j == ledList[i]:
+                              #      ledValues[j] = 1
+                            #    else:
+                             #       ledValues[j] = 0
+                            #jsonhandler.send({"led": ledValues})
+                           # thread1 = Thread(target=play_sound)
+                           # thread1.start()
+                            #for j in range(10000000):    #da cambiare
+                             #   j = j
+                            
+
 
                     if k < 10 and flag == 1 and flag2 == 0:    
                         r = random.randint(4,7)
@@ -285,9 +291,9 @@ def loop():
                         flag2 = 1                        
                         ledList[k] = r
                         k += 1
+                        flag = 0
                         #ledValues = [0,0,0,0,0,0,0,0]
                         #jsonhandler.send({"led": ledValues})
-                        i = 0
                         l = k
 
 
