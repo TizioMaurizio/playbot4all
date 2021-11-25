@@ -4,6 +4,7 @@ import pyttsx3
 #importing speech_recognition
 import speech_recognition as sr
 import jsonhandler
+import time
 
 # creating Speak() function to giving Speaking power
 # to our voice assistant
@@ -36,28 +37,41 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
         r.pause_threshold = 0.7
         # TURN ON RECORDING LED "C"
         # storing audio/sound to audio variable
-        import time
         time.sleep(2)
         audio = r.listen(source)
         # TURN OFF RECORDING LED "C"
-        try:
-            Speak("Aspetta un attimo, sto cercando di capire")
-            print("Riconoscimento")
-            # Recognizing audio using google api
-            Query = r.recognize_google(audio, language="it-IT")
-            print("Hai detto =\n", Query)
-            Speak("Hai detto\n"+ Query)
-        #SISTEMARE
-        except sr.RequestError:
-            # API was unreachable or unresponsive
-            response["success"] = False
-            response["error"] = "API unavailable"
-            Speak("Non sono connesso a internet! Non posso parlare!") 
-            
-        except sr.UnknownValueError:
-            # speech was unintelligible
-            response["error"] = "Unable to recognize speech"
-            Speak("Non ho capito cosa hai detto")
+        
+    # set up the response object
+    response = {
+        "success": True,
+        "error": None,
+        "transcription": None
+    }        
+        
+    try:
+        Speak("Aspetta un attimo, sto cercando di capire")
+        print("Riconoscimento")
+        # Recognizing audio using google api
+        response["transcription"] = r.recognize_google(audio, language="it-IT")
+        print("Hai detto =\n", response["transcription"] )
+        Speak("Hai detto\n"+ response["transcription"] )
+    #SISTEMARE---QUANDO CHATBOT ENTRA NELL'ECCEZIONE PROBLEMA CON GLI STATI 
+    except sr.RequestError:
+        # API was unreachable or unresponsive
+        response["transcription"]= None
+        response["success"] = False
+        response["error"] = "API unavailable"
+        Speak("Non sono connesso a internet! Non posso parlare!")
+        time.sleep(2)
+        
+        
+    except sr.UnknownValueError:
+        # speech was unintelligible
+        response["transcription"] = None 
+        response["error"] = "Unable to recognize speech"
+        Speak("Non ho capito cosa hai detto")
+        time.sleep(1)
+        
             
         """except Exception as e:
             print(e)
@@ -66,6 +80,6 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
             # returning none if there are errors
         """return "None" """
     # returning audio as text
-    import time
     time.sleep(1)
-    return Query
+    
+    return response

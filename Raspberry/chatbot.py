@@ -18,21 +18,21 @@ def chatbot():
     
         command = take_commands()
         
-        if "triste" in command:
+        if "triste" in command["transcription"]:
             #musichetta triste, led accesi??
-            Speak("Oh noo, mi dispiace... Per quel chevale, io ti voglio bene!")
+            Speak("Oh noo, mi dispiace. Per quel che vale, io ti voglio bene!")
             
             
-        if "felice" in command:
+        if "felice" in command["transcription"]:
             Speak("Wow, che grinta! Sono felice anche io.")
             
             
-        if "cattura la pulce" in command:
+        if "cattura la pulce" in command["transcription"]:
             Speak("Giochiamo a cattura la pulce!")
-            status["catchthebug"] = "startedbychatbot"
+            status["catchthebug"] = "startedbychatbot" ##DA SISEMARE
             
             
-        if "giochi" in command or "giocare" in command:
+        if "giochi" in command or "giocare" in command["transcription"]:
             Speak("A cosa vuoi giocare?")
             Speak("Premi martello per cattura la pulce")
             Speak("Premi nota musicale per ascoltare la musica")
@@ -40,7 +40,7 @@ def chatbot():
             Speak("Premi microfono per parlare")
             
         
-        if "joystick" in command:
+        if "joystick" in command["transcription"]:
             Speak("Giochiamo insieme con il joystick a seguire le luci!")
             status["simon"] == "startedsimon"
             
@@ -48,7 +48,7 @@ def chatbot():
             
         else:
             pass
-        command = ""
+        command["transcription"] = ""
             
         status["chatbot"] = False
         
