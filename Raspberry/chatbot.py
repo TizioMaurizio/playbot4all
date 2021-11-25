@@ -5,6 +5,7 @@ import serial
 from status import status as status
 
 pressed = False
+
 Speak("Ciao sono Pinguino")
 def chatbot():
     global pressed, status
@@ -14,33 +15,41 @@ def chatbot():
         pressed = True
         #Speak("Ciao sono Pinguino")
         #Speak('Dimmi qualcosa!')
+    
         command = take_commands()
         
-        if "triste" in command:
+        if "triste" in command["transcription"]:
             #musichetta triste, led accesi??
-            Speak("Oh noo, come mai?")
+            Speak("Oh noo, mi dispiace. Per quel che vale, io ti voglio bene!")
             
-        if "felice" in command:
-            Speak("Sono felice anche io!")
             
-        if "cattura la pulce" in command:
+        if "felice" in command["transcription"]:
+            Speak("Wow, che grinta! Sono felice anche io.")
+            
+            
+        if "cattura la pulce" in command["transcription"]:
             Speak("Giochiamo a cattura la pulce!")
-            status["catchthebug"] = "startedbychatbot"
+            status["catchthebug"] = "startedbychatbot" ##DA SISEMARE
             
-        if "giochiamo" in command or "giocare" in command:
+            
+        if "giochi" in command or "giocare" in command["transcription"]:
             Speak("A cosa vuoi giocare?")
-            Speak("Premi martello per Catch the Bug")
+            Speak("Premi martello per cattura la pulce")
             Speak("Premi nota musicale per ascoltare la musica")
             Speak("Premi piede per camminare")
             Speak("Premi microfono per parlare")
-        if ""   in command:
-            Speak()
+            
+        
+        if "joystick" in command["transcription"]:
+            Speak("Giochiamo insieme con il joystick a seguire le luci!")
             status["simon"] == "startedsimon"
+            
                 
             
         else:
             pass
-        command = ""
+        command["transcription"] = ""
+            
         status["chatbot"] = False
         
     elif not (jsonhandler.getPlaybot()["button"][3]):

@@ -7,6 +7,9 @@ from status import status as status
 #import winsound
 from threading import Thread
 import traceback
+
+from chatbot_backend import Speak as Speak
+from chatbot_backend import take_commands as take_commands
 # Setup for sounds. Defaults are good.
 pygame.mixer.init()
 
@@ -22,6 +25,7 @@ MAX_DIFFICULTY = 2
 GAME_DURATION = 3
 prevtime = 0
 playing_sound = False
+start_sound = pygame.mixer.Sound("yt1s.com-All-Vote-Out-Typing-Among-Us-Sound-Effect.wav")
 pop_sound = pygame.mixer.Sound("Pop.wav")
 defeat_sound = pygame.mixer.Sound("negative-beeps(lost).wav")
 victory_sound = pygame.mixer.Sound("success-fanfare-trumpets.wav")
@@ -49,7 +53,9 @@ def loop():
     try:
         if (not playing and ((jsonhandler.getPlaybot()["button"][1]) and status["playbot"] == "free")) or (not playing and status["catchthebug"] == "startedbychatbot"):
             p = 'y'
-            sound = pop_sound
+            #Speak("Cattura la pulce! Quando si illumina la pulce, premi il pulsante accanto per prenderla!")
+            #ERRORE CON LA PARLATA
+            sound = start_sound
             thread = Thread(target=play_sound)
             thread.start()
             print("Start catch the bug")
