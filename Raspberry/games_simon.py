@@ -3,6 +3,7 @@
 import jsonhandler
 import random
 import time
+from status import status as status
 #import keyboard
 import pygame
 from threading import Thread
@@ -88,7 +89,7 @@ def play_sound():
 """Game of light to introduce the main game"""
 def loop(): 
     
-    global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2
+    global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2, status
     try:
         if (not playing and (jsonhandler.getPlaybot()["analog"]["pressed"]) and status["playbot"] == "free") or (not playing and status["simon"] == "startedsimon"):
         

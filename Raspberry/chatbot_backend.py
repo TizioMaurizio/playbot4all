@@ -24,7 +24,7 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
     r = sr.Recognizer()
     # opening physical microphone of computer
     with sr.Microphone() as source:
-        words = ['Ascolto...', 'Dimmi...']
+        words = ['Hei dimmi', 'Sono in ascolto']
         import random
         toSpeak = int(random.randrange(0,len(words)))
         print(words)
@@ -37,11 +37,11 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
         # TURN ON RECORDING LED "C"
         # storing audio/sound to audio variable
         import time
-        time.sleep(1)
+        time.sleep(2)
         audio = r.listen(source)
         # TURN OFF RECORDING LED "C"
         try:
-            Speak("Aspetta un attimo, sto cercando di capire cosa hai detto")
+            Speak("Aspetta un attimo, sto cercando di capire")
             print("Riconoscimento")
             # Recognizing audio using google api
             Query = r.recognize_google(audio, language="it-IT")
@@ -57,12 +57,14 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
         except sr.UnknownValueError:
             # speech was unintelligible
             response["error"] = "Unable to recognize speech"
+            Speak("Non ho capito cosa hai detto")
+            
         """except Exception as e:
             print(e)
-            print("Prova a ripetere")
-            Speak("Non ho capito, prova a ripetere")
+            print("Prova a ripetere")"""
+            
             # returning none if there are errors
-            return "None" """
+        """return "None" """
     # returning audio as text
     import time
     time.sleep(1)
