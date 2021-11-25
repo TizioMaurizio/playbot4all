@@ -124,7 +124,7 @@ def loop():
                     if end_turn == True and flag2 == 1:
                         currtime = time.time()
                         if (l-k) < k:
-                            if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analog"]["y"] >= 600:
+                            if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analog"]["x"] <= 200:
                                 ledValues = [0,0,0,0,1,0,0,0]
                                 jsonhandler.send({"led": ledValues})
                                 thread1 = Thread(target=play_sound)
@@ -140,7 +140,7 @@ def loop():
                                 print(l, k)
                                 l += 1
 
-                            if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analog"]["x"] <= 1023:
+                            if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analog"]["y"] >= 800:
                                 ledValues = [0,0,0,0,0,1,0,0]
                                 jsonhandler.send({"led": ledValues})
                                 thread1 = Thread(target=play_sound)
@@ -156,7 +156,7 @@ def loop():
                                 print(l, k)
                                 l += 1
 
-                            if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analog"]["y"] <= 400:
+                            if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analog"]["x"] >= 600:
                                 ledValues = [0,0,0,0,0,0,1,0]
                                 jsonhandler.send({"led": ledValues})
                                 thread1 = Thread(target=play_sound)
@@ -172,7 +172,7 @@ def loop():
                                 print(l, k)
                                 l += 1
 
-                            if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analog"]["x"] >= 600:
+                            if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analog"]["y"] <= 200:
                                 ledValues = [0,0,0,0,0,0,0,1]
                                 jsonhandler.send({"led": ledValues})
                                 thread1 = Thread(target=play_sound)
@@ -204,6 +204,7 @@ def loop():
                     if k == WIN:
                         #winsound.PlaySound('trumpet-win-super.wav', winsound.SND_FILENAME)
                         #sound
+                        thread1 = Thread(target=play_sound)
                         thread1.start()
                         playing = False
                         j = 0
@@ -225,6 +226,7 @@ def loop():
                     if k == LOSE:
                          #winsound.PlaySound('lose.wav', winsound.SND_FILENAME)
                         #sound
+                        thread1 = Thread(target=play_sound)
                         thread1.start()
                         playing = False
                         j = 0
