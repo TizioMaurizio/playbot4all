@@ -15,11 +15,12 @@ import status
 
 while True:
     try:
+        time.sleep(0.01)
         jsonhandler.loop()
         #locomotion.loop()
         chatbot.chatbot()
         games.loop()
-        #emotions.loop()
+        emotions.loop()
         status.loop()
 
 

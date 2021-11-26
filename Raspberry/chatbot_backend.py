@@ -41,39 +41,39 @@ def take_commands(): #PARTE QUANDO SI PREME MICROFONO (pulsante C)
         audio = r.listen(source)
         # TURN OFF RECORDING LED "C"
         
-    # set up the response object
-    response = {
-        "success": True,
-        "error": None,
-        "transcription": None
-    }        
-        
-    try:
-        Speak("Aspetta un attimo, sto cercando di capire")
-        print("Riconoscimento")
-        # Recognizing audio using google api
-        response["transcription"] = r.recognize_google(audio, language="it-IT")
-        print("Hai detto =\n", response["transcription"] )
-        Speak("Hai detto\n"+ response["transcription"] )
-    #SISTEMARE---QUANDO CHATBOT ENTRA NELL'ECCEZIONE PROBLEMA CON GLI STATI 
-    except sr.RequestError:
-        # API was unreachable or unresponsive
-        response["transcription"]= None
-        response["success"] = False
-        response["error"] = "API unavailable"
-        Speak("Non sono connesso a internet! Non posso parlare!")
-        time.sleep(2)
-        
-        
-    except sr.UnknownValueError:
-        # speech was unintelligible
-        response["transcription"] = None 
-        response["error"] = "Unable to recognize speech"
-        Speak("Non ho capito cosa hai detto")
-        time.sleep(1)
-        
+        # set up the response object
+        response = {
+            "success": True,
+            "error": None,
+            "transcription": None
+        }        
             
-        """except Exception as e:
+        try:
+            Speak("Aspetta un attimo, sto cercando di capire")
+            print("Riconoscimento")
+            # Recognizing audio using google api
+            response["transcription"] = r.recognize_google(audio, language="it-IT")
+            print("Hai detto =\n", response["transcription"] )
+            Speak("Hai detto\n"+ response["transcription"] )
+        #SISTEMARE---QUANDO CHATBOT ENTRA NELL'ECCEZIONE PROBLEMA CON GLI STATI 
+        except sr.RequestError:
+            # API was unreachable or unresponsive
+            response["transcription"]= None
+            response["success"] = False
+            response["error"] = "API unavailable"
+            Speak("Non sono connesso a internet! Non posso parlare!")
+            time.sleep(2)
+            
+            
+        except sr.UnknownValueError:
+            # speech was unintelligible
+            response["transcription"] = None 
+            response["error"] = "Unable to recognize speech"
+            Speak("Non ho capito cosa hai detto")
+            time.sleep(1)
+            
+                
+            """except Exception as e:
             print(e)
             print("Prova a ripetere")"""
             

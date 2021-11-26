@@ -3,12 +3,14 @@ from chatbot_backend import take_commands as take_commands
 import jsonhandler
 import serial
 from status import status as status
+import traceback
 
 pressed = False
+error = None
 
 Speak("Ciao sono Pinguino")
 def chatbot():
-    global pressed, status
+    global pressed, status, error
     
     if not pressed and (jsonhandler.getPlaybot()["button"][3]) and status["playbot"] == "free":
         status["chatbot"] = True
@@ -17,6 +19,7 @@ def chatbot():
         #Speak('Dimmi qualcosa!')
     
         command = take_commands()
+        error = command["error"]
         
         if "triste" in command["transcription"]:
             #musichetta triste, led accesi??
@@ -54,7 +57,12 @@ def chatbot():
         
     elif not (jsonhandler.getPlaybot()["button"][3]):
         pressed = False
-    
+    try:
+        if error:# == "API unavailable" or command["error"] == "Unable to recognize speech":
+            status["chatbot"] = False
+    except:
+        pass
+        #traceback.print_exc()
     #print(pressed)
     #Speak("Dimmi qualcosa...")
     #usare if per far partire giochi o dare comandi camminata?      
