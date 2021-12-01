@@ -7,6 +7,7 @@ import chatbot
 debug("chatbot imported")
 import games
 debug("games imported")
+import music
 from jsonhandler import playbot
 import traceback
 import emotions
@@ -21,6 +22,7 @@ while True:
         chatbot.chatbot()
         games.loop()
         emotions.loop()
+        music.loop()
         status.loop()
 
 

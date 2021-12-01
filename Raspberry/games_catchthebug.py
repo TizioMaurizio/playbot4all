@@ -4,6 +4,7 @@ import random
 import time
 import pygame
 from status import status as status
+from status import can_play as can_play
 #import winsound
 from threading import Thread
 import traceback
@@ -22,7 +23,7 @@ buttonValues = [0, 0, 0, 0]
 GAME_TICK = 3
 DIFFICULTY = 1.1
 MAX_DIFFICULTY = 2
-GAME_DURATION = 10
+GAME_DURATION = 7
 prevtime = 0
 prevtime_begin = 0
 playing_sound = False
@@ -65,8 +66,10 @@ def loop():
     currtime = time.time()
     
     try:
-        if (not playing and ((jsonhandler.getPlaybot()["button"][1]) and status["playbot"] == "free")) or (not playing and status["catchthebug"] == "startedbychatbot") or starting:
-            
+        #if (not playing and ((jsonhandler.getPlaybot()["button"][1]) and status["playbot"] == "free")) or (not playing and status["catchthebug"] == "startedbychatbot") or starting:
+        if (not playing and can_play("catchthebug")) or starting:
+    #!A and (B and C) or (!A and D)
+    #!A and (B and C or D)
             if not starting:
                 status["catchthebug"] = True
                 prevtime_begin = time.time()
@@ -89,6 +92,7 @@ def loop():
         
         if playing:
             #print(jsonhandler.getPlaybot())
+            status["catchthebug"] = True
             thread = Thread(target=play_sound)
             if jsonhandler.getPlaybot()["button"][0]:# or jsonhandler.getPlaybot()["button"][3]:#ORDINE INVERTITO##########################################################
                 p = 'u'

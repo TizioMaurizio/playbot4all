@@ -29,6 +29,7 @@ def loop():
         
     #print(status["playbot"])
 """
+import jsonhandler
 from pbdebug import debug as debug
 import time
 status = dict()
@@ -74,3 +75,15 @@ def loop():
     #debug(toFree)
 #
 
+def button(game):
+    if game == "catchthebug":
+        return 1
+    if game == "chatbot":
+        return 3
+    if game == "locomotion":
+        return 0
+    if game == "music":
+        return 2
+
+def can_play(game):
+    return (((jsonhandler.getPlaybot()["button"][button(game)]) and status["playbot"] == "free") or status[game] == "startedbychatbot")

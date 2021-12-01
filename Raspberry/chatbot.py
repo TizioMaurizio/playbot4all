@@ -2,6 +2,7 @@ from chatbot_backend import Speak as Speak
 from chatbot_backend import take_commands as take_commands
 import jsonhandler
 import serial
+import time
 from status import status as status
 import traceback
 
@@ -32,10 +33,11 @@ def chatbot():
             
         if "cattura la pulce" in command["transcription"]:
             Speak("Giochiamo a cattura la pulce!")
+            time.sleep(1)
             status["catchthebug"] = "startedbychatbot" ##DA SISEMARE
             
             
-        if "giochi" in command or "giocare" in command["transcription"]:
+        if "giochi" in command["transcription"] or "giocare" in command["transcription"] or "giochiamo" in command["transcription"]:
             Speak("A cosa vuoi giocare?")
             Speak("Premi martello per cattura la pulce")
             Speak("Premi nota musicale per ascoltare la musica")

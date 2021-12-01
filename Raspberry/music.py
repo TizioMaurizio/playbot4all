@@ -1,7 +1,10 @@
+import jsonhandler
 import pygame
 from pygame import mixer
-import keyboard
 import time
+from status import status as status
+from status import can_play as can_play
+import traceback
 
 pygame.init()
 pygame.mixer.init()
@@ -10,13 +13,15 @@ music = ["UnVeroAmicoInMe.wav", "GIORGIA_CREDO.wav", "Toploader_DancingintheMoon
 nbSongs = 3
 songID = 0
 playing = False
-status = False
-pygame.mixer.music.load(music[songID])
 
 
-while True:  
+
+def loop():
+    global playing, songID, nbSongs, music
     try:  
-        if keyboard.is_pressed('p') and not playing :
+        if can_play("music") and not playing :
+            status["music"] = True
+            pygame.mixer.music.load(music[songID])
             playing =True
             time.sleep(0.3)
             print ("stopped->playing")
@@ -26,9 +31,10 @@ while True:
             
         #pygame.mixer.music.get_busy()--> Returns True when the music stream is actively playing. When the music is idle this returns False.
         if playing and pygame.mixer.music.get_busy() == False:
-            break
+            status["music"] = False
     
-        if keyboard.is_pressed('p')  and playing  :
+        if can_play("music") and playing:
+            status["music"] = True
             time.sleep(0.3)
             pygame.mixer.music.stop()
             print ("playing->stopped")
@@ -40,11 +46,12 @@ while True:
                 playing = False
                 songID = 0
                 pygame.mixer.music.stop()
-                break
+                status["music"] = False
 
             pygame.mixer.music.load(music[songID])
             pygame.mixer.music.play()
             
 
-    except:
-        break 
+    except Exception as e:
+        print(e)
+        traceback.print_exc()
