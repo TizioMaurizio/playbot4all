@@ -44,7 +44,7 @@ def loop():
         except:
             print("no capacitive")
             
-        #increase anger if lying down
+        #increase anger if lying down... due to IR
         try:
             if jsonhandler.getPlaybot()["pose"] == 'face_up':
                 emotions["anger"] += 1

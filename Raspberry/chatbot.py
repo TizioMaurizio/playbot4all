@@ -4,6 +4,7 @@ import jsonhandler
 import serial
 import time
 from status import status as status
+from status import can_play as can_play
 import traceback
 
 pressed = False
@@ -13,7 +14,7 @@ Speak("Ciao sono Pinguino")
 def chatbot():
     global pressed, status, error
     
-    if not pressed and (jsonhandler.getPlaybot()["button"][3]) and status["playbot"] == "free":
+    if not pressed and can_play("chatbot"):
         status["chatbot"] = True
         pressed = True
         #Speak("Ciao sono Pinguino")
@@ -47,7 +48,7 @@ def chatbot():
         
         if "joystick" in command["transcription"]:
             Speak("Giochiamo insieme con il joystick a seguire le luci!")
-            status["simon"] == "startedsimon"
+            status["simon"] == "startedbychatbot"
             
                 
             
