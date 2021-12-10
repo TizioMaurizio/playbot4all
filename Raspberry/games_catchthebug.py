@@ -53,7 +53,7 @@ def play_sound_begin():
     global playing_sound_begin
     if not playing_sound:
         playing_sound_begin = True
-        Speak("Cattura la pulce! Quando si illumina la pulce, premi il pulsante accanto per prenderla!")
+        Speak("Quando si illumina la pulce, premi il pulsante accanto per prenderla!")
         sound.play()
         time.sleep(10)
         #winsound.PlaySound("Pop", winsound.SND_ALIAS)

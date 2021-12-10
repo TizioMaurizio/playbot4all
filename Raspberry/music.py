@@ -9,52 +9,76 @@ import traceback
 pygame.init()
 pygame.mixer.init()
 
+#tempo partenza musica SISTEMARE
+
 music = ["UnVeroAmicoInMe.wav", "GIORGIA_CREDO.wav", "Toploader_DancingintheMoonlight.wav" ]
-nbSongs = 3
+nbSongs = len(music)
 songID = 0
-x = False
-
-
+playing = False
+pressed = False
+chatbot = False
 
 def loop():
-    global x, songID, nbSongs, music
-    try:  
-        if can_play("music") and not x :
+    global playing, pressed, songID, nbSongs, music, chatbot
+    try:
+        if not jsonhandler.getPlaybot()["button"][2]:
+            pressed = False
+            
+        print(pygame.mixer.music.get_busy())
+        
+        if status["music"] == "startedbychatbot":
+            chatbot = True
+                
+        if can_play("music") and not playing :
             pygame.mixer.music.load(music[songID])
             status["music"] = True
             time.sleep(1)
             
-            x =True
+            playing =True
             
-            print ("stopped->playing")
-            print (songID)
-            print (music[songID])
+            #print ("stopped->playing")
+            #print (songID)
+            #print (music[songID])
             pygame.mixer.music.play()
-            
+            if chatbot:
+                songID += 1
+                if songID > nbSongs:
+                    playing = False
+                    pygame.mixer.music.stop()
+                    status["music"] = False
+                    songID = 0
+        #Music finished
         #pygame.mixer.music.get_busy()--> Returns True when the music stream is actively playing. When the music is idle this returns False.
-        if x and pygame.mixer.music.get_busy() == False:
-            x = False
+        if playing and (pygame.mixer.music.get_busy() == False):
+            playing = False
             status["music"] = False
+            songID = 0
     
-        if jsonhandler.getPlaybot()["button"][2] and x:
-            #status["music"] = True
-            time.sleep(1)
+        #Play next music (leave if last music)
+        if jsonhandler.getPlaybot()["button"][2] and status["playbot"] == "busy" and not pressed and playing:
+            pressed = True
+            status["music"] = True
+            time.sleep(0.2)
             pygame.mixer.music.stop()
-            print ("playing->stopped")
-            songID += 1
-            print (songID)
-            print (music[songID])
-
-            if songID == nbSongs:
-                x = False
-                songID = 0
-                pygame.mixer.music.stop()
-                status["music"] = False
-
+            print ("playing->stopped")  
             pygame.mixer.music.load(music[songID])
             pygame.mixer.music.play()
+            songID += 1 
+            #print (songID)
+            #print (music[songID])
+
+            if songID > nbSongs:
+                playing = False
+                pygame.mixer.music.stop()
+                status["music"] = False
+                songID = 0
+                
+            chatbot = False 
+
             
 
     except Exception as e:
         print(e)
+        songID = 0
+        pressed = False
         traceback.print_exc()

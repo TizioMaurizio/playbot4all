@@ -35,7 +35,12 @@ def chatbot():
         if "cattura la pulce" in command["transcription"]:
             Speak("Giochiamo a cattura la pulce!")
             time.sleep(1)
-            status["catchthebug"] = "startedbychatbot" ##DA SISEMARE
+            status["catchthebug"] = "startedbychatbot"
+            
+        if "musica" in command["transcription"]:
+            Speak("Diamoci dentro con un po' di musica!")
+            #time.sleep(1)
+            status["music"] = "startedbychatbot"
             
             
         if "giochi" in command["transcription"] or "giocare" in command["transcription"] or "giochiamo" in command["transcription"]:

@@ -77,7 +77,7 @@ def loop():
     print(toFree)
 #
 
-def butt(game):
+def button(game):
     if game == "catchthebug":
         return 1
     if game == "chatbot":
@@ -88,4 +88,4 @@ def butt(game):
         return 2
     
 def can_play(game):
-    return (((jsonhandler.getPlaybot()["button"][butt(game)]) and status["playbot"] == "free") or status[game] == "startedbychatbot")
+    return (((jsonhandler.getPlaybot()["button"][button(game)]) and status["playbot"] == "free") or status[game] == "startedbychatbot")
