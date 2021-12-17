@@ -20,7 +20,7 @@ import time
 import serial
 import json
 import jsonhandler
-import keyboard
+#import keyboard
 
 RATE = 0.1
 
@@ -185,7 +185,9 @@ prevtime = 0
 def doState(currDeg, nextDeg, curr, currvel, nextName, stopName):
     global state, prev_state
     if state != prev_state:
-        jsonhandler.send({"servo":currDeg,"next":nextDeg})
+        jsonhandler.send({"servo":[int(currDeg[0]),int(currDeg[1]),int(currDeg[2]),int(currDeg[3])], "next":[int(nextDeg[0]),int(nextDeg[1]),int(nextDeg[2]),int(nextDeg[3])]})
+    #if jsonhandler.getPlaybot()["servo"] == currDeg:
+        #jsonhandler.send({"next":nextDeg})
     try:
         if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
             """if reach(curr,currvel):
@@ -496,20 +498,21 @@ def loop():
         backward = False
     
     #"""
-    if jsonhandler.getPlaybot()["button"][2]:
-        stopping = True
-        turnRight = False
-        turnLeft = False
-        forward = False
-        backward = False
-        
-    if jsonhandler.getPlaybot()["button"][3]:
+    if jsonhandler.getPlaybot()["button"][0]:
         if not forward:
             stopping = True
         turnRight = False
         turnLeft = False
         backward = False
-        forward = True
+        forward = True 
+        
+    if jsonhandler.getPlaybot()["button"][1]:
+        print("STOP")
+        stopping = True
+        turnRight = False
+        turnLeft = False
+        forward = False
+        backward = False
     
     """
     #READ INPUT        
@@ -550,4 +553,4 @@ def loop():
 
     if keyboard.is_pressed('q'):
         state = 'dA'
-    #"""
+    """

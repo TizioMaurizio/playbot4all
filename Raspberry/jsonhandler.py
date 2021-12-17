@@ -22,7 +22,7 @@ debug("jsonhandler begin")
 
 for i in range(1000):
     try:
-        usbport = str('COM4')#str('/dev/ttyACM0')
+        usbport = str('/dev/ttyACM0')#str('COM4')#
         arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE)#CHANGE FOR RASPBERRY
         debug("usb connected")
         break
