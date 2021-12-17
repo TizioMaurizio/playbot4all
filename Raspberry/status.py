@@ -73,8 +73,8 @@ def loop():
     prev_check = check
     #debug(status["playbot"])
     #debug(toFree)
-    print(status["playbot"])
-    print(toFree)
+    #print(status["playbot"])
+    #print(toFree)
 #
 
 def button(game):

@@ -6,6 +6,11 @@ from status import status as status
 from status import can_play as can_play
 import traceback
 
+
+
+from chatbot_backend import Speak as Speak
+from chatbot_backend import take_commands as take_commands
+
 pygame.init()
 pygame.mixer.init()
 
@@ -24,16 +29,17 @@ def loop():
         if not jsonhandler.getPlaybot()["button"][2]:
             pressed = False
             
-        print(pygame.mixer.music.get_busy())
+        #print(pygame.mixer.music.get_busy())
         
         if status["music"] == "startedbychatbot":
             chatbot = True
                 
         if can_play("music") and not playing :
+            #Speak("un po' di musica! Ascolta la canzone fino alla fine oppure rischiaccia il bottone per cambiare")
             pygame.mixer.music.load(music[songID])
             status["music"] = True
-            time.sleep(1)
-            
+            #time.sleep(1)
+            Speak("un po' di musica! Ascolta la canzone fino alla fine oppure rischiaccia il bottone per cambiare")
             playing =True
             
             #print ("stopped->playing")
