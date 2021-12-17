@@ -14,11 +14,13 @@
 #skids and turns
 
 #import keyboard
+from pbdebug import debug as debug
 import pygame
 import time
 import serial
 import json
 import jsonhandler
+import keyboard
 
 RATE = 0.1
 
@@ -186,10 +188,10 @@ def doState(currDeg, nextDeg, curr, currvel, nextName, stopName):
         jsonhandler.send({"servo":currDeg,"next":nextDeg})
     try:
         if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
-            if reach(curr,currvel):
+            """if reach(curr,currvel):
                 pass
             if stopping:
-                reach(stopName,currvel)
+                reach(stopName,currvel)"""
         elif(jsonhandler.getPlaybot()["servo"]==nextDeg): #Arduino completed the current state
                 if stopping:
                     state = stopName
@@ -197,7 +199,7 @@ def doState(currDeg, nextDeg, curr, currvel, nextName, stopName):
                     state=nextName
         if(jsonhandler.getPlaybot()["next"]!=nextDeg): #Arduino next state not updated
             jsonhandler.send({"servo":currDeg,"next":nextDeg})
-            reach(curr,currvel)
+            #reach(curr,currvel)
     except:
         pass 
         
@@ -207,8 +209,8 @@ def turnState(currDeg, nextDeg, curr, currvel, nextName, stopName):
         jsonhandler.send({"servo":currDeg,"next":nextDeg})
     try:
         if(jsonhandler.getPlaybot()["servo"]==currDeg): #Arduino is reaching the current state
-            if reach(curr,currvel):
-                pass
+            #if reach(curr,currvel):
+               pass
         elif(jsonhandler.getPlaybot()["servo"]==nextDeg): #Arduino completed the current state
                 state=nextName
         if(jsonhandler.getPlaybot()["next"]!=nextDeg): #Arduino next state not updated
@@ -216,7 +218,7 @@ def turnState(currDeg, nextDeg, curr, currvel, nextName, stopName):
     except:
         pass  
 #END SET UP THE FINITE-STATE AUTOMATON
-    
+debug("locomotion define loop")    
 def loop():
     global state, resetting, stopping, turnLeft, turnRight, forward, backward, avoiding, walking
     """  
@@ -493,6 +495,23 @@ def loop():
         forward = False
         backward = False
     
+    #"""
+    if jsonhandler.getPlaybot()["button"][2]:
+        stopping = True
+        turnRight = False
+        turnLeft = False
+        forward = False
+        backward = False
+        
+    if jsonhandler.getPlaybot()["button"][3]:
+        if not forward:
+            stopping = True
+        turnRight = False
+        turnLeft = False
+        backward = False
+        forward = True
+    
+    """
     #READ INPUT        
     if keyboard.is_pressed('x'):
         stopping = True
@@ -500,7 +519,7 @@ def loop():
         turnLeft = False
         forward = False
         backward = False
-        
+
     if keyboard.is_pressed('a'):
         stopping = True
         turnRight = True
@@ -531,4 +550,4 @@ def loop():
 
     if keyboard.is_pressed('q'):
         state = 'dA'
-    
+    #"""

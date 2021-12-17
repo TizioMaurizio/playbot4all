@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/.idea/playbot4all.iml" filepath="$PROJECT_DIR$/.idea/playbot4all.iml" />
+=======
+      <module fileurl="file://$PROJECT_DIR$/.idea/Playbot4All.iml" filepath="$PROJECT_DIR$/.idea/Playbot4All.iml" />
+>>>>>>> 8c08a2bbc0a23b7a70334b5468ba3cf37852e8bc
     </modules>
   </component>
 </project>

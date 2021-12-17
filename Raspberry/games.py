@@ -1,5 +1,8 @@
+from pbdebug import debug as debug
 import games_catchthebug
+debug("games_catchthebug imported")
 import games_simon
+debug("games_simon imported")
 
 p='0'
 GAME_TICK = 3
