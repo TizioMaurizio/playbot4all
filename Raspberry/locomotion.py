@@ -507,7 +507,6 @@ def loop():
         forward = True 
         
     if jsonhandler.getPlaybot()["button"][1]:
-        print("STOP")
         stopping = True
         turnRight = False
         turnLeft = False

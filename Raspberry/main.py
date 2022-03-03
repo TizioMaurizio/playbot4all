@@ -3,7 +3,7 @@ import jsonhandler
 debug("jsonhandler imported")
 import locomotion
 debug("locomotion imported")
-#import chatbot
+import chatbot
 debug("chatbot imported")
 import games
 debug("games imported")
@@ -18,9 +18,9 @@ while True:
     try:
         time.sleep(0.01)
         jsonhandler.loop()
-        #locomotion.loop()
-        #chatbot.chatbot()
-        games.loop()
+        locomotion.loop()
+        chatbot.chatbot()
+        #games.loop()
         emotions.loop()
         music.loop()
         status.loop()
