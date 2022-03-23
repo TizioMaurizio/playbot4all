@@ -10,7 +10,7 @@ from status import status
 
 colors = {"anger": [255, 0, 0], "fear": [0, 255, 0], "sadness": [0, 0, 255], "joy": [255, 128, 0],
           "cyan": [0, 255, 255], "purple": [255, 0, 255], "white": [255, 255, 255]}
-emotions = {"joy": 240, "anger": 120, "fear": 120, "sadness": 120}
+emotions = {"joy": 120, "anger": 240, "fear": 120, "sadness": 120}
 
 DECAY = 1  # second
 EMOTION_TICK = 1  # second
