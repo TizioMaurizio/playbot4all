@@ -253,6 +253,7 @@ def loop():
     if status["playbot"] == "free":
         try:
             if walking:
+                avoiding = [False, False, False]
                 if not avoiding[0] and not jsonhandler.getPlaybot()["irsensor"][0]:# and False:
                     avoiding[0] = True
                     stopping = True
@@ -276,9 +277,11 @@ def loop():
                     forward = False
                     backward = False
                 if jsonhandler.getPlaybot()["irsensor"][0]:
-                    if not jsonhandler.getPlaybot()["irsensor"][1]:
-                        if jsonhandler.getPlaybot()["irsensor"][2]:
-                            avoiding = [False,False,False]
+                        avoiding[0] = False
+                if not jsonhandler.getPlaybot()["irsensor"][1]:
+                        avoiding[1] = False
+                if jsonhandler.getPlaybot()["irsensor"][2]:
+                        avoiding[2] = False
                 
         except:
             pass

@@ -1,7 +1,7 @@
 import time
 if True:
     print("wait avvio")
-    time.sleep(5)
+    #time.sleep(5)
 from pbdebug import debug as debug
 import jsonhandler
 debug("jsonhandler imported")
@@ -21,19 +21,19 @@ import status
 while True:
     try:
         time.sleep(0.01)
-        print("jsonhandler")
+        #print("jsonhandler")
         jsonhandler.loop()
-        print("locomotion")
+        #print("locomotion")
         locomotion.loop()
-        print("chatbot")
+        #print("chatbot")
         chatbot.chatbot()
-        print("games")
+        #print("games")
         games.loop()
-        print("emotions")
+        #print("emotions")
         emotions.loop()
-        print("music")
+        #print("music")
         music.loop()
-        print("status")
+        #print("status")
         status.loop()
 
 
