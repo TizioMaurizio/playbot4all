@@ -359,12 +359,8 @@ def loop():
         if state=='trC': 
             doState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
         if state=='trD':
-            doState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
-<<<<<<< HEAD
-             
-=======
+            doState(trDdeg, ZEROdeg, trD, vrD, '0', '0')
             
->>>>>>> 574119a5401d7260359f008a12ab4785dffc9160
         """        
         #OLD STATES BEFORE FUNCTIONS
                 
@@ -393,12 +389,8 @@ def loop():
             doState(pAdeg, pBdeg, pA, vA, 'pB', '0')
                 
         if state=='pZ':
-            doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')  
-<<<<<<< HEAD
-                  
-=======
-                
->>>>>>> 574119a5401d7260359f008a12ab4785dffc9160
+            doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')
+            
         if state=='pB':
             doState(pBdeg, pCdeg, pB, vB, 'pC', 'pA')
                 
@@ -407,11 +399,7 @@ def loop():
                         
         if state=='pD':
             doState(pDdeg, pEdeg, pD, vD, 'pE', 'pZ')
-<<<<<<< HEAD
-                               
-=======
-                            
->>>>>>> 574119a5401d7260359f008a12ab4785dffc9160
+            
         if state=='pE':
             doState(pEdeg, pBdeg, pE, vE, 'pB', 'pA')
             
