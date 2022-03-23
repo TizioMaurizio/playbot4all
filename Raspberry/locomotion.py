@@ -20,6 +20,7 @@ import time
 import serial
 import json
 import jsonhandler
+from status import status as status
 #import keyboard
 
 RATE = 0.1
@@ -249,307 +250,308 @@ def loop():
     completed = False
     prev_state = state
     
-    #IR SENSOR 
-    try:
-        if walking:
-            if not avoiding[0] and not jsonhandler.getPlaybot()["irsensor"][0]:# and False:
-                avoiding[0] = True
-                stopping = True
-                turnRight = True
-                turnLeft = False
-                forward = False
-                backward = False
-            if not avoiding[2] and not jsonhandler.getPlaybot()["irsensor"][2]:# and False:
-                avoiding[2] = True
-                stopping = True
-                turnRight = False
-                turnLeft = True
-                forward = False
-                backward = False
-            if not avoiding[1] and jsonhandler.getPlaybot()["irsensor"][1]:# and False:
-                avoiding[1] = True
-                state = '0'
-                stopping = True
-                turnRight = False
-                turnLeft = False
-                forward = False
-                backward = False
-            if jsonhandler.getPlaybot()["irsensor"][0]:
-                if not jsonhandler.getPlaybot()["irsensor"][1]:
-                    if jsonhandler.getPlaybot()["irsensor"][2]:
-                        avoiding = [False,False,False]
-            
-    except:
-        pass
-    
-    #BEGIN STATES 
-    
-    #INITIAL STATE   
-    if state=='0':
-        turnState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
+    #IR SENSOR
+    if status["playbot"] == "free":
         try:
-            if(jsonhandler.getPlaybot()["servo"] != ZEROdeg):
-                jsonhandler.send({"servo":ZEROdeg,"next":ZEROdeg})
+            if walking:
+                if not avoiding[0] and not jsonhandler.getPlaybot()["irsensor"][0]:# and False:
+                    avoiding[0] = True
+                    stopping = True
+                    turnRight = True
+                    turnLeft = False
+                    forward = False
+                    backward = False
+                if not avoiding[2] and not jsonhandler.getPlaybot()["irsensor"][2]:# and False:
+                    avoiding[2] = True
+                    stopping = True
+                    turnRight = False
+                    turnLeft = True
+                    forward = False
+                    backward = False
+                if not avoiding[1] and jsonhandler.getPlaybot()["irsensor"][1]:# and False:
+                    avoiding[1] = True
+                    state = '0'
+                    stopping = True
+                    turnRight = False
+                    turnLeft = False
+                    forward = False
+                    backward = False
+                if jsonhandler.getPlaybot()["irsensor"][0]:
+                    if not jsonhandler.getPlaybot()["irsensor"][1]:
+                        if jsonhandler.getPlaybot()["irsensor"][2]:
+                            avoiding = [False,False,False]
+                
         except:
             pass
-        #reach([ZERO,ZERO,ZERO,ZERO],[1,1,1,1])
-        stopping = False
-        walking = False
-        if turnLeft:
-            walking = True
-            state='tlA'
-        if turnRight:
-            walking = True
-            state='trA'
-        if backward:
-            walking = True
-            state='bA'
-        if forward:
-            walking = True
-            state='pA'                
-    """
-    #OLD STATES BEFORE FUNCTIONS
-    if state=='tlA':  
-        if reach(tlA,[2,2,2,1]):
-            state='tlB'
-    if state=='tlB':  
-        if reach(tlB,[2,2,2,2]):
-            state='tlC'
-    if state=='tlC':  
-        if reach(tlC,[2,1,2,2]):
-            state='tlD'
-    if state=='tlD':
-        #turnLeft = False  
-        if reach(tlD,[2,2,2,2]):
-            state='0'  
-            
-    if state=='trA':  
-        doState(trAdeg, trBdeg, trA, [2,1,2,2], 'trB', 'trB')
-        #if reach(trA,[2,1,2,2]):
-            #state='trB'
-    if state=='trB':  
-        if reach(trB,[2,2,2,2]):
-            state='trC'
-    if state=='trC':  
-        if reach(trC,[2,2,2,1]):
-            state='trD'
-    if state=='trD':
-        #turnRight = False  
-        if reach(trD,[2,2,2,2]):
-            state='0'  
-    """   
-    #TURN LEFT STATES
-    if state=='tlA':  
-        doState(tlAdeg, tlBdeg, tlA, vlA, 'tlB', 'tlB')
-    if state=='tlB':
-        doState(tlBdeg, tlCdeg, tlB, vlB, 'tlC', 'tlC')  
-    if state=='tlC': 
-        doState(tlCdeg, tlDdeg, tlC, vlC, 'tlD', 'tlD') 
-    if state=='tlD':
-        doState(tlDdeg, ZEROdeg, tlD, vlD, '0', '0')
-    
-    #TURN RIGHT STATES
-    if state=='trA':  
-        doState(trAdeg, trBdeg, trA, vrA, 'trB', 'trB')
-        #if reach(trA,[2,1,2,2]):
-            #state='trB'
-    if state=='trB':
-        doState(trBdeg, trCdeg, trB, vrB, 'trC', 'trC')  
-    if state=='trC': 
-        doState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
-    if state=='trD':
-        doState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
-         
-    """        
-    #OLD STATES BEFORE FUNCTIONS
-            
-    if state=='pA':
-        if state != prev_state:
-            jsonhandler.send({"servo":pAdeg,"next":pBdeg})
-        try:
-            if(jsonhandler.getPlaybot()["servo"]==pAdeg):
-                if reach(pA,vA):
-                    pass
-                if stopping:
-                    state = '0'
-            elif(jsonhandler.getPlaybot()["servo"]==pBdeg):
+        
+        #BEGIN STATES 
+        
+        #INITIAL STATE   
+        if state=='0':
+            turnState(ZEROdeg, ZEROdeg, [ZERO,ZERO,ZERO,ZERO], [1,1,1,1], '0', '0')
+            try:
+                if(jsonhandler.getPlaybot()["servo"] != ZEROdeg):
+                    jsonhandler.send({"servo":ZEROdeg,"next":ZEROdeg})
+            except:
+                pass
+            #reach([ZERO,ZERO,ZERO,ZERO],[1,1,1,1])
+            stopping = False
+            walking = False
+            if turnLeft:
+                walking = True
+                state='tlA'
+            if turnRight:
+                walking = True
+                state='trA'
+            if backward:
+                walking = True
+                state='bA'
+            if forward:
+                walking = True
+                state='pA'                
+        """
+        #OLD STATES BEFORE FUNCTIONS
+        if state=='tlA':  
+            if reach(tlA,[2,2,2,1]):
+                state='tlB'
+        if state=='tlB':  
+            if reach(tlB,[2,2,2,2]):
+                state='tlC'
+        if state=='tlC':  
+            if reach(tlC,[2,1,2,2]):
+                state='tlD'
+        if state=='tlD':
+            #turnLeft = False  
+            if reach(tlD,[2,2,2,2]):
+                state='0'  
+                
+        if state=='trA':  
+            doState(trAdeg, trBdeg, trA, [2,1,2,2], 'trB', 'trB')
+            #if reach(trA,[2,1,2,2]):
+                #state='trB'
+        if state=='trB':  
+            if reach(trB,[2,2,2,2]):
+                state='trC'
+        if state=='trC':  
+            if reach(trC,[2,2,2,1]):
+                state='trD'
+        if state=='trD':
+            #turnRight = False  
+            if reach(trD,[2,2,2,2]):
+                state='0'  
+        """   
+        #TURN LEFT STATES
+        if state=='tlA':  
+            doState(tlAdeg, tlBdeg, tlA, vlA, 'tlB', 'tlB')
+        if state=='tlB':
+            doState(tlBdeg, tlCdeg, tlB, vlB, 'tlC', 'tlC')  
+        if state=='tlC': 
+            doState(tlCdeg, tlDdeg, tlC, vlC, 'tlD', 'tlD') 
+        if state=='tlD':
+            doState(tlDdeg, ZEROdeg, tlD, vlD, '0', '0')
+        
+        #TURN RIGHT STATES
+        if state=='trA':  
+            doState(trAdeg, trBdeg, trA, vrA, 'trB', 'trB')
+            #if reach(trA,[2,1,2,2]):
+                #state='trB'
+        if state=='trB':
+            doState(trBdeg, trCdeg, trB, vrB, 'trC', 'trC')  
+        if state=='trC': 
+            doState(trCdeg, trDdeg, trC, vrC, 'trD', 'trD') 
+        if state=='trD':
+            doState(trDdeg, ZEROdeg, trD, vrD, '0', '0') 
+             
+        """        
+        #OLD STATES BEFORE FUNCTIONS
+                
+        if state=='pA':
+            if state != prev_state:
+                jsonhandler.send({"servo":pAdeg,"next":pBdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pAdeg):
+                    if reach(pA,vA):
+                        pass
                     if stopping:
                         state = '0'
-                    else: 
-                        state='pB'
-            if(jsonhandler.getPlaybot()["next"]!=pBdeg):
-                jsonhandler.send({"servo":pAdeg,"next":pBdeg})
-        except:
-            pass
-    """
-    
-    #GO FORWARD STATES
-    if state=='pA':
-        doState(pAdeg, pBdeg, pA, vA, 'pB', '0')
-            
-    if state=='pZ':
-        doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')  
-              
-    if state=='pB':
-        doState(pBdeg, pCdeg, pB, vB, 'pC', 'pA')
-            
-    if state=='pC':
-        doState(pCdeg, pDdeg, pC, vC, 'pD', 'pZ')
-                    
-    if state=='pD':
-        doState(pDdeg, pEdeg, pD, vD, 'pE', 'pZ')
-                           
-    if state=='pE':
-        doState(pEdeg, pBdeg, pE, vE, 'pB', 'pA')
+                elif(jsonhandler.getPlaybot()["servo"]==pBdeg):
+                        if stopping:
+                            state = '0'
+                        else: 
+                            state='pB'
+                if(jsonhandler.getPlaybot()["next"]!=pBdeg):
+                    jsonhandler.send({"servo":pAdeg,"next":pBdeg})
+            except:
+                pass
+        """
         
-    """
-    #OLD STATES BEFORE FUNCTIONS
+        #GO FORWARD STATES
+        if state=='pA':
+            doState(pAdeg, pBdeg, pA, vA, 'pB', '0')
+                
+        if state=='pZ':
+            doState(pZdeg, ZEROdeg, pZ, vZ, '0', '0')  
+                  
+        if state=='pB':
+            doState(pBdeg, pCdeg, pB, vB, 'pC', 'pA')
+                
+        if state=='pC':
+            doState(pCdeg, pDdeg, pC, vC, 'pD', 'pZ')
+                        
+        if state=='pD':
+            doState(pDdeg, pEdeg, pD, vD, 'pE', 'pZ')
+                               
+        if state=='pE':
+            doState(pEdeg, pBdeg, pE, vE, 'pB', 'pA')
+            
+        """
+        #OLD STATES BEFORE FUNCTIONS
+            if state != prev_state:
+                jsonhandler.send({"servo":pZdeg})
+            try:
+                if(jsonhandler.getPlaybot()["servo"]==pZdeg):
+                    if reach(pZ,vZ):
+                        pass
+                    if(jsonhandler.getPlaybot()["ready"]):
+                        state = '0'
+            except:
+                pass
+        """
+        """        
+        #OLD STATES BEFORE FUNCTIONS
+        if state=='bA':
+            if reach(bA,vA):
+                state='bB'
+                if stopping:
+                    state = '0' 
+        if state=='bZ':
+            if reach(bZ,vZ):
+                state = '0'
+        if state=='bB':
+            if reach(bB,vB):
+                state='bC'
+                if stopping:
+                    state='bA'
+        if state=='bC':
+            if reach(bC,vC):
+                state='bD'
+                if stopping:
+                    state='bZ'
+        if state=='bD':
+            if reach(bD,vD):
+                state='bE'
+                if stopping:
+                    state='bZ'
+        if state=='bE':
+            if reach(bE,vE):
+                state='bB'
+                if stopping:
+                    state='bA'
+        """
+        
+        #GO BACKWARD STATES
+        if state=='bA':
+            doState(bAdeg, bBdeg, bA, vA, 'bB', '0')
+            
+        if state=='bZ':
+            doState(bZdeg, ZEROdeg, bZ, vZ, '0', '0')
+            
+        if state=='bB':
+            doState(bBdeg, bCdeg, bB, vB, 'bC', 'bA')
+            
+        if state=='bC':
+            doState(bCdeg, bDdeg, bC, vC, 'bD', 'bZ')
+            
+        if state=='bD':
+            doState(bDdeg, bEdeg, bD, vD, 'bE', 'bZ')
+            
+        if state=='bE':
+            doState(bEdeg, bBdeg, bE, vE, 'bB', 'bA')
+        
+        #DANCE STATES
+        if state=='dA':
+            doState(dAdeg, dBdeg, dA, vA, 'dB', '0')
+            
+        if state=='dZ':
+            doState(dZdeg, ZEROdeg, dZ, vZ, '0', '0')
+            
+        if state=='dB':
+            doState(dBdeg, dCdeg, dB, vB, 'dC', 'dA')
+            
+        if state=='dC':
+            doState(dCdeg, dDdeg, dC, vC, 'dD', 'dZ')
+            
+        if state=='dD':
+            doState(dDdeg, dEdeg, dD, vD, 'dE', 'dZ')
+            
+        if state=='dE':
+            doState(dEdeg, dBdeg, dE, vE, 'dB', 'dA')
+        
         if state != prev_state:
-            jsonhandler.send({"servo":pZdeg})
-        try:
-            if(jsonhandler.getPlaybot()["servo"]==pZdeg):
-                if reach(pZ,vZ):
-                    pass
-                if(jsonhandler.getPlaybot()["ready"]):
-                    state = '0'
-        except:
-            pass
-    """
-    """        
-    #OLD STATES BEFORE FUNCTIONS
-    if state=='bA':
-        if reach(bA,vA):
-            state='bB'
-            if stopping:
-                state = '0' 
-    if state=='bZ':
-        if reach(bZ,vZ):
+            print(state)
+            
+        if jsonhandler.CONNECTION_RESET == True:
+            jsonhandler.CONNECTION_RESET = False
             state = '0'
-    if state=='bB':
-        if reach(bB,vB):
-            state='bC'
-            if stopping:
-                state='bA'
-    if state=='bC':
-        if reach(bC,vC):
-            state='bD'
-            if stopping:
-                state='bZ'
-    if state=='bD':
-        if reach(bD,vD):
-            state='bE'
-            if stopping:
-                state='bZ'
-    if state=='bE':
-        if reach(bE,vE):
-            state='bB'
-            if stopping:
-                state='bA'
-    """
-    
-    #GO BACKWARD STATES
-    if state=='bA':
-        doState(bAdeg, bBdeg, bA, vA, 'bB', '0')
-        
-    if state=='bZ':
-        doState(bZdeg, ZEROdeg, bZ, vZ, '0', '0')
-        
-    if state=='bB':
-        doState(bBdeg, bCdeg, bB, vB, 'bC', 'bA')
-        
-    if state=='bC':
-        doState(bCdeg, bDdeg, bC, vC, 'bD', 'bZ')
-        
-    if state=='bD':
-        doState(bDdeg, bEdeg, bD, vD, 'bE', 'bZ')
-        
-    if state=='bE':
-        doState(bEdeg, bBdeg, bE, vE, 'bB', 'bA')
-    
-    #DANCE STATES
-    if state=='dA':
-        doState(dAdeg, dBdeg, dA, vA, 'dB', '0')
-        
-    if state=='dZ':
-        doState(dZdeg, ZEROdeg, dZ, vZ, '0', '0')
-        
-    if state=='dB':
-        doState(dBdeg, dCdeg, dB, vB, 'dC', 'dA')
-        
-    if state=='dC':
-        doState(dCdeg, dDdeg, dC, vC, 'dD', 'dZ')
-        
-    if state=='dD':
-        doState(dDdeg, dEdeg, dD, vD, 'dE', 'dZ')
-        
-    if state=='dE':
-        doState(dEdeg, dBdeg, dE, vE, 'dB', 'dA')
-    
-    if state != prev_state:
-        print(state)
-        
-    if jsonhandler.CONNECTION_RESET == True:
-        jsonhandler.CONNECTION_RESET = False
-        state = '0'
-        stopping = True
-        turnRight = False
-        turnLeft = False
-        forward = False
-        backward = False
-    
-    #"""
-    if jsonhandler.getPlaybot()["button"][0]:
-        if not forward:
             stopping = True
-        turnRight = False
-        turnLeft = False
-        backward = False
-        forward = True 
+            turnRight = False
+            turnLeft = False
+            forward = False
+            backward = False
         
-    if jsonhandler.getPlaybot()["button"][1]:
-        stopping = True
-        turnRight = False
-        turnLeft = False
-        forward = False
-        backward = False
-    
-    """
-    #READ INPUT        
-    if keyboard.is_pressed('x'):
-        stopping = True
-        turnRight = False
-        turnLeft = False
-        forward = False
-        backward = False
+        #"""
+        if jsonhandler.getPlaybot()["button"][0]:
+            if not forward:
+                stopping = True
+            turnRight = False
+            turnLeft = False
+            backward = False
+            forward = True 
+            
+        if jsonhandler.getPlaybot()["button"][1]:
+            stopping = True
+            turnRight = False
+            turnLeft = False
+            forward = False
+            backward = False
+        
+        """
+        #READ INPUT        
+        if keyboard.is_pressed('x'):
+            stopping = True
+            turnRight = False
+            turnLeft = False
+            forward = False
+            backward = False
 
-    if keyboard.is_pressed('a'):
-        stopping = True
-        turnRight = True
-        forward = False
-        backward = False
-        
-    if keyboard.is_pressed('d'):
-        stopping = True
-        turnLeft = True
-        forward = False
-        backward = False
-        
-    if keyboard.is_pressed('s'):
-        if not backward:
+        if keyboard.is_pressed('a'):
             stopping = True
-        turnRight = False
-        turnLeft = False
-        forward = False
-        backward = True
-        
-    if keyboard.is_pressed('w'):
-        if not forward:
+            turnRight = True
+            forward = False
+            backward = False
+            
+        if keyboard.is_pressed('d'):
             stopping = True
-        turnRight = False
-        turnLeft = False
-        backward = False
-        forward = True 
+            turnLeft = True
+            forward = False
+            backward = False
+            
+        if keyboard.is_pressed('s'):
+            if not backward:
+                stopping = True
+            turnRight = False
+            turnLeft = False
+            forward = False
+            backward = True
+            
+        if keyboard.is_pressed('w'):
+            if not forward:
+                stopping = True
+            turnRight = False
+            turnLeft = False
+            backward = False
+            forward = True 
 
-    if keyboard.is_pressed('q'):
-        state = 'dA'
-    """
+        if keyboard.is_pressed('q'):
+            state = 'dA'
+        """

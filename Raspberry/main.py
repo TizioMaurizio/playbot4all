@@ -17,12 +17,19 @@ import status
 while True:
     try:
         time.sleep(0.01)
+        print("jsonhandler")
         jsonhandler.loop()
+        print("locomotion")
         locomotion.loop()
+        print("chatbot")
         chatbot.chatbot()
-        #games.loop()
+        print("games")
+        games.loop()
+        print("emotions")
         emotions.loop()
+        print("music")
         music.loop()
+        print("status")
         status.loop()
 
 
