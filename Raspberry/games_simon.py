@@ -13,14 +13,14 @@ pygame.mixer.init()
 
 pygame.init()
 
-get_simon_sound = pygame.mixer.Sound("Pop.wav")
-ready_sound = pygame.mixer.Sound("Ready-set-go.wav")
-up_led_sound = pygame.mixer.Sound("up_sound.wav")
-right_led_sound = pygame.mixer.Sound("right_sound.wav")
-down_led_sound = pygame.mixer.Sound("down_sound.wav")
-left_led_sound = pygame.mixer.Sound("left_sound.wav")
-win_sound = pygame.mixer.Sound("trumpet-win-super.wav")
-lose_sound = pygame.mixer.Sound("negative-beeps(lost).wav")
+get_simon_sound = pygame.mixer.Sound(jsonhandler.path+"Pop.wav")
+ready_sound = pygame.mixer.Sound(jsonhandler.path+"Ready-set-go.wav")
+up_led_sound = pygame.mixer.Sound(jsonhandler.path+"up_sound.wav")
+right_led_sound = pygame.mixer.Sound(jsonhandler.path+"right_sound.wav")
+down_led_sound = pygame.mixer.Sound(jsonhandler.path+"down_sound.wav")
+left_led_sound = pygame.mixer.Sound(jsonhandler.path+"left_sound.wav")
+win_sound = pygame.mixer.Sound(jsonhandler.path+"trumpet-win-super.wav")
+lose_sound = pygame.mixer.Sound(jsonhandler.path+"negative-beeps(lost).wav")
 
 #while True:
     #for event in pygame.event.get():

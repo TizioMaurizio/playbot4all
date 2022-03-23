@@ -1,3 +1,7 @@
+import time
+if True:
+    print("wait avvio")
+    time.sleep(5)
 from pbdebug import debug as debug
 import jsonhandler
 debug("jsonhandler imported")
@@ -11,8 +15,8 @@ import music
 from jsonhandler import playbot
 import traceback
 import emotions
-import time
 import status
+
 
 while True:
     try:

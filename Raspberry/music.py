@@ -16,7 +16,7 @@ pygame.mixer.init()
 
 #tempo partenza musica SISTEMARE
 
-music = ["UnVeroAmicoInMe.wav", "GIORGIA_CREDO.wav", "Toploader_DancingintheMoonlight.wav", "Wheres_the_love.wav" ]
+music = [jsonhandler.path+"UnVeroAmicoInMe.wav", jsonhandler.path+"GIORGIA_CREDO.wav", jsonhandler.path+"Toploader_DancingintheMoonlight.wav", jsonhandler.path+"Wheres_the_love.wav" ]
 nbSongs = len(music)
 songID = 0
 playing = False

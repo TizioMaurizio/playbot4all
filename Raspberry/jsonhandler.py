@@ -15,7 +15,7 @@ from pbdebug import debug as debug
 
 REC_RATE = 0.05
 SEND_RATE = REC_RATE * 4
-
+path = "/home/pi/Desktop/playbot4all/Raspberry/"
 tosend = 0
 
 debug("jsonhandler begin")
