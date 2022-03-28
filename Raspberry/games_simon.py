@@ -57,8 +57,8 @@ ledList = [0,0,0,0,0,0,0,0,0,0]
 go = False
 set = True
 end_turn = False
-flag = 0
-flag2 = 0
+new_led_flag = 0
+analog_flag = 0
 LIGHTS_CLOCK = 0.2
 WIN = 10
 LOSE = 20
@@ -91,9 +91,9 @@ def play_sound():
 """Game of light to introduce the main game"""
 def loop(): 
     
-    global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, flag, flag2, status, m, prevtime_3
+    global ready, i, j, playing, prevtime, go, set, ledValues, ledList, k, l, end_turn, prevtime_2, new_led_flag, analog_flag, status, m, prevtime_3
     try:
-        if (not playing and (jsonhandler.getPlaybot()["analog"]["pressed"]) and status["playbot"] == "free") or (not playing and status["simon"] == "startedsimon"):
+        if (not playing and (jsonhandler.getPlaybot()["analog_flag"]["pressed"]) and status["playbot"] == "free") or (not playing and status["simon"] == "startedsimon"):
             print("Start Simon")
             playing = True
         if playing == True:
@@ -115,19 +115,18 @@ def loop():
                 prevtime = currtime
                 set = False
                 go = True
-                flag = 1
+                new_led_flag = 1
 
 
             """Game starts -GO""" #da fare/completare
             if go == True and set == False:
                 if (currtime - prevtime) >= 5: #time of ready-set-go
-                    if end_turn == True and flag2 == 1:
+                    if end_turn == True and analog_flag == 1:
                         currtime = time.time()
                         if (l-k) < k:
-                            if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analog"]["y"] >= 600:
+                            if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analog_flag"]["y"] >= 600:
                                 ledValues = [0,0,0,0,1,0,0,0]
                                 jsonhandler.send({"led": ledValues})
-                                thread1 = Thread(target=play_sound)
                                 thread1.start()
                                 prevtime_2 = currtime
                                 print(l, k)
@@ -140,10 +139,9 @@ def loop():
                                 print(l, k)
                                 l += 1
 
-                            if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analog"]["x"] <= 1023:
+                            if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analog_flag"]["x"] <= 1023:
                                 ledValues = [0,0,0,0,0,1,0,0]
                                 jsonhandler.send({"led": ledValues})
-                                thread1 = Thread(target=play_sound)
                                 thread1.start()
                                 prevtime_2 = currtime
                                 print(l, k)
@@ -156,10 +154,9 @@ def loop():
                                 print(l, k)
                                 l += 1
 
-                            if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analog"]["y"] <= 400:
+                            if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analog_flag"]["y"] <= 400:
                                 ledValues = [0,0,0,0,0,0,1,0]
                                 jsonhandler.send({"led": ledValues})
-                                thread1 = Thread(target=play_sound)
                                 thread1.start()
                                 prevtime_2 = currtime
                                 print(l, k)
@@ -172,10 +169,9 @@ def loop():
                                 print(l, k)
                                 l += 1
 
-                            if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analog"]["x"] >= 600:
+                            if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analog_flag"]["x"] >= 600:
                                 ledValues = [0,0,0,0,0,0,0,1]
                                 jsonhandler.send({"led": ledValues})
-                                thread1 = Thread(target=play_sound)
                                 thread1.start()
                                 prevtime_2 = currtime
                                 print(l, k)
@@ -190,7 +186,7 @@ def loop():
 
                         if (l-k) >= k:
                             end_turn = False
-                            flag2 = 0
+                            analog_flag = 0
                         
                         if (currtime - prevtime_2) >= 4:
                             #sound
@@ -210,8 +206,8 @@ def loop():
                         i = 0
                         k = 0
                         l = 0
-                        flag = 0
-                        flag2 = 0
+                        new_led_flag = 0
+                        analog_flag = 0
                         ready = True
                         playing = False
                         prevtime = 0
@@ -231,8 +227,8 @@ def loop():
                         i = 0
                         k = 0
                         l = 0
-                        flag = 0
-                        flag2 = 0
+                        new_led_flag = 0
+                        analog_flag = 0
                         ready = True
                         playing = False
                         prevtime = 0
@@ -246,7 +242,7 @@ def loop():
 
 
                     #NUOVO TURNO
-                    if k > 0 and k < 10 and flag == 0 and flag2 == 0:     
+                    if k > 0 and k < 10 and new_led_flag == 0 and analog_flag == 0:     
                         if m < k and (currtime - prevtime_3) >= 1:
                             for j in range(4, 7, 1):
                                 if j == ledList[m]:
@@ -258,7 +254,7 @@ def loop():
                             thread1.start()
                             m += 1
                         elif m >= k:
-                            flag = 1
+                            new_led_flag = 1
                         
                         #for i in range(k-1):
                            # for j in range(4, 7, 1):
@@ -274,7 +270,7 @@ def loop():
                             
 
 
-                    if k < 10 and flag == 1 and flag2 == 0:    
+                    if k < 10 and new_led_flag == 1 and analog_flag == 0:    
                         r = random.randint(4,7)
                         for j in range(4, 7, 1):
                             if j == r:
@@ -282,16 +278,15 @@ def loop():
                             else:
                                 ledValues[j] = 0
                         jsonhandler.send({"led": ledValues})
-                        thread1 = Thread(target=play_sound)
                         thread1.start()
                         
                        
                         prevtime_2 = currtime
                         end_turn = True
-                        flag2 = 1                        
+                        analog_flag = 1                        
                         ledList[k] = r
                         k += 1
-                        flag = 0
+                        new_led_flag = 0
                         #ledValues = [0,0,0,0,0,0,0,0]
                         #jsonhandler.send({"led": ledValues})
                         l = k
