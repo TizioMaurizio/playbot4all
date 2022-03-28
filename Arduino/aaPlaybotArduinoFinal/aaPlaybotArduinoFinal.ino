@@ -643,7 +643,7 @@ void loop() {
   CAPACITIVE_loop();
   ANALOG_loop();
   //ROTARY_loop();
-  IMU_loop();
+  //IMU_loop();
   IR_loop();
   SERVO_loop();
   

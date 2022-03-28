@@ -4,6 +4,7 @@ import random
 import time
 import pygame
 from status import status as status
+from status import can_play as can_play
 #import winsound
 from threading import Thread
 import traceback
@@ -22,19 +23,23 @@ buttonValues = [0, 0, 0, 0]
 GAME_TICK = 3
 DIFFICULTY = 1.1
 MAX_DIFFICULTY = 2
-GAME_DURATION = 3
+GAME_DURATION = 7
 prevtime = 0
+prevtime_begin = 0
 playing_sound = False
-start_sound = pygame.mixer.Sound("yt1s.com-All-Vote-Out-Typing-Among-Us-Sound-Effect.wav")
-pop_sound = pygame.mixer.Sound("Pop.wav")
-defeat_sound = pygame.mixer.Sound("negative-beeps(lost).wav")
-victory_sound = pygame.mixer.Sound("success-fanfare-trumpets.wav")
+playing_sound_begin = False
+start_sound = pygame.mixer.Sound(jsonhandler.path+"yt1s.com-All-Vote-Out-Typing-Among-Us-Sound-Effect.wav")
+pop_sound = pygame.mixer.Sound(jsonhandler.path+"Pop.wav")
+#start_sound = pop_sound
+defeat_sound = pygame.mixer.Sound(jsonhandler.path+"negative-beeps(lost).wav")
+victory_sound = pygame.mixer.Sound(jsonhandler.path+"success-fanfare-trumpets.wav")
 playing = False
 taken = False
 sending = False
 progress = 0
 score = 0
 sound = pop_sound
+starting = False
 
 def play_sound():
     global playing_sound
@@ -43,29 +48,51 @@ def play_sound():
         sound.play()
         #winsound.PlaySound("Pop", winsound.SND_ALIAS)
         playing_sound = False
+    
+def play_sound_begin():
+    global playing_sound_begin
+    if not playing_sound:
+        playing_sound_begin = True
+        Speak("Quando si illumina la pulce, premi il pulsante accanto per prenderla!")
+        sound.play()
+        time.sleep(10)
+        #winsound.PlaySound("Pop", winsound.SND_ALIAS)
+        playing_sound_begin = False
 
 
 def loop():
-    global p, prevtime, playing_sound, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY, MAX_DIFFICULTY, sound, status
+    global p, prevtime, prevtime_begin, playing_sound, playing_sound_begin, buttonValues, playing, taken, sending, progress, score, GAME_TICK, DIFFICULTY, MAX_DIFFICULTY, sound, status, starting
 
     currtime = time.time()
     
     try:
-        if (not playing and ((jsonhandler.getPlaybot()["button"][1]) and status["playbot"] == "free")) or (not playing and status["catchthebug"] == "startedbychatbot"):
+        #if (not playing and ((jsonhandler.getPlaybot()["button"][1]) and status["playbot"] == "free")) or (not playing and status["catchthebug"] == "startedbychatbot") or starting:
+        if (not playing and can_play("catchthebug")) or starting:
+    #!A and (B and C) or (!A and D)
+    #!A and (B and C or D)
+            if not starting:
+                status["catchthebug"] = True
+                prevtime_begin = time.time()
+                starting = True
             p = 'y'
             #Speak("Cattura la pulce! Quando si illumina la pulce, premi il pulsante accanto per prenderla!")
             #ERRORE CON LA PARLATA
-            sound = start_sound
-            thread = Thread(target=play_sound)
-            thread.start()
-            print("Start catch the bug")
-            playing = True
-            status["catchthebug"] = True
-            score = 0
-            progress = 0
+            
+            if not playing_sound_begin:
+                sound = start_sound
+                thread = Thread(target=play_sound_begin)
+                thread.start()
+            #play_sound()
+            if (currtime - prevtime_begin > 6):
+                print("Start catch the bug")
+                playing = True
+                score = 0
+                progress = 0
+                starting = False
         
         if playing:
             #print(jsonhandler.getPlaybot())
+            status["catchthebug"] = True
             thread = Thread(target=play_sound)
             if jsonhandler.getPlaybot()["button"][0]:# or jsonhandler.getPlaybot()["button"][3]:#ORDINE INVERTITO##########################################################
                 p = 'u'
@@ -169,6 +196,7 @@ def loop():
                     jsonhandler.send({"led": [0,0,0,0,0,0,0,0]})
                 prevtime = currtime
             
-    except e as Exception:
+    except Exception as e:
+        print(e)
         p = 0
         traceback.print_exc()

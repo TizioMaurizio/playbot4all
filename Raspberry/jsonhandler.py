@@ -15,14 +15,14 @@ from pbdebug import debug as debug
 
 REC_RATE = 0.05
 SEND_RATE = REC_RATE * 4
-
+path = "/home/pi/Desktop/playbot4all/Raspberry/"
 tosend = 0
 
 debug("jsonhandler begin")
 
 for i in range(1000):
     try:
-        usbport = str('/dev/ttyACM0')
+        usbport = str('/dev/ttyACM0')#str('COM7')#
         arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE)#CHANGE FOR RASPBERRY
         debug("usb connected")
         break
@@ -57,7 +57,7 @@ def loop():
             arduino.close()
             for i in range(10):
                 try:
-                    arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                    arduino = serial.Serial('COM4', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
                 except:
                     pass
             arduino.flushInput()
@@ -84,7 +84,7 @@ def loop():
                 arduino.close()
                 for i in range(10):
                     try:
-                        arduino = serial.Serial('COM3', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                        arduino = serial.Serial('COM4', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
                     except:
                         pass
                 arduino.flushInput()

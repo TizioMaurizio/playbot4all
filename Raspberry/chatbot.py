@@ -2,21 +2,26 @@ from chatbot_backend import Speak as Speak
 from chatbot_backend import take_commands as take_commands
 import jsonhandler
 import serial
+import time
 from status import status as status
+from status import can_play as can_play
+import traceback
 
 pressed = False
+error = None
 
 Speak("Ciao sono Pinguino")
 def chatbot():
-    global pressed, status
+    global pressed, status, error
     
-    if not pressed and (jsonhandler.getPlaybot()["button"][3]) and status["playbot"] == "free":
+    if not pressed and can_play("chatbot"):
         status["chatbot"] = True
         pressed = True
         #Speak("Ciao sono Pinguino")
         #Speak('Dimmi qualcosa!')
     
         command = take_commands()
+        error = command["error"]
         
         if "triste" in command["transcription"]:
             #musichetta triste, led accesi??
@@ -29,10 +34,16 @@ def chatbot():
             
         if "cattura la pulce" in command["transcription"]:
             Speak("Giochiamo a cattura la pulce!")
-            status["catchthebug"] = "startedbychatbot" ##DA SISEMARE
+            time.sleep(1)
+            status["catchthebug"] = "startedbychatbot"
+            
+        if "musica" in command["transcription"]:
+            Speak("Diamoci dentro con un po' di musica!")
+            #time.sleep(1)
+            status["music"] = "startedbychatbot"
             
             
-        if "giochi" in command or "giocare" in command["transcription"]:
+        if "giochi" in command["transcription"] or "giocare" in command["transcription"] or "giochiamo" in command["transcription"]:
             Speak("A cosa vuoi giocare?")
             Speak("Premi martello per cattura la pulce")
             Speak("Premi nota musicale per ascoltare la musica")
@@ -42,7 +53,7 @@ def chatbot():
         
         if "joystick" in command["transcription"]:
             Speak("Giochiamo insieme con il joystick a seguire le luci!")
-            status["simon"] == "startedsimon"
+            status["simon"] == "startedbychatbot"
             
                 
             
@@ -54,7 +65,12 @@ def chatbot():
         
     elif not (jsonhandler.getPlaybot()["button"][3]):
         pressed = False
-    
+    try:
+        if error:# == "API unavailable" or command["error"] == "Unable to recognize speech":
+            status["chatbot"] = False
+    except:
+        pass
+        #traceback.print_exc()
     #print(pressed)
     #Speak("Dimmi qualcosa...")
     #usare if per far partire giochi o dare comandi camminata?      
