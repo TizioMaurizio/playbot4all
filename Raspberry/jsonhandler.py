@@ -75,7 +75,7 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            print(received)
+            #print(received)
         else:
             ERROR = ERROR + 1
             if(ERROR > 100):
@@ -133,7 +133,7 @@ def send(toSend):
                 if i == sending:
                     sendQueue.remove(i)
             sendQueue.append(sending)
-        print("QUEUE", sendQueue)
+        #print("QUEUE", sendQueue)
         isSending = True
     return 1
 
@@ -142,7 +142,7 @@ def ack():
     try:
         sendElement = sendQueue.pop(0)
         arduino.write(json.dumps(sendElement).encode())
-        print("SEND", sendElement)
+        #print("SEND", sendElement)
     except:
         pass
     """if isSending: #Send only when message is different

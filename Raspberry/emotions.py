@@ -4,10 +4,28 @@ import serial
 import json
 import traceback
 from status import status
+from threading import Thread
+import pygame
 
+pygame.mixer.init()
+
+# Initialize pygame
+pygame.init()
 # example to increase an emotion: import emotions, emotions.increase("joy", 200): this will make the robot happy for at least 200 seconds
 # every EMOTION_TICK seconds every emotion score is reduced by DELAY down to zero
-
+happy_sound = pygame.mixer.Sound(jsonhandler.path+"procione.wav")
+sound = happy_sound
+playing_sound = False
+def play_sound():
+    global playing_sound
+    if not playing_sound:
+        playing_sound = True
+        sound.play()
+        #winsound.PlaySound("Pop", winsound.SND_ALIAS)
+        playing_sound = False
+        
+thread = Thread(target=play_sound)
+            
 colors = {"anger": [255, 0, 0], "fear": [0, 255, 0], "sadness": [0, 0, 255], "joy": [255, 128, 0],
           "cyan": [0, 255, 255], "purple": [255, 0, 255], "white": [255, 255, 255]}
 emotions = {"joy": 120, "anger": 240, "fear": 120, "sadness": 120}
@@ -33,7 +51,7 @@ def emotion(emot):
 
 
 def loop():
-    global prevtime, prevtime_rage, rage_pressed, checking, RAGE_THRESHOLD, RAGE_TIME
+    global prevtime, prevtime_rage, rage_pressed, checking, RAGE_THRESHOLD, RAGE_TIME, thread, sound
     currtime = time.time()
 
     if (not checking):  # any button pressed
@@ -89,6 +107,8 @@ def loop():
         try:
             if jsonhandler.getPlaybot()["capacitive"]:
                 emotions["joy"] += 10
+                sound = happy_sound
+                play_sound()
             if status["playbot"] != "free":
                 if emotions["joy"] < emotions["sadness"]:
                     emotions["joy"] = emotions["sadness"] + 10
@@ -112,7 +132,7 @@ def loop():
             if emotions[emot] > EMOTION_MAX:
                 emotions[emot] = EMOTION_MAX
 
-        print(emotions)
+        #print(emotions)
 
 
 def increase(to_increase, score):

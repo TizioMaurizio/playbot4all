@@ -38,4 +38,4 @@ while True:
 
 
     except:# RuntimeError: #TODO CHECK BETTER BECAUSE IT'S USEFUL
-        traceback.print_exc()
+        pass#traceback.print_exc()

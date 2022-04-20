@@ -246,7 +246,11 @@ def loop():
         print (recjson)
         recjson = ''
     """
-    
+    try:
+        if(state!=prev_state):
+            print(state)
+    except:
+        pass
     completed = False
     prev_state = state
     
@@ -516,6 +520,7 @@ def loop():
             turnLeft = False
             forward = False
             backward = False
+        
         
         """
         #READ INPUT        
