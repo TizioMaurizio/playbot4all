@@ -22,22 +22,49 @@ def chatbot():
     
         command = take_commands()
         error = command["error"]
+
+        if "ciao" in command["transcription"]:
+            Speak("Ciao")
+
+        if "buongiorno" in command["transcription"]:
+            Speak("buongiorno a te")
+
+        if "specchio riflesso" in command["transcription"]:
+            Speak("oihcceps osselfir")
+
+        if "buonasera" in command["transcription"]:
+            Speak("buonasera a te")
+
+        if "grazie" in command["transcription"]:
+            Speak("figurati, sono felice di aiutarti")
+
+        if "scusa" in command["transcription"] or "mi dispiace" in command["transcription"] or "scusami" in command["transcription"]:
+            Speak("tranquilla")
         
-        if "triste" in command["transcription"]:
+        if "anni" in command["transcription"] or "età" in command["transcription"]:
+            Speak("sono nato nel 2021")
+
+        if "come stai" in command["transcription"]:
+            Speak("Io sono felice. Tu come ti senti?")
+
+        if "come ti senti" in command["transcription"]:
+            Speak("Io sono felice. Tu come stai?")
+        
+        if "triste" in command["transcription"] or "arrabbiata" in command["transcription"] or "delusa" in command["transcription"]:
             #musichetta triste, led accesi??
             Speak("Oh noo, mi dispiace. Per quel che vale, io ti voglio bene!")
             
             
-        if "felice" in command["transcription"]:
+        if "felice" in command["transcription"] or "contento" in command["transcription"] or "sorridente" in command["transcription"]:
             Speak("Wow, che grinta! Sono felice anche io.")
             
             
-        if "cattura la pulce" in command["transcription"]:
+        if "cattura" in command["transcription"] or "pulce" in command["transcription"] or "marmotta" in command["transcription"]:
             Speak("Giochiamo a cattura la pulce!")
             time.sleep(1)
             status["catchthebug"] = "startedbychatbot"
             
-        if "musica" in command["transcription"]:
+        if "musica" in command["transcription"] or "canzone" in command["transcription"] or "melodia" in command["transcription"] or "cantare" in command["transcription"] or "canto" in command["transcription"]:
             Speak("Diamoci dentro con un po' di musica!")
             #time.sleep(1)
             status["music"] = "startedbychatbot"
@@ -55,7 +82,9 @@ def chatbot():
             Speak("Giochiamo insieme con il joystick a seguire le luci!")
             status["simon"] == "startedbychatbot"
             
-                
+        if "simon" in command["transcription"]:
+            Speak("Giochiamo insieme con il joystick a seguire le luci!")
+            status["simon"] == "startedbychatbot"
             
         else:
             pass
