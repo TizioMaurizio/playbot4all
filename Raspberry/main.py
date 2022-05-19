@@ -1,7 +1,7 @@
 import time
 if True:
     print("wait avvio")
-    #time.sleep(5)
+    time.sleep(15)
 from pbdebug import debug as debug
 import jsonhandler
 debug("jsonhandler imported")

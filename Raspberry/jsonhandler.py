@@ -13,11 +13,11 @@ import traceback
 from pbdebug import debug as debug
 #import keyboard
 
+PRINT_RECEIVED = True
 REC_RATE = 0.05
 SEND_RATE = REC_RATE * 4
 path = "/home/pi/Desktop/playbot4all/Raspberry/"
 tosend = 0
-
 debug("jsonhandler begin")
 
 for i in range(1000):
@@ -28,8 +28,8 @@ for i in range(1000):
         break
     except:
         pass
-arduino.flushInput()
-arduino.flushOutput()
+#arduino.flushInput()
+#arduino.flushOutput()
 prevtime = 0
 
 servo = True
@@ -45,7 +45,7 @@ CONNECTION_RESET = False
 
 def loop():
     #debug("jsonhandler loop")
-    global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot, ERROR, CONNECTION_RESET
+    global REC_RATE, SEND_RATE, tosend, arduino, prevtime, playbot, ERROR, CONNECTION_RESET, PRINT_RECEIVED
     currtime = time.time()
     if(currtime-prevtime > REC_RATE):
         tosend += REC_RATE
@@ -55,13 +55,12 @@ def loop():
             CONNECTION_RESET = True
             print('RESETTING SERIAL')
             arduino.close()
-            for i in range(10):
-                try:
-                    arduino = serial.Serial('COM4', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
-                except:
-                    pass
-            arduino.flushInput()
-            arduino.flushOutput()
+            try:
+                arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+            except:
+                pass
+            #arduino.flushInput()
+            #arduino.flushOutput()
             
         if(received):
             ERROR = 0
@@ -75,20 +74,20 @@ def loop():
             except:
                 pass
                 #print("Json error")
-            #print(received)
+            if(PRINT_RECEIVED):
+                print(received)
         else:
             ERROR = ERROR + 1
             if(ERROR > 100):
                 CONNECTION_RESET = True
                 print('RESETTING SERIAL')
                 arduino.close()
-                for i in range(10):
-                    try:
-                        arduino = serial.Serial('COM4', 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
-                    except:
-                        pass
-                arduino.flushInput()
-                arduino.flushOutput()
+                try:
+                    arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                except:
+                    pass
+                #arduino.flushInput()
+                #arduino.flushOutput()
                 ERROR = 0
         prevtime = currtime
         

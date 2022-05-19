@@ -49,9 +49,9 @@ l = 0
 m = 0
 ready = True
 playing = False
-prevtime = 0
-prevtime_2 = 0
-prevtime_3 = 0
+start_time = 0
+last_move_time = 0
+strange_time = 0
 ledValues = [0,0,0,0,0,0,0,0]
 ledList = [0,0,0,0,0,0,0,0,0,0]
 go = False
@@ -63,6 +63,29 @@ LIGHTS_CLOCK = 0.2
 WIN = 10
 LOSE = 20
 
+def reset_variables():
+    global ready, i, j, playing, start_time, go, sets, ledValues, ledList, k, l, end_turn, last_move_time, new_led_flag, analog_flag, status, m, strange_time
+    j = 0
+    i = 0
+    k = 0
+    l = 0
+    m = 0
+    ready = True
+    playing = False
+    start_time = 0
+    last_move_time = 0
+    strange_time = 0
+    ledValues = [0,0,0,0,0,0,0,0]
+    ledList = [0,0,0,0,0,0,0,0,0,0]
+    go = False
+    sets = True
+    end_turn = False
+    new_led_flag = 0
+    analog_flag = 0
+    LIGHTS_CLOCK = 0.2
+    WIN = 10
+    LOSE = 20
+    
 def play_sound():
     #get_simon_sound.play()
     if ledValues == [0,0,0,0,1,0,0,0]:
@@ -83,7 +106,7 @@ def play_sound():
 """Game of light to introduce the main game"""
 def loop(): 
     
-    global ready, i, j, playing, prevtime, go, sets, ledValues, ledList, k, l, end_turn, prevtime_2, new_led_flag, analog_flag, status, m, prevtime_3
+    global ready, i, j, playing, start_time, go, sets, ledValues, ledList, k, l, end_turn, last_move_time, new_led_flag, analog_flag, status, m, strange_time
     try:
         thread1 = Thread(target=play_sound)
         if (not playing and (jsonhandler.getPlaybot()["analog"]["pressed"]) and status["playbot"] == "free") or (not playing and status["simon"] == "startedbychatbot"):
@@ -98,14 +121,14 @@ def loop():
             if sets == True:
                 thread1.start()
 
-                #if (currtime - prevtime) >= 1 and i < 3:
+                #if (currtime - start_time) >= 1 and i < 3:
                     #winsound.Beep(DO, 200)
                     #i += 1
-                    #prevtime = currtime
-                #if (currtime - prevtime) >= 1 and i == 3:
+                    #start_time = currtime
+                #if (currtime - start_time) >= 1 and i == 3:
                     #winsound.Beep(DO*2, 300)
                 
-                prevtime = currtime
+                start_time = currtime
                 sets = False
                 go = True
                 new_led_flag = 1
@@ -114,51 +137,55 @@ def loop():
             """Game starts -GO""" #da fare/completare
             #PARTE GIOCATORE
             if go == True and sets == False:
-                if (currtime - prevtime) >= 5: #time of ready-set-go
+                if (currtime - start_time) >= 5: #time of ready-set-go
                     if end_turn == True and analog_flag == 1:
                         currtime = time.time()
                         if (l-k) < k:
                             if ledList[l-k] == 4 and jsonhandler.getPlaybot()["analog"]["x"] <= 200:
                                 ledValues = [0,0,0,0,1,0,0,0]
+                                print("analog down")
                                 jsonhandler.send({"led": ledValues})
                                 thread1.start()
-                                prevtime_2 = currtime
+                                last_move_time = currtime
                                 l += 1
                         
                         if (l-k) < k:
                             if ledList[l-k] == 5 and jsonhandler.getPlaybot()["analog"]["y"] >= 800:
                                 ledValues = [0,0,0,0,0,1,0,0]
+                                print("analog left")
                                 jsonhandler.send({"led": ledValues})
                                 thread1.start()
-                                prevtime_2 = currtime
+                                last_move_time = currtime
                                 l += 1
 
                         if (l-k) < k:
                             if ledList[l-k] == 6 and jsonhandler.getPlaybot()["analog"]["x"] >= 600:
                                 ledValues = [0,0,0,0,0,0,1,0]
+                                print("analog up")
                                 jsonhandler.send({"led": ledValues})
                                 thread1.start()
-                                prevtime_2 = currtime
+                                last_move_time = currtime
                                 l += 1
                                 
                         if (l-k) < k:
                             if ledList[l-k] == 7 and jsonhandler.getPlaybot()["analog"]["y"] <= 200:
                                 ledValues = [0,0,0,0,0,0,0,1]
+                                print("analog right")
                                 jsonhandler.send({"led": ledValues}) 
                                 thread1.start()
-                                prevtime_2 = currtime
+                                last_move_time = currtime
                                 l += 1
 
                         if (l-k) >= k:
                             end_turn = False
                             analog_flag = 0
                         
-                        if (currtime - prevtime_2) >= 4:
+                        if (currtime - last_move_time) >= 4:
                             #sound
                             k = LOSE
                             end_turn = False
                         
-                        prevtime_3 = currtime
+                        strange_time = currtime
 
 
 
@@ -166,59 +193,33 @@ def loop():
                         #winsound.PlaySound('trumpet-win-super.wav', winsound.SND_FILENAME)
                         #sound
                         thread1.start()
-                        playing = False
-                        j = 0
-                        i = 0
-                        k = 0
-                        l = 0
-                        new_led_flag = 0
-                        analog_flag = 0
-                        ready = True
-                        prevtime = 0
-                        prevtime_2 = 0
-                        prevtime_3 = 0
-                        ledValues = [0,0,0,0,0,0,0,0]
-                        ledList = [0,0,0,0,0,0,0,0,0,0]
-                        go = False
-                        sets = False
-                        end_turn = False
+                        reset_variables()
+                        print("simon win")
                         #status["simon"] = False
 
                     if k == LOSE:
                          #winsound.PlaySound('lose.wav', winsound.SND_FILENAME)
                         #sound
                         thread1.start()
-                        playing = False
-                        j = 0
-                        i = 0
-                        k = 0
-                        l = 0
-                        new_led_flag = 0
-                        analog_flag = 0
-                        ready = True
-                        prevtime = 0
-                        prevtime_2 = 0
-                        prevtime_3 = 0
-                        ledValues = [0,0,0,0,0,0,0,0]
-                        ledList = [0,0,0,0,0,0,0,0,0,0]
-                        go = False
-                        sets = False
-                        end_turn = False
+                        reset_variables()
+                        print("simon lose")
                         #status["simon"] = False
 
 
 
                     #NUOVO TURNO
                     if k > 0 and k < 10 and new_led_flag == 0 and analog_flag == 0:     
-                        if m < k and (currtime - prevtime_3) >= 1:
-                            for j in range(4, 7, 1):
+                        if m < k and (currtime - strange_time) >= 1:
+                            for j in range(4, 8, 1):
                                 if j == ledList[m]:
                                     ledValues[j] = 1
                                 else:
                                     ledValues[j] = 0
                             jsonhandler.send({"led": ledValues})
                             thread1.start()
+                            print("led precedenti " + str(ledList))
                             m += 1
+                            strange_time = currtime
                         elif m >= k:
                             new_led_flag = 1
                         
@@ -238,16 +239,17 @@ def loop():
 
                     if k < 10 and new_led_flag == 1 and analog_flag == 0:    
                         r = random.randint(4,7)
-                        for j in range(4, 7, 1):
+                        for j in range(4, 8, 1):
                             if j == r:
                                 ledValues[j] = 1
                             else:
                                 ledValues[j] = 0
                         jsonhandler.send({"led": ledValues})
                         thread1.start()
+                        print("nuovo led " + str(ledValues))
                         
                         currtime = time.time()
-                        prevtime_2 = currtime
+                        last_move_time = currtime
                         end_turn = True
                         analog_flag = 1                        
                         ledList[k] = r
@@ -266,19 +268,19 @@ def loop():
                     #if r == 7:
                         #winsound.Beep(SI, 500)
                     
-                    #if (currtime - prevtime) >= 1:
+                    #if (currtime - start_time) >= 1:
 
                     
-                    #if (currtime - prevtime) >= 0.5 and lights == True:
-                    #prevtime = currtime
+                    #if (currtime - start_time) >= 0.5 and lights == True:
+                    #start_time = currtime
 
                     #for j in range(30):
                         #ledList[j] =
 
 
-                #if (currtime - prevtime) >= LIGHTS_CLOCK and go == False:
+                #if (currtime - start_time) >= LIGHTS_CLOCK and go == False:
                  #   ready = True
-                  #  prevtime = currtime
+                  #  start_time = currtime
                    # i += 1
 
     
