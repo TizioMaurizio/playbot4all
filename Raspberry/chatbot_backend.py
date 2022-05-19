@@ -15,7 +15,7 @@ def Speak(audio):
     engine.setProperty('voice', voice_id)
     # anything we pass inside engine.say(),
     # will be spoken by our voice assistant
-    engine.say(audio)
+    engine.say("ciao")
     engine.runAndWait()
 #creating take_commands() function which
 # can take some audio, Recognize and return
