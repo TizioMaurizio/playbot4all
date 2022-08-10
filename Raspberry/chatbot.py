@@ -23,31 +23,31 @@ def chatbot():
         command = take_commands()
         error = command["error"]
 
-        if "ciao" in command["transcription"]:
+        if "ciao" in command["transcription"] or "Ciao" in command["transcription"]:
             Speak("Ciao")
 
-        if "buongiorno" in command["transcription"]:
+        if "buongiorno" in command["transcription"] or "Buongiorno" in command["transcription"]:
             Speak("buongiorno a te")
 
-        if "specchio riflesso" in command["transcription"]:
+        if "specchio riflesso" in command["transcription"] or "Specchio riflesso" in command["transcription"]:
             Speak("oihcceps osselfir")
 
-        if "buonasera" in command["transcription"]:
+        if "buonasera" in command["transcription"] or "Buonasera" in command["transcription"]:
             Speak("buonasera a te")
 
-        if "grazie" in command["transcription"]:
+        if "grazie" in command["transcription"] or "Grazie" in command["transcription"]:
             Speak("figurati, sono felice di aiutarti")
 
-        if "scusa" in command["transcription"] or "mi dispiace" in command["transcription"] or "scusami" in command["transcription"]:
+        if "scusa" in command["transcription"] or "mi dispiace" in command["transcription"] or "scusami" in command["transcription"] or "Scusa" in command["transcription"] or "Mi dispiace" in command["transcription"] or "Scusami" in command["transcription"]:
             Speak("tranquilla")
         
-        if "anni" in command["transcription"] or "età" in command["transcription"]:
+        if "anni" in command["transcription"] or "eta'" in command["transcription"] or "Anni" in command["transcription"] or "Eta'" in command["transcription"]:
             Speak("sono nato nel 2021")
 
-        if "come stai" in command["transcription"]:
+        if "come stai" in command["transcription"] or "Come stai" in command["transcription"] or "come va" in command["transcription"] or "Come va" in command["transcription"]:
             Speak("Io sono felice. Tu come ti senti?")
 
-        if "come ti senti" in command["transcription"]:
+        if "come ti senti" in command["transcription"] or "Come ti senti" in command["transcription"]:
             Speak("Io sono felice. Tu come stai?")
         
         if "triste" in command["transcription"] or "arrabbiata" in command["transcription"] or "delusa" in command["transcription"]:
@@ -82,7 +82,7 @@ def chatbot():
             Speak("Giochiamo insieme con il joystick a seguire le luci!")
             status["simon"] == "startedbychatbot"
             
-        if "simon" in command["transcription"]:
+        if "Simon" in command["transcription"]:
             Speak("Giochiamo insieme con il joystick a seguire le luci!")
             status["simon"] == "startedbychatbot"
             

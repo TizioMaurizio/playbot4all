@@ -23,7 +23,7 @@ debug("jsonhandler begin")
 for i in range(1000):
     try:
         usbport = str('/dev/ttyACM0')#str('COM7')#
-        arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE)#CHANGE FOR RASPBERRY
+        arduino = serial.Serial(usbport, 115200, timeout=REC_RATE)#CHANGE FOR RASPBERRY
         debug("usb connected")
         break
     except:
@@ -56,7 +56,7 @@ def loop():
             print('RESETTING SERIAL')
             arduino.close()
             try:
-                arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                arduino = serial.Serial(usbport, 115200, timeout=REC_RATE) #CHANGE FOR RASPBERRY
             except:
                 pass
             #arduino.flushInput()
@@ -83,7 +83,7 @@ def loop():
                 print('RESETTING SERIAL')
                 arduino.close()
                 try:
-                    arduino = serial.Serial(usbport, 2000000, timeout=REC_RATE) #CHANGE FOR RASPBERRY
+                    arduino = serial.Serial(usbport, 115200, timeout=REC_RATE) #CHANGE FOR RASPBERRY
                 except:
                     pass
                 #arduino.flushInput()

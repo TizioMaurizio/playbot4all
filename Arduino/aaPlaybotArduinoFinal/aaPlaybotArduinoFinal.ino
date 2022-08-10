@@ -618,7 +618,7 @@ int prevTime = millis();
 void setup() {
   // put your setup code here, to run once:
   //REMINDER initialize Serial only once
-  Serial.begin(2000000);
+  Serial.begin(115200);
   Serial.setTimeout(UPDATE_TIME);
   Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
