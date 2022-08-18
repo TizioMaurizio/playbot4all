@@ -647,7 +647,7 @@ void loop() {
   IR_loop();
   SERVO_loop();
   
-  //JSON fields are filled in the functions' loops, then sent via serial every 50ms
+  //JSON fields are filled in the functions' loops, then sent via serial every 100ms
   int currTime = millis();
   if(currTime - prevTime >= UPDATE_TIME){
     toUpdateREMOVE = componentsAmountREMOVE; //reduced by one in each loop function
