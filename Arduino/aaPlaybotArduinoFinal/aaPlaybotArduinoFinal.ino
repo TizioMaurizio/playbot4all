@@ -620,7 +620,6 @@ void setup() {
   //REMINDER initialize Serial only once
   Serial.begin(115200);
   Serial.setTimeout(UPDATE_TIME);
-  Serial.println("Claudia's friend v0.01, print sensors on change, press buttons to change led color. (check the cables)");
   Serial.println("The purpose of this prototype is to acquire data from sensors and store them\ninto a JSON to be sent to Raspberry, also to read such JSON and actuate things accordingly.\nYou can enable or disable the prints of each sensor by editing the defines\nat the beginning of the code");
   Serial.println("\nEnabled serial prints:");
   RGB_setup();
@@ -628,8 +627,6 @@ void setup() {
   BUTTON_setup();
   CAPACITIVE_setup();
   ANALOG_setup();
-  //ROTARY_setup();
-  IMU_setup();
   IR_setup();
   SERVO_setup();
   Serial.print(componentsAmountREMOVE);
@@ -642,8 +639,6 @@ void loop() {
   BUTTON_loop();
   CAPACITIVE_loop();
   ANALOG_loop();
-  //ROTARY_loop();
-  //IMU_loop();
   IR_loop();
   SERVO_loop();
   
